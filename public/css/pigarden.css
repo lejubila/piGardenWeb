@@ -1,0 +1,222 @@
+.box{
+    border-radius:3px;
+    border-top-width: 3px;
+}
+
+.callout pre{
+    background-color: transparent;
+    border:0;
+    color:#fff;
+    font-style: italic;
+}
+
+.box-zone img.sprinkler {
+    width: 100px;
+    margin: 0 0 10px 10px;
+}
+.box-weather{
+    margin-bottom:10px;
+}
+.weather-text{
+    margin-top: 10px;
+}
+#icon_url{
+    width:80px;
+}
+#curWind{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    height: 66px;
+    line-height: normal;
+    margin: 14px 0 0 auto;
+    padding: 0px;
+    position: relative;
+    width: 65px;
+}
+#windCompassContainer{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    height: 65px;
+    line-height: normal;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: 0px;
+    width: 65px;
+}
+#windCompass{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    height: 65px;
+    left: 0px;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    transform: matrix(0.920505, 0.390731, -0.390731, 0.920505, 0, 0);
+    white-space: nowrap;
+    width: 65px;
+}
+.dial{
+    border-bottom-color: rgb(129, 130, 130);
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-style: solid;
+    border-bottom-width: 3px;
+    border-image-outset: 0px;
+    border-image-repeat: stretch;
+    border-image-slice: 100%;
+    border-image-source: none;
+    border-image-width: 1;
+    border-left-color: rgb(129, 130, 130);
+    border-left-style: solid;
+    border-left-width: 3px;
+    border-right-color: rgb(129, 130, 130);
+    border-right-style: solid;
+    border-right-width: 3px;
+    border-top-color: rgb(129, 130, 130);
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-top-style: solid;
+    border-top-width: 3px;
+    box-sizing: content-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    height: 59px;
+    line-height: normal;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    position: relative;
+    white-space: nowrap;
+    width: 59px;
+}
+.arrow-direction{
+    border-left-color: rgba(0, 0, 0, 0);
+    border-left-style: solid;
+    border-left-width: 6px;
+    border-right-color: rgba(0, 0, 0, 0);
+    border-right-style: solid;
+    border-right-width: 6px;
+    border-top-color: rgb(30, 32, 35);
+    border-top-style: solid;
+    border-top-width: 18px;
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: normal;
+    height: 18px;
+    left: 23.5px;
+    line-height: normal;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    position: absolute;
+    top: -10px;
+    white-space: nowrap;
+    width: 12px;
+}
+#windN{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 10.4px;
+    font-style: normal;
+    font-weight: normal;
+    height: 13px;
+    left: 0px;
+    line-height: normal;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    position: absolute;
+    text-align: center;
+    top: 7px;
+    width: 65px;
+}
+#windCompassSpeed{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: block;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    height: 71px;
+    left: 0px;
+    line-height: 70px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    position: absolute;
+    text-align: center;
+    top: 0px;
+    white-space: nowrap;
+    width: 65px;
+}
+.wx-value{
+    box-sizing: border-box;
+    color: rgb(30, 32, 35);
+    cursor: auto;
+    display: inline;
+    font-family: verb, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    height: auto;
+    line-height: 70px;
+    text-align: center;
+    white-space: nowrap;
+    width: auto;
+}

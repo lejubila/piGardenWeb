@@ -1,0 +1,35 @@
+{
+    "name": "prologue/alerts",
+    "description": "Prologue Alerts is a package that handles global site messages.",
+    "keywords": ["alerts", "messages", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dries Vints",
+            "email": "dries.vints@gmail.com",
+            "homepage": "http://driesvints.com",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/config": "~5",
+        "illuminate/session": "~5",
+        "illuminate/support": "~5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.1",
+        "mockery/mockery": "~0.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Prologue\\Alerts\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Prologue\\Alerts\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev"
+}
