@@ -110,6 +110,7 @@ class PiGardenAdminController extends PiGardenBaseController
         }
 
         $this->data['zone'] = $zoneData;
+        $this->data['title'] = trans('pigarden.zone').' '.(property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
 
         return view('zone.edit', $this->data);
 
