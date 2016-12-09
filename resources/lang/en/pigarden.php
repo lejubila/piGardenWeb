@@ -99,4 +99,11 @@ return array(
     'zones_empty' => 'No zones',
     'force_open_with_rain' => 'With rain force the open',
 
+    'cron' => [
+        'open_title' => 'Open schedule',
+        'close_title' => 'Close schedule'
+    ],
+
+    'add' => 'Add',
+
 );

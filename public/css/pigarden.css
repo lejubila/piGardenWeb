@@ -220,3 +220,20 @@
     white-space: nowrap;
     width: auto;
 }
+
+.with-tools tr .tools div {
+    display: inline-block;
+    color: #dd4b39;
+    width:45px;
+    visibility: hidden;
+    float: right;
+}
+.with-tools tr:hover .tools div {
+    display: inline-block;
+    visibility: visible;
+}
+.with-tools tr .tools div .fa{
+    margin: 0 5px;
+    cursor: pointer;
+}
+

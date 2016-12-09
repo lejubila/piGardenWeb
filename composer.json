@@ -8,7 +8,9 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "barryvdh/laravel-ide-helper": "^2.2",
-        "backpack/base": "^0.6.13"
+        "backpack/base": "^0.6.13",
+        "backpack/permissionmanager": "^2.1",
+        "backpack/crud": "^3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -22,6 +22,24 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 - Nothing
 
 
+## [0.6.16] - 2016-08-30
+
+### Removed
+- Backpack/Base DOES NOT automatically include backpack/generators and laracasts/generators on --dev; composer does not permit installing require-dev dependencies of dependencies;
+
+
+## [0.6.15] - 2016-08-30
+
+### Added
+- Backpack/Base automatically includes backpack/generators and laracasts/generators on --dev.
+
+
+## [0.6.14] - 2016-08-29
+
+### Fixed
+- Made the admin routes serializable, thanks to [Sabatino Masala](https://github.com/SabatinoMasala)
+
+
 ## [0.6.13] - 2016-08-12
 
 ### Added

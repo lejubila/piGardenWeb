@@ -34,7 +34,86 @@
             @include('_partials.zone', ['zone' => $zone, 'force' => true])
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="box box-primary box-zone">
+                <div class="box-header with-border text-center">
+                    <div class="box-title">{{ trans('pigarden.cron.open_title') }}</div>
+                </div>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table no-margin with-tools">
+                            <thead>
+                                <tr>
+                                    <th>{{trans('cron.min.title')}}</th>
+                                    <th>{{trans('cron.hour.title')}}</th>
+                                    <th>{{trans('cron.dom.title')}}</th>
+                                    <th>{{trans('cron.month.title')}}</th>
+                                    <th>{{trans('cron.dow.title')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($cron['open'] as $item)
+                                <tr>
+                                    <td>{{App\CronHelper::getStringMin($item['min'])}}</td>
+                                    <td>{{App\CronHelper::getStringHour($item['hour'])}}</td>
+                                    <td>{{App\CronHelper::getStringDom($item['dom'])}}</td>
+                                    <td>{{App\CronHelper::getStringMonth($item['month'])}}</td>
+                                    <td class="tools">{{App\CronHelper::getStringDow($item['dow'])}}
+                                        <div><i class="fa fa-edit"></i><i class="fa fa-trash-o"></i></div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr><td colspan='5'>{{trans('pigarden.cron.no_item')}}</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer clearfix" style="display: block;">
+                        <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> {{trans('pigarden.add')}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="box box-primary box-zone">
+                <div class="box-header with-border text-center">
+                    <div class="box-title">{{ trans('pigarden.cron.close_title') }}</div>
+                </div>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table no-margin">
+                            <thead>
+                                <th>min</th>
+                                <th>hour</th>
+                                <th>dom</th>
+                                <th>month</th>
+                                <th>dow</th>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer clearfix" style="display: block;">
+                        <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
+                        <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     @endif
+
+
+
+
+
+<pre><?php print_r($cron)?></pre>
+
 @endsection
 
 @section('after_scripts')

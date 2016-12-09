@@ -123,7 +123,7 @@
 
                     </div>
 
-                    <?php //print_r($weather)?>
+                    <?php //echo '<pre>'; print_r($status); echo '</pre>'; ?>
 
                 </div>
             </div>

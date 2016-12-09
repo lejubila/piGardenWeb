@@ -6,6 +6,7 @@ namespace App\Http\Controllers\PiGardenBase;
 
 use App\Http\Controllers\PiGardenBaseController;
 use App\PiGardenSocketClient;
+use App\CronHelper;
 use Illuminate\Http\Request;
 use Redirect;
 
@@ -85,13 +86,20 @@ class PiGardenAdminController extends PiGardenBaseController
         return $request->ajax() ? json_encode($this->data) : Redirect::back();
     }
 
+    /**
+     * Show edit zone page
+     * @param Request $request
+     * @param $zone
+     * @return string
+     */
     public function getZoneEdit(Request $request, $zone)
     {
         $zoneData = null;
+        $zoneCron = ['open' => [], 'close' => []];
         $client = new PiGardenSocketClient();
         $status = null;
-        try{
-            $status = $client->getStatus();
+//        try{
+            $status = $client->getStatus(['get_cron']);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
             if(isset($this->data['zones']) && $this->data['zones']->count()>0){
@@ -105,11 +113,54 @@ class PiGardenAdminController extends PiGardenBaseController
                     }
                 }
             }
-        } catch (\Exception $e) {
-            $zoneData = null;
-        }
+
+            if(property_exists($this->data['status'], 'cron'))
+            {
+                if(property_exists($this->data['status']->cron, 'open'))
+                {
+                    foreach($this->data['status']->cron->open as $i => $cron)
+                    {
+                        if($i == $zone)
+                        {
+                            $zoneCron['open'] = [];
+                            $arrTmp = explode('%%', $cron);
+                            if(count($arrTmp)>0)
+                            {
+                                foreach($arrTmp as $item)
+                                {
+                                    $zoneCron['open'][] = CronHelper::explode($item);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(property_exists($this->data['status']->cron, 'close'))
+                {
+                    foreach($this->data['status']->cron->close as $i => $cron)
+                    {
+                        if($i == $zone)
+                        {
+                            $zoneCron['close'] = [];
+                            $arrTmp = explode('%%', $cron);
+                            if(count($arrTmp)>0)
+                            {
+                                foreach($arrTmp as $item)
+                                {
+                                    $zoneCron['close'][] = CronHelper::explode($item);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+//        } catch (\Exception $e) {
+//            $zoneData = null;
+//        }
 
         $this->data['zone'] = $zoneData;
+        $this->data['cron'] = $zoneCron;
         $this->data['title'] = trans('pigarden.zone').' '.(property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
 
         return view('zone.edit', $this->data);

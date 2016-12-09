@@ -96,4 +96,11 @@ return array(
     'zone' => 'Zona',
     'zones_empty' => 'Nessuna zona trovata',
     'force_open_with_rain' => "In caso di pioggia forza l'apertura",
+
+    'cron' => [
+        'open_title' => 'Schedulazione apertura',
+        'close_title' => 'Schedulazione chiusura',
+    ],
+    'add' => 'Aggiungi',
+
 );

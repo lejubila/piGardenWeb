@@ -166,7 +166,8 @@ return [
         */
         //Backpack\Base\BaseServiceProvider::class,
         App\Http\Override\Backpack\Base\OverrideBaseServiceProvider::class,
-        //Prologue\Alerts\AlertsServiceProvider::class,
+	Backpack\CRUD\CrudServiceProvider::class,
+	Backpack\PermissionManager\PermissionManagerServiceProvider::class,
 
     ],
 

@@ -1,0 +1,53 @@
+{
+    "name": "backpack/crud",
+    "description": "Quickly build an admin interface for your Eloquent models, using Laravel 5. Build a CMS in a matter of minutes.",
+    "keywords": [
+        "CRUD",
+        "create",
+        "update",
+        "delete",
+        "read",
+        "admin panel",
+        "admin interface",
+        "CMS"
+    ],
+    "homepage": "https://github.com/laravel-backpack/CRUD",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cristian tabacitu",
+            "email": "hello@tabacitu.ro",
+            "homepage": "http://www.tabacitu.ro",
+            "role": "Chief Architect & Lead Developer"
+        }
+    ],
+    "require": {
+        "backpack/base": "^0.6.7",
+        "laravelcollective/html": "~5.0",
+        "barryvdh/laravel-elfinder": "^0.3.5",
+        "livecontrol/eloquent-datatable": "^0.1.5",
+        "doctrine/dbal": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "4.*",
+        "scrutinizer/ocular": "~1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Backpack\\CRUD\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Backpack\\CRUD\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

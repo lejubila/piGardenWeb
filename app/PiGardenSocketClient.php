@@ -114,11 +114,16 @@ class PiGardenSocketClient {
 
     /**
      * @return mixed|string
+     * @param array|null $additionalParameters
      * @throws Exception
      */
-    public function getStatus()
+    public function getStatus($additionalParameters=null)
     {
-        return $this->execCommand('status');
+        $ap = '';
+        if (!is_null($additionalParameters)){
+            $ap = ' '.implode(' ',$additionalParameters);
+        }
+        return $this->execCommand('status'.$ap);
     }
 
     /**

@@ -25,6 +25,13 @@ class Date extends Carbon
     protected static $fallbackLocale = 'en';
 
     /**
+     * The errors that can occur.
+     *
+     * @var array
+     */
+    protected static $lastErrors;
+
+    /**
      * Returns new DateTime object.
      *
      * @param  string              $time
@@ -96,7 +103,7 @@ class Date extends Carbon
      * @param  bool   $absolute Removes time difference modifiers ago, after, etc
      * @return string
      */
-    public function diffForHumans(Carbon $since = null, $absolute = false)
+    public function diffForHumans(Carbon $since = null, $absolute = false, $short = false)
     {
         // Get translator
         $lang = $this->getTranslator();
