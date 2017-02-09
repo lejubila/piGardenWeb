@@ -14,8 +14,12 @@
     </section>
 @endsection
 
+@section('before_styles')
+    <link href="{{ asset("vendor/adminlte/plugins/select2/select2.min.css") }}" rel="stylesheet">
+@endsection
+
 @section('after_styles')
-    <link rel="stylesheet" href="{{ asset("css/pigarden.css") }}">
+    <link href="{{ asset("css/pigarden.css") }}" rel="stylesheet">
     <link href="{{ asset('css/icheck/line/blue.css') }}" rel="stylesheet">
 @endsection
 
@@ -35,92 +39,125 @@
         </div>
     </div>
 
+    {!! Form::open(['route' => ['cron.put', $zone->name]]) !!}
+    {!! Form::text('type', '', ['id' => 'cron_type'])!!}
     <div class="row">
+        @foreach(['open', 'close'] as $type)
         <div class="col-md-6 col-sm-12 col-xs-12">
-            <div class="box box-primary box-zone">
+            <div class="box box-primary box-cron
+             box-info">
                 <div class="box-header with-border text-center">
-                    <div class="box-title">{{ trans('pigarden.cron.open_title') }}</div>
+                    <div class="box-title">{{ trans('pigarden.cron.'.$type.'_title') }}</div>
                 </div>
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table class="table no-margin with-tools">
-                            <thead>
-                                <tr>
-                                    <th>{{trans('cron.min.title')}}</th>
-                                    <th>{{trans('cron.hour.title')}}</th>
-                                    <th>{{trans('cron.dom.title')}}</th>
-                                    <th>{{trans('cron.month.title')}}</th>
-                                    <th>{{trans('cron.dow.title')}}</th>
-                                </tr>
-                            </thead>
+                        <table class="table table-striped table-hover table-borderless no-margin with-tools">
                             <tbody>
-                                @forelse($cron['open'] as $item)
-                                <tr>
-                                    <td>{{App\CronHelper::getStringMin($item['min'])}}</td>
-                                    <td>{{App\CronHelper::getStringHour($item['hour'])}}</td>
-                                    <td>{{App\CronHelper::getStringDom($item['dom'])}}</td>
-                                    <td>{{App\CronHelper::getStringMonth($item['month'])}}</td>
-                                    <td class="tools">{{App\CronHelper::getStringDow($item['dow'])}}
-                                        <div><i class="fa fa-edit"></i><i class="fa fa-trash-o"></i></div>
+                                @forelse( (!is_null(old($type)) ? old($type) : $cron[$type] ) as $k => $item)
+                                <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row">
+                                    <td class="tools">
+                                        <ul class="cron-item-text"></ul>
+                                        {{-- $item['string']  --}}
+                                        {!! Form::hidden("$type[$k][min]", implode(',',$item['min']), ['id'=>"$type-min-".$k]) !!}
+                                        {!! Form::hidden("$type[$k][hour]", implode(',',$item['hour']), ['id'=>"$type-hour-".$k]) !!}
+                                        {!! Form::hidden("$type[$k][dom]", implode(',',$item['dom']), ['id'=>"$type-dom-".$k]) !!}
+                                        {!! Form::hidden("$type[$k][month]", implode(',',$item['month']), ['id'=>"$type-month-".$k]) !!}
+                                        {!! Form::hidden("$type[$k][dow]", implode(',',$item['dow']), ['id'=>"$type-dow-".$k]) !!}
+                                        <div class="tools-wrp">
+                                            <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                            </a>
+                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan='5'>{{trans('pigarden.cron.no_item')}}</td></tr>
+                                <tr><td>{{trans('pigarden.cron.no_item')}}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                     <div class="box-footer clearfix" style="display: block;">
-                        <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> {{trans('pigarden.add')}}</button>
+                        <button type="submit" class="btn btn-primary pull-left" onclick="$('#cron_type').val('{{$type}}')"><i class="glyphicon glyphicon-save"></i> {{trans('cron.save')}}</button>
+                        <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> {{trans('cron.add')}}</button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6 col-sm-12 col-xs-12">
-            <div class="box box-primary box-zone">
-                <div class="box-header with-border text-center">
-                    <div class="box-title">{{ trans('pigarden.cron.close_title') }}</div>
-                </div>
-                <div class="box-body">
-                    <div class="table-responsive">
-                        <table class="table no-margin">
-                            <thead>
-                                <th>min</th>
-                                <th>hour</th>
-                                <th>dom</th>
-                                <th>month</th>
-                                <th>dow</th>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="box-footer clearfix" style="display: block;">
-                        <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a>
-                        <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">View All Orders</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        @endforeach
     </div>
+    {!! Form::close() !!}
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="cronModal" tabindex="-1" role="dialog" aria-labelledby="cronModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="cronModalLabel">Cron schedule</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+                {{ Form::label('cron-min', trans('cron.min.title')) }}
+                <div>{{ Form::select('cron-min', \app\CronHelper::getMinSelectItemArray('min-*'), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+            </div>
+            <div class="form-group">
+                {{ Form::label('cron-hour', trans('cron.hour.title')) }}
+                <div>{{ Form::select('cron-hour', \app\CronHelper::getHourSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+            </div>
+            <div class="form-group">
+                {{ Form::label('cron-dom', trans('cron.dom.title')) }}
+                <div>{{ Form::select('cron-dom', \app\CronHelper::getDomSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+            </div>
+            <div class="form-group">
+                {{ Form::label('cron-month', trans('cron.month.title')) }}
+                <div>{{ Form::select('cron-month', \app\CronHelper::getMonthSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+            </div>
+            <div class="form-group">
+                {{ Form::label('cron-dow', trans('cron.dow.title')) }}
+                <div>{{ Form::select('cron-dow', \app\CronHelper::getDowSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+            </div>
+
+            <input name="cron-type" type='hidden' value="" />
+            <input name="cron-row" type='hidden' value="" />
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">{{trans('pigarden.cancel')}}</button>
+            <button type="button" class="btn btn-primary" id="cron-modal-confirm">{{trans('pigarden.confirm')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     @endif
 
 
 
-
-
+@if(!is_null(old('open')))
+<!--
+                                <pre><?php print_r(old('open')) ?></pre>
+                                <pre><?php print_r(\Session::all()) ?></pre>
+                                <pre><?php print_r(\Request::input()) ?></pre>
+-->
+@endif
+<!--
 <pre><?php print_r($cron)?></pre>
-
+-->
 @endsection
 
 @section('after_scripts')
     <script src="{{ asset('js/icheck.min.js') }}"></script>
+    <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
     <script>
     $(document).ready(function(){
+
         $('.btn-zone').click(function(e){
             var btn = $(this);
             var id=$(btn).prop('id').replace('btn-zone-', '');
@@ -162,18 +199,85 @@
                 radioClass: 'iradio_line-blue',
                 insert: '<div class="icheck_line-icon"></div>' + label_text
             });
+        });
 
-/*
-            $(this).on('ifChecked', function(event){
-              $(this).prop('checked', true);
+        $('.open-cron-delete, .close-cron-delete').click(function(e){
+            var self = $(this);
+            var type = self.hasClass('open-cron-delete') ? 'open' : 'close';
+            var id = self.attr('id').replace(type+'-cron-delete-','');
+            $('#'+type+'-row-'+id).remove();
+            e.preventDefault();
+        });
+
+        $('#cronModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var row = button.data('cronrow');
+            var type = button.data('crontype');
+            var min = $('#'+type+'-min-'+row).val().split(',');
+            var hour = $('#'+type+'-hour-'+row).val().split(',');
+            var dom = $('#'+type+'-dom-'+row).val().split(',');
+            var month = $('#'+type+'-month-'+row).val().split(',');
+            var dow = $('#'+type+'-dow-'+row).val().split(',');
+
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this);
+            modal.find('.modal-body input[name="cron-type"]').val(type);
+            modal.find('.modal-body input[name="cron-row"]').val(row);
+
+            $.each({'min': min, 'hour': hour, 'dom': dom, 'month': month, 'dow': dow}, function(i, v){
+                $.each($('#cron-'+i+' option'), function(io, o){
+                    $(o).prop('selected', ($.inArray($(o).val(), v) >= 0 ? true : false) );
+                });
             });
-            $(this).on('ifUnchecked', function(event){
-              $(this).prop('checked', false);
-            });
-*/
+
+            $('#cron-min, #cron-hour, #cron-dom, #cron-month, #cron-dow').select2();
 
         });
+
+        $("#cron-modal-confirm").click(function(){
+            var type = $('#cronModal input[name="cron-type"]').val();
+            var row = $('#cronModal input[name="cron-row"]').val();
+            var choices;
+            choises = $('#cron-min').val();
+            $('#'+type+'-min-'+row).val( ($('#cron-min').val() ? $('#cron-min').val().join(',') : 'min-1') );
+            $('#'+type+'-hour-'+row).val( ($('#cron-hour').val() ? $('#cron-hour').val().join(',') : 'hour-*') );
+            $('#'+type+'-dom-'+row).val( ($('#cron-dom').val() ? $('#cron-dom').val().join(',') : 'dom-*') );
+            $('#'+type+'-month-'+row).val( ($('#cron-month').val() ? $('#cron-month').val().join(',') : 'month-*') );
+            $('#'+type+'-dow-'+row).val( ($('#cron-dow').val() ? $('#cron-dow').val().join(',') : 'dow-*') );
+
+            updateCronItemText(type, row);
+
+            $("#cronModal").modal('hide');
+        });
+
+        $(".open-row, .close-row").each(function(i,o){
+            var type = $(o).hasClass('open-row') ? 'open' : 'close';
+            var row = $(o).attr('id').replace(type+'-row-','');
+            updateCronItemText(type, row);
+        });
+
     });
+
+    function updateCronItemText(type, row) {
+        var min = $('#'+type+'-min-'+row).val().split(',');
+        var hour = $('#'+type+'-hour-'+row).val().split(',');
+        var dom = $('#'+type+'-dom-'+row).val().split(',');
+        var month = $('#'+type+'-month-'+row).val().split(',');
+        var dow = $('#'+type+'-dow-'+row).val().split(',');
+        var html = '';
+
+        $.each({'min': min, 'hour': hour, 'dom': dom, 'month': month, 'dow': dow}, function(i, v){
+            $.each(v, function(ia, va){
+                html += '<li class="'+i+'">'+$('#cron-'+i+' option[value="'+va+'"]').text()+'</li>';
+                if (va == i+'-*'){
+                    return false;
+                }
+            });
+        });
+
+        $(" #"+type+"-row-"+row+" td .cron-item-text").html(html);
+    }
 
     </script>
 @endsection

@@ -221,19 +221,88 @@
     width: auto;
 }
 
-.with-tools tr .tools div {
+.with-tools tr .tools{
+    position: relative;
+}
+.with-tools tr .tools div.tools-wrp {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    margin-top: -10px;
     display: inline-block;
     color: #dd4b39;
-    width:45px;
+    width:50px;
     visibility: hidden;
-    float: right;
 }
-.with-tools tr:hover .tools div {
+.with-tools tr:hover .tools div.tools-wrp {
     display: inline-block;
     visibility: visible;
 }
-.with-tools tr .tools div .fa{
+.with-tools tr .tools div.tools-wrp .fa{
     margin: 0 5px;
     cursor: pointer;
 }
 
+table.table-stripped-column tbody td:nth-of-type(odd),
+table.table-stripped-column thead th:nth-of-type(odd){
+    background-color: rgba(0,0,0,.05);
+}
+
+.select2-search__field{
+    border:none !important;
+}
+
+table.table-borderless,
+table.table-borderless tr,
+table.table-borderless td,
+table.table-borderless th{
+    border: 0 !important;
+}
+
+table.table-stripped-column tbody td{
+    border-left: 1px solid #eceeef;
+}
+
+ul.cron-item-text{
+    box-sizing: border-box;
+    list-style: none;
+    margin: 0px 40px 0 0;
+    padding: 0 5px;
+    width: auto;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+ul.cron-item-text li{
+    list-style: none;
+    background-color: #3c8dbc;
+    padding: 1px 10px;
+    color: #fff;
+    border: 1px solid #367fa9;
+    border-radius: 4px;
+    cursor: default;
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+ul.cron-item-text li.min{
+    background-color: #3c8dbc;
+    border: 1px solid #367fa9;
+}
+ul.cron-item-text li.hour{
+    background-color: #244c69;
+    border: 1px solid #1c3c52;
+}
+ul.cron-item-text li.dom{
+    background-color: #bca374;
+    border: 1px solid #8a7352;
+}
+ul.cron-item-text li.month{
+    background-color: #8a7352;
+    border: 1px solid #69543a;
+}
+ul.cron-item-text li.dow{
+    background-color: #efbe6c;
+    border: 1px solid #a59237;
+}

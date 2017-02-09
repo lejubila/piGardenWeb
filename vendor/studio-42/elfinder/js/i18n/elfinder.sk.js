@@ -2,9 +2,17 @@
  * Slovak translation
  * @author Jakub Ďuraš <jkblmr@gmail.com>
  * @author RobiNN <admin@robonetwork.cf>
- * @version 2016-8-8
+ * @version 2016-11-21
  */
-if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object') {
+(function(root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		define(['elfinder'], factory);
+	} else if (typeof exports !== 'undefined') {
+		module.exports = factory(require('elfinder'));
+	} else {
+		factory(root.elFinder);
+	}
+}(this, function(elFinder) {
 	elFinder.prototype.i18.sk = {
 		translator : 'Jakub Ďuraš &lt;jkblmr@gmail.com&gt;, RobiNN &lt;admin@robonetwork.cf&gt;',
 		language   : 'slovenčina',
@@ -12,7 +20,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 		dateFormat : 'd.m.Y H:i', // Mar 13, 2012 05:27 PM
 		fancyDateFormat : '$1 H:i', // will produce smth like: Today 12:25 PM
 		messages   : {
-			
+
 			/********************************** errors **********************************/
 			'error'                : 'Chyba',
 			'errUnknown'           : 'Neznáma chyba.',
@@ -51,7 +59,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'errRename'            : 'Nie je možné premenovať "$1".',
 			'errCopyFrom'          : 'Kopírovanie súborov z média "$1" nie je povolené.',
 			'errCopyTo'            : 'Kopírovanie súborov na médium "$1" nie je povolené.',
-			'errMkOutLink'         : 'Nie je možné vytvoriť odkaz mimo koreňového zväzku.', // from v2.1 added 03.10.2015 
+			'errMkOutLink'         : 'Nie je možné vytvoriť odkaz mimo koreňového zväzku.', // from v2.1 added 03.10.2015
 			'errUpload'            : 'Problém s nahrávaním.', // old name - errUploadCommon
 			'errUploadFile'        : 'Nie je možné nahrať "$1".', // old name - errUpload
 			'errUploadNoFiles'     : 'Žiadne súbory neboli nájdené na nahranie.',
@@ -98,7 +106,8 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'errConvUTF8'          : 'Nedá sa previesť do UTF-8', // from v2.1 added 08.04.2014
 			'errFolderUpload'      : 'Ak by ste chceli nahrať zložku, skúste prehliadač Google Chrome.', // from v2.1 added 26.6.2015
 			'errSearchTimeout'     : 'Vypršal časový limit pri hľadaní "$1". Výsledok vyhľadávania je čiastočný.', // from v2.1 added 12.1.2016
-			'errReauthRequire'     : 'Opätovné povolenie je nutné.', // from v2.1.10 added 3.24.2016
+			'errReauthRequire'     : 'Opätovné povolenie je nutné.', // from v2.1.10 added 24.3.2016
+			'errMaxTargets'        : 'Maximálny počet voliteľných predmetov je $1.', // from v2.1.17 added 17.10.2016
 
 			/******************************* commands names ********************************/
 			'cmdarchive'   : 'Vytvoriť archív',
@@ -136,6 +145,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'cmdopendir'   : 'Otvoriť priečinok', // from v2.1 added 13.1.2016
 			'cmdcolwidth'  : 'Resetovať šírku stĺpca', // from v2.1.13 added 12.06.2016
 			'cmdfullscreen': 'Celá obrazovka', // from v2.1.15 added 03.08.2016
+			'cmdmove'      : 'Posúvať', // from v2.1.15 added 21.08.2016
 
 			/*********************************** buttons ***********************************/
 			'btnClose'  : 'Zavrieť',
@@ -156,7 +166,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'btnFileName':'Názov súboru', // from v2.1 added 22.5.2015
 			'btnSaveClose': 'Uložiť & zavrieť', // from v2.1 added 12.6.2015
 			'btnBackup' : 'Zálohovať', // from v2.1 added 28.11.2015
-			
+
 			/******************************** notifications ********************************/
 			'ntfopen'     : 'Otváranie priečinka',
 			'ntffile'     : 'Otváranie súboru',
@@ -185,7 +195,9 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'ntfchmod'    : 'Zmena súboru', // from v2.1 added 20.6.2015
 			'ntfpreupload': 'Overenie názvu nahravaného súboru', // from v2.1 added 31.11.2015
 			'ntfzipdl'    : 'Vytvorenie súboru na stiahnutie', // from v2.1.7 added 23.1.2016
-			
+			'ntfparents'  : 'Získanie informácie o ceste', // from v2.1.17 added 2.11.2016
+			'ntfchunkmerge': 'Spracovanie nahraného súboru', // from v2.1.17 added 2.11.2016
+
 			/************************************ dates **********************************/
 			'dateUnknown' : 'neznámy',
 			'Today'       : 'Dnes',
@@ -214,19 +226,19 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'October'     : 'Október',
 			'November'    : 'November',
 			'December'    : 'December',
-			'Sunday'      : 'Nedeľa', 
-			'Monday'      : 'Pondelok', 
-			'Tuesday'     : 'Utorok', 
-			'Wednesday'   : 'Streda', 
-			'Thursday'    : 'Štvrtok', 
-			'Friday'      : 'Piatok', 
+			'Sunday'      : 'Nedeľa',
+			'Monday'      : 'Pondelok',
+			'Tuesday'     : 'Utorok',
+			'Wednesday'   : 'Streda',
+			'Thursday'    : 'Štvrtok',
+			'Friday'      : 'Piatok',
 			'Saturday'    : 'Sobota',
-			'Sun'         : 'Ned', 
-			'Mon'         : 'Pon', 
-			'Tue'         : 'Ut', 
-			'Wed'         : 'Str', 
-			'Thu'         : 'Štv', 
-			'Fri'         : 'Pia', 
+			'Sun'         : 'Ned',
+			'Mon'         : 'Pon',
+			'Tue'         : 'Ut',
+			'Wed'         : 'Str',
+			'Thu'         : 'Štv',
+			'Fri'         : 'Pia',
 			'Sat'         : 'Sob',
 
 			/******************************** sort variants ********************************/
@@ -352,15 +364,29 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'nowLoading'      : 'Práve načítava...', // from v2.1.12 added 4.26.2016
 			'openMulti'       : 'Otvorenie viacerých súborov', // from v2.1.12 added 5.14.2016
 			'openMultiConfirm': 'Pokúšate sa otvoriť súbor $1. Naozaj ho chcete otvoriť v prehliadači?', // from v2.1.12 added 5.14.2016
-			'emptySearch'     : 'Výsledky vyhľadávania su prázdne', // from v2.1.12 added 5.16.2016
+			'emptySearch'     : 'Výsledky vyhľadávania su prázdne v hľadanom cieli.', // from v2.1.12 added 5.16.2016
 			'editingFile'     : 'Upravujete súbor.', // from v2.1.13 added 6.3.2016
 			'hasSelected'     : 'Vybrali ste $1 položky.', // from v2.1.13 added 6.3.2016
 			'hasClipboard'    : 'Máte $1 položky v schránke.', // from v2.1.13 added 6.3.2016
 			'incSearchOnly'   : 'Prírastkové hľadanie je iba z aktuálneho zobrazenia.', // from v2.1.13 added 6.30.2016
 			'reinstate'       : 'Obnoviť', // from v2.1.15 added 3.8.2016
+			'complete'        : '$1 kompletné', // from v2.1.15 added 21.8.2016
+			'contextmenu'     : 'Kontextové menu', // from v2.1.15 added 9.9.2016
+			'pageTurning'     : 'Otáčanie stránky', // from v2.1.15 added 10.9.2016
+			'volumeRoots'     : 'Korene média', // from v2.1.16 added 16.9.2016
+			'reset'           : 'Reset', // from v2.1.16 added 1.10.2016
+			'bgcolor'         : 'Farba pozadia', // from v2.1.16 added 1.10.2016
+			'colorPicker'     : 'Výber farby', // from v2.1.16 added 1.10.2016
+			'8pxgrid'         : '8px mriežka', // from v2.1.16 added 4.10.2016
+			'enabled'         : 'Povolené', // from v2.1.16 added 4.10.2016
+			'disabled'        : 'Zakázané', // from v2.1.16 added 4.10.2016
+			'emptyIncSearch'  : 'Výsledky vyhľadávania sú prázdne v aktuálnom zobrazení.\\Stlačením tlačidla [Enter] rozšírite vyhľadávanie cieľa.', // from v2.1.16 added 5.10.2016
+			'textLabel'       : 'Nápis textu', // from v2.1.17 added 13.10.2016
+			'minsLeft'        : '$1 minút ostáva', // from v2.1.17 added 13.11.2016
 
 			/********************************** mimetypes **********************************/
 			'kindUnknown'     : 'Neznámy',
+			'kindRoot'        : 'Koreň média', // from v2.1.16 added 16.10.2016
 			'kindFolder'      : 'Priečinok',
 			'kindAlias'       : 'Alias',
 			'kindAliasBroken' : 'Porušený alias',
@@ -387,7 +413,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'kindOTF'         : 'Open Type font',
 			'kindRPM'         : 'RPM balík',
 			// texts
-      'kindText'        : 'Textový document',
+			'kindText'        : 'Textový document',
 			'kindTextPlain'   : 'Obyčajný text',
 			'kindPHP'         : 'PHP zdrojový kód',
 			'kindCSS'         : 'Cascading style sheet (CSS)',
@@ -440,4 +466,4 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'kindVideoOGG'    : 'Ogg video'
 		}
 	};
-}
+}));

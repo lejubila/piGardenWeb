@@ -9,6 +9,7 @@ use App\PiGardenSocketClient;
 use App\CronHelper;
 use Illuminate\Http\Request;
 use Redirect;
+use Illuminate\Support\Facades\Input;
 
 class PiGardenAdminController extends PiGardenBaseController
 {
@@ -95,7 +96,7 @@ class PiGardenAdminController extends PiGardenBaseController
     public function getZoneEdit(Request $request, $zone)
     {
         $zoneData = null;
-        $zoneCron = ['open' => [], 'close' => []];
+        $zoneCron = ['open' => [], 'close' => [], 'strOpen' => [], 'strClose' => ''];
         $client = new PiGardenSocketClient();
         $status = null;
 //        try{
@@ -128,7 +129,8 @@ class PiGardenAdminController extends PiGardenBaseController
                             {
                                 foreach($arrTmp as $item)
                                 {
-                                    $zoneCron['open'][] = CronHelper::explode($item);
+                                    $zoneCron['open'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)] ;
+                                    //$zoneCron['strOpen'][] = CronHelper::normalize($item);
                                 }
                             }
                         }
@@ -146,7 +148,8 @@ class PiGardenAdminController extends PiGardenBaseController
                             {
                                 foreach($arrTmp as $item)
                                 {
-                                    $zoneCron['close'][] = CronHelper::explode($item);
+                                    $zoneCron['close'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)];
+                                    //$zoneCron['strClose'][] = $item;
                                 }
                             }
                         }
@@ -163,7 +166,51 @@ class PiGardenAdminController extends PiGardenBaseController
         $this->data['cron'] = $zoneCron;
         $this->data['title'] = trans('pigarden.zone').' '.(property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
 
+        \Session::flash('prova', 'prova 1');
+
         return view('zone.edit', $this->data);
+
+    }
+
+    /**
+     * Put the cron scheduling
+     * @param Request $request
+     * @param $zone
+     * @return string
+     */
+    public function postCronPut(Request $request, $zone){
+
+
+        //\Alert::error(trans('pigarden.prova'))->flash();
+
+
+
+
+        return redirect()->back()->withInput($request->input());
+
+        //return '<pre>'.print_r($request->input(), true).'</pre>';
+
+        //return redirect()->to(app('url')->previous(). '#fprenotazione')->with('message', trans('newsletter.iscrizione_notify.success-message'));
+
+
+    }
+
+
+
+
+
+    public function getProva(){
+
+        return view('prova');
+
+    }
+
+    public function postProva(Request $request){
+
+        $input = $request->input();
+        return '<pre>'.print_r($input,true).'</pre>';
+
+        return redirect()->back()->withInput(Input::all())->with('message', 'prova messaggio');
 
     }
 

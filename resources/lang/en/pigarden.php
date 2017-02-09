@@ -105,5 +105,7 @@ return array(
     ],
 
     'add' => 'Add',
+    'cancel' => 'Cancel',
+    'confirm' => 'Confirm',
 
 );

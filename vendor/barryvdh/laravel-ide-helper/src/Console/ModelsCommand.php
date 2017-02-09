@@ -194,6 +194,10 @@ class ModelsCommand extends Command
                         $this->getPropertiesFromTable($model);
                     }
 
+                    if (method_exists($model, 'getCasts')) {
+                        $this->castPropertiesType($model);
+                    }
+
                     $this->getPropertiesFromMethods($model);
                     $output .= $this->createPhpDocs($name);
                     $ignore[] = $name;
@@ -211,7 +215,6 @@ class ModelsCommand extends Command
         }
 
         return $output;
-
     }
 
 
@@ -227,6 +230,73 @@ class ModelsCommand extends Command
             }
         }
         return $models;
+    }
+
+    /**
+     * cast the properties's type from $casts.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     */
+    protected function castPropertiesType($model)
+    {
+        $casts = $model->getCasts();
+        foreach ($casts as $name => $type) {
+            switch ($type) {
+                case 'boolean':
+                case 'bool':
+                    $realType = 'boolean';
+                    break;
+                case 'string':
+                    $realType = 'string';
+                    break;
+                case 'array':
+                case 'json':
+                    $realType = 'array';
+                    break;
+                case 'object':
+                    $realType = 'object';
+                    break;
+                case 'int':
+                case 'integer':
+                case 'timestamp':
+                    $realType = 'integer';
+                    break;
+                case 'real':
+                case 'double':
+                case 'float':
+                    $realType = 'float';
+                    break;
+                case 'date':
+                case 'datetime':
+                    $realType = '\Carbon\Carbon';
+                    break;
+                case 'collection':
+                    $realType = '\Illuminate\Support\Collection';
+                    break;
+                default:
+                    $realType = 'mixed';
+                    break;
+            }
+
+            if (!isset($this->properties[$name])) {
+                continue;
+            } else {
+                $this->properties[$name]['type'] = $this->getTypeOverride($realType);
+            }
+        }
+    }
+
+    /**
+     * Returns the overide type for the give type.
+     *
+     * @param string $type
+     * @return string
+     */
+    protected function getTypeOverride($type)
+    {
+        $typeOverrides = $this->laravel['config']->get('ide-helper.type_overrides', array());
+
+        return isset($typeOverrides[$type]) ? $typeOverrides[$type] : $type;
     }
 
     /**
@@ -316,7 +386,9 @@ class ModelsCommand extends Command
                     //Magic get<name>Attribute
                     $name = Str::snake(substr($method, 3, -9));
                     if (!empty($name)) {
-                        $this->setProperty($name, null, true, null);
+                        $reflection = new \ReflectionMethod($model, $method);
+                        $type = $this->getReturnTypeFromDocBlock($reflection);
+                        $this->setProperty($name, $type, true, null);
                     }
                 } elseif (Str::startsWith($method, 'set') && Str::endsWith(
                     $method,
@@ -421,7 +493,7 @@ class ModelsCommand extends Command
             $this->properties[$name]['comment'] = (string) $comment;
         }
         if ($type !== null) {
-            $this->properties[$name]['type'] = $type;
+            $this->properties[$name]['type'] = $this->getTypeOverride($type);
         }
         if ($read !== null) {
             $this->properties[$name]['read'] = $read;
@@ -550,7 +622,8 @@ class ModelsCommand extends Command
         $paramsWithDefault = array();
         /** @var \ReflectionParameter $param */
         foreach ($method->getParameters() as $param) {
-            $paramStr = '$' . $param->getName();
+            $paramClass = $param->getClass();
+            $paramStr = (!is_null($paramClass) ? '\\' . $paramClass->getName() . ' ' : '') . '$' . $param->getName();
             $params[] = $paramStr;
             if ($param->isOptional() && $param->isDefaultValueAvailable()) {
                 $default = $param->getDefaultValue();
@@ -598,5 +671,24 @@ class ModelsCommand extends Command
     protected function hasCamelCaseModelProperties()
     {
         return $this->laravel['config']->get('ide-helper.model_camel_case_properties', false);
+    }
+
+    /**
+     * Get method return type based on it DocBlock comment
+     *
+     * @param \ReflectionMethod $reflection
+     *
+     * @return null|string
+     */
+    protected function getReturnTypeFromDocBlock(\ReflectionMethod $reflection)
+    {
+        $type = null;
+        $phpdoc = new DocBlock($reflection);
+
+        if ($phpdoc->hasTag('return')) {
+            $type = $phpdoc->getTagsByName('return')[0]->getContent();
+        }
+
+        return $type;
     }
 }

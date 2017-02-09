@@ -9,7 +9,7 @@ __For Laravel 4.x, check [version 1.11](https://github.com/barryvdh/laravel-ide-
 
 ### Complete phpDocs, directly from the source
 
-_Checkout [this Laracasts video](https://laracasts.com/series/how-to-be-awesome-in-phpstorm/episodes/15) for a quick introduction/explanation!_
+_Check out [this Laracasts video](https://laracasts.com/series/how-to-be-awesome-in-phpstorm/episodes/15) for a quick introduction/explanation!_
 
  * [`php artisan ide-helper:generate` - phpDoc generation for Laravel Facades ](#automatic-phpdoc-generation-for-laravel-facades)
  * [`php artisan ide-helper:models` - phpDocs for models](#automatic-phpdocs-for-models)
@@ -38,8 +38,27 @@ After updating composer, add the service provider to the `providers` array in `c
 Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 ```
 
-### Automatic phpDoc generation for Laravel Facades
+To install this package on only development systems, add the `--dev` flag to your composer command:
 
+```bash
+composer require --dev barryvdh/laravel-ide-helper
+```
+
+In Laravel, instead of adding the service provider in the `config/app.php` file, you can add the following code to your `app/Providers/AppServiceProvider.php` file, within the `register()` method:
+
+```php
+public function register()
+{
+    if ($this->app->environment() !== 'production') {
+        $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+    }
+    // ...
+}
+```
+
+This will allow your application to load the Laravel IDE Helper on non-production enviroments.
+
+### Automatic phpDoc generation for Laravel Facades
 
 You can now re-generate the docs yourself (for future updates)
 
@@ -71,10 +90,10 @@ php artisan vendor:publish --provider="Barryvdh\LaravelIdeHelper\IdeHelperServic
 The generator tries to identify the real class, but if it cannot be found, you can define it in the config file.
 
 Some classes need a working database connection. If you do not have a default working connection, some facades will not be included.
-You can use an in-memory SQLite driver, using the -M option.
+You can use an in-memory SQLite driver by adding the -M option.
 
 You can choose to include helper files. This is not enabled by default, but you can override it with the `--helpers (-H)` option.
-The `Illuminate/Support/helpers.php` is already set-up, but you can add/remove your own files in the config file.
+The `Illuminate/Support/helpers.php` is already set up, but you can add/remove your own files in the config file.
 
 ### Automatic phpDocs for models
 
@@ -134,7 +153,7 @@ Note: With namespaces, wrap your model name in " signs: `php artisan ide-helper:
 
 ## PhpStorm Meta for Container instances
 
-It's possible to generate a PhpStorm meta file, to [add support for factory design pattern](https://confluence.jetbrains.com/display/PhpStorm/PhpStorm+Advanced+Metadata). For Laravel, this means we can make PhpStorm understand what kind of object we are resolving from the IoC Container. For example, `events` will return an `Illuminate\Events\Dispatcher` object, so with the meta file you can call `app('events')` and it will autocomplete the Dispatcher methods.
+It's possible to generate a PhpStorm meta file to [add support for factory design pattern](https://confluence.jetbrains.com/display/PhpStorm/PhpStorm+Advanced+Metadata). For Laravel, this means we can make PhpStorm understand what kind of object we are resolving from the IoC Container. For example, `events` will return an `Illuminate\Events\Dispatcher` object, so with the meta file you can call `app('events')` and it will autocomplete the Dispatcher methods.
 
 ``` bash
 php artisan ide-helper:meta
@@ -155,6 +174,55 @@ Pre-generated example: https://gist.github.com/barryvdh/bb6ffc5d11e0a75dba67
 
 > Note: You might need to restart PhpStorm and make sure `.phpstorm.meta.php` is indexed.
 > Note: When you receive a FatalException about a class that is not found, check your config (for example, remove S3 as cloud driver when you don't have S3 configured. Remove Redis ServiceProvider when you don't use it).
+
+## Lumen Install
+
+This pacakges is focused on Laravel development, but it can also be used in Lumen with some workarounds. Because Lumen works a little different, as it is like a barebone version of Laravel and the main configuration parameters are instead located in `bootstrap/app.php`, some arreglements must be made.
+
+#### Enabling Facades
+
+While Laravel IDE Helper can generate automatically default Facades for code hinting, Lumen doesn't come with Facades activated. If you plan in using them, you must enable them under the `Create The Application` section, uncommenting this line:
+
+```php
+// $app->withFacades();
+```
+
+From there, you should be able to use the `create_alias()` function to add additional Facades into your application.
+
+#### Adding the Service Provider
+
+You can install Laravel IDE Helper in `app/Providers/AppServiceProvider.php`, and uncommenting this line that registers the App Service Providers so it can properly load.
+
+```php
+// $app->register(App\Providers\AppServiceProvider::class);
+```
+
+If you are not using that line, that is usually handy to manage gracefully multiple Laravel/Lumen installations, you will have to add this line of code under the `Register Service Providers` section of your `bootstrap/app.php`.
+
+```php
+if ($app->environment() !== 'production') {
+    $app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+}
+```
+
+After that, Laravel IDE Helper should work correctly. During the generation process, the script may throw exceptions saying that some Classes doesn't exist or there are some undefined indexes. This is normal, as Lumen has some default packages stripped away, like Cookies, Storage and Session. If you plan to add these packages, you will have to add them manually and create additional 
+Facades if needed.
+
+#### Adding Additional Facades
+
+Currently Lumen IDE Helper doesn't take into account additional Facades created under `bootstrap/app.php` using `create_alias()`, so you need to create a `config/app.php` file and add your custom aliases under an `aliases` array again, like so:
+
+```php
+return [
+    'aliases' => [
+        'CustomAliasOne' => Example\Support\Facades\CustomAliasOne::class,
+        'CustomAliasTwo' => Example\Support\Facades\CustomAliasTwo::class,
+        //...
+    ]
+];
+```
+
+After you run ```php artisan ide-helper:generate```, it's recommended (but not mandatory) to rename `config/app.php` to something else until you have to re-generate the docs or after passing to production enviroment. Lumen 5.1+ will read this file for configuration parameters if it is present, and may overlap some configurations if it is completely populated.
 
 ### License
 

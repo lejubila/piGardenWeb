@@ -101,6 +101,9 @@ return array(
         'open_title' => 'Schedulazione apertura',
         'close_title' => 'Schedulazione chiusura',
     ],
+
     'add' => 'Aggiungi',
+    'cancel' => 'Annulla',
+    'confirm' => 'Conferma',
 
 );

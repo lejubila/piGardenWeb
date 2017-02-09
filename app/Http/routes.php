@@ -58,6 +58,23 @@ Route::group(['prefix' => config('backpack.base.route_prefix')], function () {
             'uses' => 'PiGardenAdminController@getZonePause',
             'as' => 'zone.pause'
         ]);
+
+        Route::post('cron/put/{zone}', [
+            'uses' => 'PiGardenAdminController@postCronPut',
+            'as' => 'cron.put'
+        ]);
+
+
+        Route::get('prova', [
+            'uses' => 'PiGardenAdminController@getProva',
+            'as' => 'prova.get'
+        ]);
+        Route::post('prova', [
+            'uses' => 'PiGardenAdminController@postProva',
+            'as' => 'prova.post'
+        ]);
+
+
     });
 
 });

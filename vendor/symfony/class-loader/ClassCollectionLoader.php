@@ -55,6 +55,11 @@ class ClassCollectionLoader
 
         $classes = array_unique($classes);
 
+        // cache the core classes
+        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0777, true) && !is_dir($cacheDir)) {
+            throw new \RuntimeException(sprintf('Class Collection Loader was not able to create directory "%s"', $cacheDir));
+        }
+        $cacheDir = rtrim(realpath($cacheDir) ?: $cacheDir, '/'.DIRECTORY_SEPARATOR);
         $cache = $cacheDir.'/'.$name.$extension;
 
         // auto-reload
@@ -93,38 +98,94 @@ class ClassCollectionLoader
             $declared = array_merge(get_declared_classes(), get_declared_interfaces(), get_declared_traits());
         }
 
-        $files = array();
-        $content = '';
-        foreach (self::getOrderedClasses($classes) as $class) {
-            if (in_array($class->getName(), $declared)) {
-                continue;
-            }
-
-            $files[] = $class->getFileName();
-
-            $c = preg_replace(array('/^\s*<\?php/', '/\?>\s*$/'), '', file_get_contents($class->getFileName()));
-
-            // fakes namespace declaration for global code
-            if (!$class->inNamespace()) {
-                $c = "\nnamespace\n{\n".$c."\n}\n";
-            }
-
-            $c = self::fixNamespaceDeclarations('<?php '.$c);
-            $c = preg_replace('/^\s*<\?php/', '', $c);
-
-            $content .= $c;
-        }
-
-        // cache the core classes
-        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0777, true) && !is_dir($cacheDir)) {
-            throw new \RuntimeException(sprintf('Class Collection Loader was not able to create directory "%s"', $cacheDir));
-        }
-        self::writeCacheFile($cache, '<?php '.$content);
+        $files = self::inline($classes, $cache, $declared);
 
         if ($autoReload) {
             // save the resources
-            self::writeCacheFile($metadata, serialize(array($files, $classes)));
+            self::writeCacheFile($metadata, serialize(array(array_values($files), $classes)));
         }
+    }
+
+    /**
+     * Generates a file where classes and their parents are inlined.
+     *
+     * @param array  $classes  An array of classes to load
+     * @param string $cache    The file where classes are inlined
+     * @param array  $excluded An array of classes that won't be inlined
+     *
+     * @return array The source map of inlined classes, with classes as keys and files as values
+     *
+     * @throws \RuntimeException When class can't be loaded
+     */
+    public static function inline($classes, $cache, array $excluded)
+    {
+        $declared = array();
+        foreach (self::getOrderedClasses($excluded) as $class) {
+            $declared[$class->getName()] = true;
+        }
+
+        // cache the core classes
+        $cacheDir = dirname($cache);
+        if (!is_dir($cacheDir) && !@mkdir($cacheDir, 0777, true) && !is_dir($cacheDir)) {
+            throw new \RuntimeException(sprintf('Class Collection Loader was not able to create directory "%s"', $cacheDir));
+        }
+
+        $spacesRegex = '(?:\s*+(?:(?:\#|//)[^\n]*+\n|/\*(?:(?<!\*/).)++)?+)*+';
+        $dontInlineRegex = <<<REGEX
+            '(?:
+               ^<\?php\s.declare.\(.strict_types.=.1.\).;
+               | \b__halt_compiler.\(.\)
+               | \b__(?:DIR|FILE)__\b
+            )'isx
+REGEX;
+        $dontInlineRegex = str_replace('.', $spacesRegex, $dontInlineRegex);
+
+        $cacheDir = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $cacheDir));
+        $files = array();
+        $content = '';
+        foreach (self::getOrderedClasses($classes) as $class) {
+            if (isset($declared[$class->getName()])) {
+                continue;
+            }
+            $declared[$class->getName()] = true;
+
+            $files[$class->getName()] = $file = $class->getFileName();
+            $c = file_get_contents($file);
+
+            if (preg_match($dontInlineRegex, $c)) {
+                $file = explode('/', str_replace(DIRECTORY_SEPARATOR, '/', $file));
+
+                for ($i = 0; isset($file[$i], $cacheDir[$i]); ++$i) {
+                    if ($file[$i] !== $cacheDir[$i]) {
+                        break;
+                    }
+                }
+                if (1 >= $i) {
+                    $file = var_export(implode('/', $file), true);
+                } else {
+                    $file = array_slice($file, $i);
+                    $file = str_repeat('../', count($cacheDir) - $i).implode('/', $file);
+                    $file = '__DIR__.'.var_export('/'.$file, true);
+                }
+
+                $c = "\nnamespace {require $file;}";
+            } else {
+                $c = preg_replace(array('/^\s*<\?php/', '/\?>\s*$/'), '', $c);
+
+                // fakes namespace declaration for global code
+                if (!$class->inNamespace()) {
+                    $c = "\nnamespace\n{\n".$c."\n}\n";
+                }
+
+                $c = self::fixNamespaceDeclarations('<?php '.$c);
+                $c = preg_replace('/^\s*<\?php/', '', $c);
+            }
+
+            $content .= $c;
+        }
+        self::writeCacheFile($cache, '<?php '.$content);
+
+        return $files;
     }
 
     /**

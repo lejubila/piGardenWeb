@@ -13,18 +13,19 @@ class RoleCrudController extends CrudController
     {
         parent::__construct();
 
-        $this->crud->setModel("Backpack\PermissionManager\app\Models\Role");
-        $this->crud->setEntityNameStrings('role', 'roles');
-        $this->crud->setRoute('admin/role');
+        $this->crud->setModel(config('laravel-permission.models.role'));
+        $this->crud->setEntityNameStrings(trans('backpack::permissionmanager.role'), trans('backpack::permissionmanager.roles'));
+        $this->crud->setRoute(config('backpack.base.route_prefix').'/role');
+
         $this->crud->setColumns([
                 [
                     'name'  => 'name',
-                    'label' => 'Name',
+                    'label' => trans('backpack::permissionmanager.name'),
                     'type'  => 'text',
                 ],
                 [
                     // n-n relationship (with pivot table)
-                    'label'     => 'Permissions',
+                    'label'     => ucfirst(trans('backpack::permissionmanager.permission_plural')),
                     'type'      => 'select_multiple',
                     'name'      => 'permissions', // the method that defines the relationship in your Model
                     'entity'    => 'permissions', // the method that defines the relationship in your Model
@@ -36,11 +37,11 @@ class RoleCrudController extends CrudController
 
         $this->crud->addField([
                                 'name'  => 'name',
-                                'label' => 'Name',
+                                'label' => trans('backpack::permissionmanager.name'),
                                 'type'  => 'text',
                             ]);
         $this->crud->addField([
-                                'label'     => 'Permissions',
+                                'label'     => ucfirst(trans('backpack::permissionmanager.permission_plural')),
                                 'type'      => 'checklist',
                                 'name'      => 'permissions',
                                 'entity'    => 'permissions',
