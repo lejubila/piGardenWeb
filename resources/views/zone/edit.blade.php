@@ -51,18 +51,18 @@
                 </div>
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover table-borderless no-margin with-tools">
+                        <table id="table-{{$type}}-cron" class="table table-striped table-hover table-borderless no-margin with-tools">
                             <tbody>
                                 @forelse( (!is_null(old($type)) ? old($type) : $cron[$type] ) as $k => $item)
-                                <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row">
+                                <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
                                     <td class="tools">
                                         <ul class="cron-item-text"></ul>
                                         {{-- $item['string']  --}}
-                                        {!! Form::hidden("$type[$k][min]", implode(',',$item['min']), ['id'=>"$type-min-".$k]) !!}
-                                        {!! Form::hidden("$type[$k][hour]", implode(',',$item['hour']), ['id'=>"$type-hour-".$k]) !!}
-                                        {!! Form::hidden("$type[$k][dom]", implode(',',$item['dom']), ['id'=>"$type-dom-".$k]) !!}
-                                        {!! Form::hidden("$type[$k][month]", implode(',',$item['month']), ['id'=>"$type-month-".$k]) !!}
-                                        {!! Form::hidden("$type[$k][dow]", implode(',',$item['dow']), ['id'=>"$type-dow-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][min]", implode(',',$item['min']), ['id'=>"$type-min-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][hour]", implode(',',$item['hour']), ['id'=>"$type-hour-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dom]", implode(',',$item['dom']), ['id'=>"$type-dom-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][month]", implode(',',$item['month']), ['id'=>"$type-month-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dow]", implode(',',$item['dow']), ['id'=>"$type-dow-".$k]) !!}
                                         <div class="tools-wrp">
                                             <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="box-footer clearfix" style="display: block;">
                         <button type="submit" class="btn btn-primary pull-left" onclick="$('#cron_type').val('{{$type}}')"><i class="glyphicon glyphicon-save"></i> {{trans('cron.save')}}</button>
-                        <button type="button" class="btn btn-default pull-right"><i class="fa fa-plus"></i> {{trans('cron.add')}}</button>
+                        <a hred="#" class="btn btn-default pull-right" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow=""><i class="fa fa-plus"></i> {{trans('cron.add')}}</a>
                     </div>
                 </div>
             </div>
@@ -201,23 +201,40 @@
             });
         });
 
-        $('.open-cron-delete, .close-cron-delete').click(function(e){
+        // Elimina una schedulazione
+        $('.open-cron-delete, .close-cron-delete').click(callBackDeleteCronSchedule);
+        function callBackDeleteCronSchedule(e){
             var self = $(this);
             var type = self.hasClass('open-cron-delete') ? 'open' : 'close';
             var id = self.attr('id').replace(type+'-cron-delete-','');
             $('#'+type+'-row-'+id).remove();
             e.preventDefault();
-        });
+        }
 
+        // Prepara i campi nella finestra di editing schedulazione
         $('#cronModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var row = button.data('cronrow');
             var type = button.data('crontype');
-            var min = $('#'+type+'-min-'+row).val().split(',');
-            var hour = $('#'+type+'-hour-'+row).val().split(',');
-            var dom = $('#'+type+'-dom-'+row).val().split(',');
-            var month = $('#'+type+'-month-'+row).val().split(',');
-            var dow = $('#'+type+'-dow-'+row).val().split(',');
+            var min;
+            var hour;
+            var dom;
+            var month;
+            var dow;
+
+            if(row != ""){
+                min = $('#'+type+'-min-'+row).val().split(',');
+                hour = $('#'+type+'-hour-'+row).val().split(',');
+                dom = $('#'+type+'-dom-'+row).val().split(',');
+                month = $('#'+type+'-month-'+row).val().split(',');
+                dow = $('#'+type+'-dow-'+row).val().split(',');
+            } else {
+                min = ['min-1'];
+                hour = ['hour-22'];
+                dom = ['dom-*'];
+                month = ['month-*'];
+                dow = ['dow-*'];
+            }
 
             // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
             // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
@@ -235,11 +252,35 @@
 
         });
 
+        // Conferma l'edit di una schedulazione
         $("#cron-modal-confirm").click(function(){
             var type = $('#cronModal input[name="cron-type"]').val();
             var row = $('#cronModal input[name="cron-row"]').val();
-            var choices;
-            choises = $('#cron-min').val();
+            if(row == ""){
+                var ids = $('.'+type+'-row').map(function(){return parseInt($(this).data('cronrow')) });
+                var row = ids.length > 0 ? Math.max.apply(null, ids)+1 : 0;
+                $('#table-'+type+'-cron tbody').append(
+                    '<tr id="'+type+'-row-'+row+'" class="'+type+'-row" data-cronrow="3">' +
+                        '<td class="tools">' +
+                            '<ul class="cron-item-text"></ul>' +
+                            '<input id="'+type+'-min-'+row+'" name="'+type+'[min]" type="hidden" value="">' +
+                            '<input id="'+type+'-hour-'+row+'" name="'+type+'[hour]" type="hidden" value="">' +
+                            '<input id="'+type+'-dom-'+row+'" name="'+type+'[dom]" type="hidden" value="dom-*">' +
+                            '<input id="'+type+'-month-'+row+'" name="'+type+'[month]" type="hidden" value="">' +
+                            '<input id="'+type+'-dow-'+row+'" name="'+type+'[dow]" type="hidden" value="">' +
+                            '<div class="tools-wrp">' +
+                                '<a href="#" class="'+type+'-cron-modify" id="'+type+'-cron-modify-'+row+'" data-toggle="modal" data-target="#cronModal" data-crontype="'+type+'" data-cronrow="'+row+'">' +
+                                    '<i class="fa fa-pencil" aria-hidden="true"></i>' +
+                                '</a>' +
+                                '<a href="#" class="'+type+'-cron-delete" id="'+type+'-cron-delete-'+row+'">' +
+                                    '<i class="fa fa-trash" aria-hidden="true"></i>' +
+                                '</a>' +
+                            '</div>' +
+                        '</td>' +
+                    '</tr>'
+                );
+                $('#'+type+'-row-'+row+' .'+type+'-cron-delete').click(callBackDeleteCronSchedule);
+            }
             $('#'+type+'-min-'+row).val( ($('#cron-min').val() ? $('#cron-min').val().join(',') : 'min-1') );
             $('#'+type+'-hour-'+row).val( ($('#cron-hour').val() ? $('#cron-hour').val().join(',') : 'hour-*') );
             $('#'+type+'-dom-'+row).val( ($('#cron-dom').val() ? $('#cron-dom').val().join(',') : 'dom-*') );
@@ -251,6 +292,7 @@
             $("#cronModal").modal('hide');
         });
 
+        // Visualizza la descrizione di ogni schedulazioni
         $(".open-row, .close-row").each(function(i,o){
             var type = $(o).hasClass('open-row') ? 'open' : 'close';
             var row = $(o).attr('id').replace(type+'-row-','');
