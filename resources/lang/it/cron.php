@@ -44,6 +44,7 @@ return [
     ],
 
     'add' => 'Aggiungi',
-    'save' => 'Conferma schedulazioni'
+    'save' => 'Conferma schedulazioni',
+    'no_scheduling' => 'Nessuna schedulazione',
 
 ];

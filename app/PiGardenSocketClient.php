@@ -66,7 +66,7 @@ class PiGardenSocketClient {
     }
 
     /**
-     * Write steam to socket
+     * Write stream to socket
      * @param $out string
      * @throws Exception
      */
@@ -146,5 +146,63 @@ class PiGardenSocketClient {
     {
         return $this->execCommand('close '.$zone);
     }
+
+    /**
+     * @param $zone
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function delCronOpen( $zone )
+    {
+        return $this->execCommand('del_cron_open '.$zone);
+    }
+
+    /**
+     * @param $zone
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function delCronClose( $zone )
+    {
+        return $this->execCommand('del_cron_close '.$zone);
+    }
+
+    /**
+     * @param $zone
+     * @param $min
+     * @param $hour
+     * @param $dom
+     * @param $month
+     * @param $dow
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function addCronOpen( $zone, $min, $hour, $dom, $month, $dow)
+    {
+        return $this->execCommand("add_cron_open $zone $min $hour $dom $month $dow");
+    }
+
+    /**
+     * Set multiple scheduling on zone
+     * @param $type string, accepted value ('open', 'close')
+     * @param $zone string
+     * @param $schedule array
+     * @throws Exception
+     */
+    public function setCronZone( $type, $zone, $schedule )
+    {
+        $type = ucfirst($type);
+        if($type != 'Open' && $type != 'Close'){
+            throw new Exception( __METHOD__ . ": wrong value of 'type' argument");
+        }
+        $this->{"delCron$type"}( $zone );
+        if(is_array($schedule) && !empty($schedule)){
+            foreach($schedule as $s){
+                $this->{"addCron$type"}( $zone, $s['min'], $s['hour'], $s['dom'], $s['month'], $s['dow'] );
+            }
+        }
+    }
+
+
 
 } 

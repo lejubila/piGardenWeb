@@ -32,6 +32,8 @@
     </div>
     @endif
 
+    @include('_partials.errors')
+
     @if(!empty($zone))
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -40,7 +42,7 @@
     </div>
 
     {!! Form::open(['route' => ['cron.put', $zone->name]]) !!}
-    {!! Form::text('type', '', ['id' => 'cron_type'])!!}
+    {!! Form::hidden('type', '', ['id' => 'cron_type'])!!}
     <div class="row">
         @foreach(['open', 'close'] as $type)
         <div class="col-md-6 col-sm-12 col-xs-12">
@@ -51,32 +53,40 @@
                 </div>
                 <div class="box-body">
                     <div class="table-responsive">
-                        <table id="table-{{$type}}-cron" class="table table-striped table-hover table-borderless no-margin with-tools">
+                        <table id="table-{{$type}}-cron" class="table table-cron table-striped table-hover table-borderless no-margin with-tools">
                             <tbody>
-                                @forelse( (!is_null(old($type)) ? old($type) : $cron[$type] ) as $k => $item)
+                                @if(!is_null(old($type)) && false)
+                                    <pre>
+                                    <?php var_dump(old($type)); ?>
+                                    </pre>
+                                @else
+
+                                @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
                                 <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
                                     <td class="tools">
                                         <ul class="cron-item-text"></ul>
                                         {{-- $item['string']  --}}
-                                        {!! Form::hidden("{$type}[$k][min]", implode(',',$item['min']), ['id'=>"$type-min-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][hour]", implode(',',$item['hour']), ['id'=>"$type-hour-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dom]", implode(',',$item['dom']), ['id'=>"$type-dom-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][month]", implode(',',$item['month']), ['id'=>"$type-month-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dow]", implode(',',$item['dow']), ['id'=>"$type-dow-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][min]", implode(',',$cron[$type][$k]['min']), ['id'=>"$type-min-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][hour]", implode(',',$cron[$type][$k]['hour']), ['id'=>"$type-hour-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dom]", implode(',',$cron[$type][$k]['dom']), ['id'=>"$type-dom-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][month]", implode(',',$cron[$type][$k]['month']), ['id'=>"$type-month-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dow]", implode(',',$cron[$type][$k]['dow']), ['id'=>"$type-dow-".$k]) !!}
                                         <div class="tools-wrp">
                                             <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </a>
-                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
+                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}" data-toggle="confirmation" data-title="Open Google?">
                                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr><td>{{trans('pigarden.cron.no_item')}}</td></tr>
-                                @endforelse
+                                @endforeach
+                                @endif
                             </tbody>
+                            <tfoot>
+                                <tr><td><i>{{trans('cron.no_scheduling')}}</i></td></tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="box-footer clearfix" style="display: block;">
@@ -204,10 +214,15 @@
         // Elimina una schedulazione
         $('.open-cron-delete, .close-cron-delete').click(callBackDeleteCronSchedule);
         function callBackDeleteCronSchedule(e){
-            var self = $(this);
-            var type = self.hasClass('open-cron-delete') ? 'open' : 'close';
-            var id = self.attr('id').replace(type+'-cron-delete-','');
-            $('#'+type+'-row-'+id).remove();
+            if(confirm("Confermi l'eliminazione")){
+                var self = $(this);
+                var type = self.hasClass('open-cron-delete') ? 'open' : 'close';
+                var id = self.attr('id').replace(type+'-cron-delete-','');
+                $('#'+type+'-row-'+id).fadeOut(function(){
+                    $(this).remove();
+                    cronShowHideTableFoot($('#table-'+type+'-cron'));
+                });
+            }
             e.preventDefault();
         }
 
@@ -222,7 +237,7 @@
             var month;
             var dow;
 
-            if(row != ""){
+            if(row !== ""){
                 min = $('#'+type+'-min-'+row).val().split(',');
                 hour = $('#'+type+'-hour-'+row).val().split(',');
                 dom = $('#'+type+'-dom-'+row).val().split(',');
@@ -288,6 +303,7 @@
             $('#'+type+'-dow-'+row).val( ($('#cron-dow').val() ? $('#cron-dow').val().join(',') : 'dow-*') );
 
             updateCronItemText(type, row);
+            cronShowHideTableFoot($('#table-'+type+'-cron'));
 
             $("#cronModal").modal('hide');
         });
@@ -299,7 +315,20 @@
             updateCronItemText(type, row);
         });
 
+        $('.table-cron').each(function(i,o){
+            cronShowHideTableFoot(o);
+        });
+
     });
+
+    // Mostra o nasconde il footer della tabella di schedulazione
+    function cronShowHideTableFoot(table){
+        if($(table).find('tbody tr').length > 0){
+            $(table).find('tfoot').hide();
+        }else{
+            $(table).find('tfoot').show();
+        }
+    }
 
     function updateCronItemText(type, row) {
         var min = $('#'+type+'-min-'+row).val().split(',');

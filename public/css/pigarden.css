@@ -238,6 +238,13 @@
     display: inline-block;
     visibility: visible;
 }
+@media screen and (max-width: 1024px) {
+    .with-tools tr .tools div.tools-wrp {
+        display: inline-block;
+        visibility: visible;
+    }
+}
+
 .with-tools tr .tools div.tools-wrp .fa{
     margin: 0 5px;
     cursor: pointer;

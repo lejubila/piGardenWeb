@@ -101,7 +101,8 @@ return array(
 
     'cron' => [
         'open_title' => 'Open schedule',
-        'close_title' => 'Close schedule'
+        'close_title' => 'Close schedule',
+        'success' => 'Scheduling confirmed',
     ],
 
     'add' => 'Add',

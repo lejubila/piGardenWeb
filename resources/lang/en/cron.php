@@ -44,6 +44,7 @@ return [
     ],
 
     'add' => 'Add',
-    'save' => 'Save scheduling'
+    'save' => 'Save scheduling',
+    'no_scheduling' => 'No scheduling',
 
 ];

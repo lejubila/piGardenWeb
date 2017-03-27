@@ -10,6 +10,7 @@ use App\CronHelper;
 use Illuminate\Http\Request;
 use Redirect;
 use Illuminate\Support\Facades\Input;
+use Validator;
 
 class PiGardenAdminController extends PiGardenBaseController
 {
@@ -166,7 +167,7 @@ class PiGardenAdminController extends PiGardenBaseController
         $this->data['cron'] = $zoneCron;
         $this->data['title'] = trans('pigarden.zone').' '.(property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
 
-        \Session::flash('prova', 'prova 1');
+        //\Session::flash('prova', 'prova 1');
 
         return view('zone.edit', $this->data);
 
@@ -180,11 +181,98 @@ class PiGardenAdminController extends PiGardenBaseController
      */
     public function postCronPut(Request $request, $zone){
 
+        $type = $request->get('type');
 
-        //\Alert::error(trans('pigarden.prova'))->flash();
+        $validateMin = 'required|in:' . implode(',', array_keys(CronHelper::getMinSelectItemArray()));
+        $validateHour = 'required|in:' . implode(',', array_keys(CronHelper::getHourSelectItemArray()));
+        $validateDom = 'required|in:' . implode(',', array_keys(CronHelper::getDomSelectItemArray()));
+        $validateMonth = 'required|in:' . implode(',', array_keys(CronHelper::getMonthSelectItemArray()));
+        $validateDow = 'required|in:' . implode(',', array_keys(CronHelper::getDowSelectItemArray()));
+
+        $validateRules = [
+            'type' => 'required|in:open,close'
+        ];
+
+        if ($type == 'open'){
+            $validateRules += [
+                'open.*.min.*' => $validateMin,
+                'open.*.hour.*' => $validateHour,
+                'open.*.dom.*' => $validateDom,
+                'open.*.month.*' => $validateMonth,
+                'open.*.dow.*' => $validateDow,
+            ];
+        } elseif($type == 'close') {
+            $validateRules += [
+                'close.*.min.*' => $validateMin,
+                'close.*.hour.*' => $validateHour,
+                'close.*.dom.*' => $validateDom,
+                'close.*.month.*' => $validateMonth,
+                'close.*.dow.*' => $validateDow,
+            ];
+        }
+
+        $data = $request->all();
+        if(empty($data[$type])){
+            foreach($data[$type] as $k => $cron){
+                $arrayCron = [];
+                $arrayCron['min'] = explode(',', $cron['min']);
+                $arrayCron['hour'] = explode(',', $cron['hour']);
+                $arrayCron['dom'] = explode(',', $cron['dom']);
+                $arrayCron['month'] = explode(',', $cron['month']);
+                $arrayCron['dow'] = explode(',', $cron['dow']);
+                $data[$type][$k] = $arrayCron;
+            }
+        }
+
+        $validator = Validator::make($data, $validateRules);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+
+        $cronJobs = $request->get($type);
+        $scheduling = [];
+
+        if(is_array($cronJobs) && !empty($cronJobs)){
+            foreach($cronJobs as $cron){
+                $scheduling[] = [
+                    'min' => str_replace('min-', '', $cron['min']),
+                    'hour' => str_replace('hour-', '', $cron['hour']),
+                    'dom' => str_replace('dom-', '', $cron['dom']),
+                    'month' => str_replace('min-', '', $cron['month']),
+                    'dow' => str_replace('min-', '', $cron['dow']),
+                ];
+            }
+        }
+
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->setCronZone($type, $zone, $scheduling);
+        } catch (\Exception $e) {
+            \Alert::error($e->getMessage())->flash();
+            return redirect()->back()->withInput($request->input());
+        }
+
+        \Alert::success(trans('pigarden.cron.success'))->flash();
+
+        return redirect()->back();
 
 
 
+
+        /*
+        if ($type != 'open' && $type != 'close'){
+            \Alert::error("'type' value is wrong")->flash();
+            return redirect()->back()->withInput($request->input());
+        }
+        */
+
+        \Alert::error(trans('pigarden.prova'))->flash();
 
         return redirect()->back()->withInput($request->input());
 

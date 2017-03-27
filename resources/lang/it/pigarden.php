@@ -100,6 +100,7 @@ return array(
     'cron' => [
         'open_title' => 'Schedulazione apertura',
         'close_title' => 'Schedulazione chiusura',
+        'success' => 'Schedulazioni confermate',
     ],
 
     'add' => 'Aggiungi',
