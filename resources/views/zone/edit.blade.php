@@ -55,22 +55,19 @@
                     <div class="table-responsive">
                         <table id="table-{{$type}}-cron" class="table table-cron table-striped table-hover table-borderless no-margin with-tools">
                             <tbody>
-                                @if(!is_null(old($type)) && false)
-                                    <pre>
-                                    <?php var_dump(old($type)); ?>
-                                    </pre>
+                                @if( !is_null(old($type)) && false )
+                                    <div><pre><?php print_r(old($type))?></pre></div>
                                 @else
-
                                 @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
                                 <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
                                     <td class="tools">
                                         <ul class="cron-item-text"></ul>
                                         {{-- $item['string']  --}}
-                                        {!! Form::hidden("{$type}[$k][min]", implode(',',$cron[$type][$k]['min']), ['id'=>"$type-min-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][hour]", implode(',',$cron[$type][$k]['hour']), ['id'=>"$type-hour-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dom]", implode(',',$cron[$type][$k]['dom']), ['id'=>"$type-dom-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][month]", implode(',',$cron[$type][$k]['month']), ['id'=>"$type-month-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dow]", implode(',',$cron[$type][$k]['dow']), ['id'=>"$type-dow-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][min]", (is_array($item['min']) ? implode(',',$item['min']) : $item['min']), ['id'=>"$type-min-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][hour]", (is_array($item['hour']) ? implode(',',$item['hour']) : $item['hour']), ['id'=>"$type-hour-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dom]", (is_array($item['dom']) ? implode(',',$item['dom']) : $item['dom']), ['id'=>"$type-dom-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][month]", (is_array($item['month']) ? implode(',',$item['month']) : $item['month']), ['id'=>"$type-month-".$k]) !!}
+                                        {!! Form::hidden("{$type}[$k][dow]", (is_array($item['dow']) ? implode(',',$item['dow']) : $item['dow']), ['id'=>"$type-dow-".$k]) !!}
                                         <div class="tools-wrp">
                                             <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
@@ -275,14 +272,14 @@
                 var ids = $('.'+type+'-row').map(function(){return parseInt($(this).data('cronrow')) });
                 var row = ids.length > 0 ? Math.max.apply(null, ids)+1 : 0;
                 $('#table-'+type+'-cron tbody').append(
-                    '<tr id="'+type+'-row-'+row+'" class="'+type+'-row" data-cronrow="3">' +
+                    '<tr id="'+type+'-row-'+row+'" class="'+type+'-row" data-cronrow="'+row+'">' +
                         '<td class="tools">' +
                             '<ul class="cron-item-text"></ul>' +
-                            '<input id="'+type+'-min-'+row+'" name="'+type+'[min]" type="hidden" value="">' +
-                            '<input id="'+type+'-hour-'+row+'" name="'+type+'[hour]" type="hidden" value="">' +
-                            '<input id="'+type+'-dom-'+row+'" name="'+type+'[dom]" type="hidden" value="dom-*">' +
-                            '<input id="'+type+'-month-'+row+'" name="'+type+'[month]" type="hidden" value="">' +
-                            '<input id="'+type+'-dow-'+row+'" name="'+type+'[dow]" type="hidden" value="">' +
+                            '<input id="'+type+'-min-'+row+'" name="'+type+'['+row+'][min]" type="hidden" value="">' +
+                            '<input id="'+type+'-hour-'+row+'" name="'+type+'['+row+'][hour]" type="hidden" value="">' +
+                            '<input id="'+type+'-dom-'+row+'" name="'+type+'['+row+'][dom]" type="hidden" value="dom-*">' +
+                            '<input id="'+type+'-month-'+row+'" name="'+type+'['+row+'][month]" type="hidden" value="">' +
+                            '<input id="'+type+'-dow-'+row+'" name="'+type+'['+row+'][dow]" type="hidden" value="">' +
                             '<div class="tools-wrp">' +
                                 '<a href="#" class="'+type+'-cron-modify" id="'+type+'-cron-modify-'+row+'" data-toggle="modal" data-target="#cronModal" data-crontype="'+type+'" data-cronrow="'+row+'">' +
                                     '<i class="fa fa-pencil" aria-hidden="true"></i>' +

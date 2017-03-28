@@ -130,8 +130,9 @@ class PiGardenAdminController extends PiGardenBaseController
                             {
                                 foreach($arrTmp as $item)
                                 {
-                                    $zoneCron['open'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)] ;
-                                    //$zoneCron['strOpen'][] = CronHelper::normalize($item);
+                                    if(!empty($item)){
+                                        $zoneCron['open'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)] ;
+                                    }
                                 }
                             }
                         }
@@ -149,8 +150,9 @@ class PiGardenAdminController extends PiGardenBaseController
                             {
                                 foreach($arrTmp as $item)
                                 {
-                                    $zoneCron['close'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)];
-                                    //$zoneCron['strClose'][] = $item;
+                                    if(!empty($item)) {
+                                        $zoneCron['close'][] = CronHelper::explode($item) + ['string' => CronHelper::normalize($item)];
+                                    }
                                 }
                             }
                         }
@@ -212,7 +214,7 @@ class PiGardenAdminController extends PiGardenBaseController
         }
 
         $data = $request->all();
-        if(empty($data[$type])){
+        if(!empty($data[$type])){
             foreach($data[$type] as $k => $cron){
                 $arrayCron = [];
                 $arrayCron['min'] = explode(',', $cron['min']);
@@ -225,6 +227,8 @@ class PiGardenAdminController extends PiGardenBaseController
         }
 
         $validator = Validator::make($data, $validateRules);
+
+        //return '<pre>' . print_r($data,true) . '</pre><br><br><pre>' . print_r($validateRules,true) . '</pre>';
 
         if ($validator->fails()) {
             return redirect()
@@ -243,8 +247,8 @@ class PiGardenAdminController extends PiGardenBaseController
                     'min' => str_replace('min-', '', $cron['min']),
                     'hour' => str_replace('hour-', '', $cron['hour']),
                     'dom' => str_replace('dom-', '', $cron['dom']),
-                    'month' => str_replace('min-', '', $cron['month']),
-                    'dow' => str_replace('min-', '', $cron['dow']),
+                    'month' => str_replace('month-', '', $cron['month']),
+                    'dow' => str_replace('dow-', '', $cron['dow']),
                 ];
             }
         }
@@ -254,32 +258,19 @@ class PiGardenAdminController extends PiGardenBaseController
         try{
             $status = $client->setCronZone($type, $zone, $scheduling);
         } catch (\Exception $e) {
+            //return $e->getMessage();
             \Alert::error($e->getMessage())->flash();
-            return redirect()->back()->withInput($request->input());
+            return redirect()->back()->withInput();
         }
 
         \Alert::success(trans('pigarden.cron.success'))->flash();
 
         return redirect()->back();
 
-
-
-
         /*
-        if ($type != 'open' && $type != 'close'){
-            \Alert::error("'type' value is wrong")->flash();
-            return redirect()->back()->withInput($request->input());
-        }
-        */
-
         \Alert::error(trans('pigarden.prova'))->flash();
-
         return redirect()->back()->withInput($request->input());
-
-        //return '<pre>'.print_r($request->input(), true).'</pre>';
-
-        //return redirect()->to(app('url')->previous(). '#fprenotazione')->with('message', trans('newsletter.iscrizione_notify.success-message'));
-
+        */
 
     }
 

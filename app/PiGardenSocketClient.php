@@ -92,7 +92,6 @@ class PiGardenSocketClient {
         $this->open();
         $this->put($command);
         $json_response = $this->get();
-        $response = "";
         if (!$json_response)
         {
             throw new Exception("Invalid socket client response");
@@ -180,6 +179,21 @@ class PiGardenSocketClient {
     public function addCronOpen( $zone, $min, $hour, $dom, $month, $dow)
     {
         return $this->execCommand("add_cron_open $zone $min $hour $dom $month $dow");
+    }
+
+    /**
+     * @param $zone
+     * @param $min
+     * @param $hour
+     * @param $dom
+     * @param $month
+     * @param $dow
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function addCronClose( $zone, $min, $hour, $dom, $month, $dow)
+    {
+        return $this->execCommand("add_cron_close $zone $min $hour $dom $month $dow");
     }
 
     /**
