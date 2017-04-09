@@ -107,6 +107,12 @@ class PiGardenSocketClient {
         {
             throw new Exception($response->error->description, $response->error->code);
         }
+
+        if (property_exists($response, "version") && ($response->version->ver != config('pigarden.pigarden_version_support.ver') || $response->version->sub != config('pigarden.pigarden_version_support.sub') )  )
+        {
+            throw new Exception("Invalid version of piGarden (required version ".config('pigarden.pigarden_version_support.ver').'.'.config('pigarden.pigarden_version_support.sub').".* )");
+        }
+
         $this->close();
         return $response;
     }
@@ -217,6 +223,13 @@ class PiGardenSocketClient {
         }
     }
 
+    /**
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function setGeneralCron(){
+        return $this->execCommand("set_general_cron set_cron_init set_cron_start_socket_server set_cron_check_rain_sensor set_cron_check_rain_online set_cron_close_all_for_rain");
+    }
 
 
 } 

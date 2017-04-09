@@ -5,11 +5,11 @@
 @section('header')
     <section class="content-header">
       <h1>
-        {{ trans('pigarden.zone') . ' ' . $zone->name_stripped }}<small></small>
+        {{ trans('pigarden.zone') . ' ' . (is_null($zone) ? '' : $zone->name_stripped) }}<small></small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ url('admin') }}">{{ config('backpack.base.project_name') }}</a></li>
-        <li class="active">{{ trans('pigarden.zone')  . ' ' . $zone->name_stripped}}</li>
+        <li class="active">{{ trans('pigarden.zone')  . ' ' . (is_null($zone) ? '' : $zone->name_stripped)}}</li>
       </ol>
     </section>
 @endsection
@@ -144,24 +144,13 @@
 
     @endif
 
-
-
-@if(!is_null(old('open')))
-<!--
-                                <pre><?php print_r(old('open')) ?></pre>
-                                <pre><?php print_r(\Session::all()) ?></pre>
-                                <pre><?php print_r(\Request::input()) ?></pre>
--->
-@endif
-<!--
-<pre><?php print_r($cron)?></pre>
--->
 @endsection
 
 @section('after_scripts')
     <script src="{{ asset('js/icheck.min.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
+    <script src="{{ asset('js/backend.js') }}"></script>
     <script>
     $(document).ready(function(){
 

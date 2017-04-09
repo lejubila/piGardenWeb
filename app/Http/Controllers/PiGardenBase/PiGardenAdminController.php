@@ -100,7 +100,7 @@ class PiGardenAdminController extends PiGardenBaseController
         $zoneCron = ['open' => [], 'close' => [], 'strOpen' => [], 'strClose' => ''];
         $client = new PiGardenSocketClient();
         $status = null;
-//        try{
+        try{
             $status = $client->getStatus(['get_cron']);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
@@ -161,15 +161,14 @@ class PiGardenAdminController extends PiGardenBaseController
 
             }
 
-//        } catch (\Exception $e) {
-//            $zoneData = null;
-//        }
+        } catch (\Exception $e) {
+            $zoneData = null;
+            $this->data['error'] = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
 
         $this->data['zone'] = $zoneData;
         $this->data['cron'] = $zoneCron;
-        $this->data['title'] = trans('pigarden.zone').' '.(property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
-
-        //\Session::flash('prova', 'prova 1');
+        $this->data['title'] = trans('pigarden.zone').' '.(!is_null($zoneData) && property_exists($zoneData, 'name_stripped') ? $zoneData->name_stripped : ''); // set the page title
 
         return view('zone.edit', $this->data);
 
@@ -274,6 +273,45 @@ class PiGardenAdminController extends PiGardenBaseController
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getInitialSetup(Request $request){
+        $client = new PiGardenSocketClient();
+        $status = null;
+
+        try{
+            $status = $client->getStatus();
+            $this->setDataFromStatus($status);
+            $this->setMessagesFromStatus($status);
+        } catch (\Exception $e) {
+            $zoneData = null;
+            $this->data['error'] = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->data['title'] = trans('pigarden.initial_setup.title'); // set the page title
+
+        return view('initial_setup', $this->data);
+
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postInitialSetup(Request $request){
+
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $client->setGeneralCron();
+            \Alert::success(trans('pigarden.initial_setup.success'))->flash();
+        } catch (\Exception $e) {
+            \Alert::error($e->getMessage())->flash();
+        }
+
+        return redirect()->back();
+    }
 
 
 

@@ -5,10 +5,13 @@
       <section class="sidebar">
         <!-- Sidebar user panel -->
         <div class="user-panel">
+          <!--
           <div class="pull-left image">
             <img src="http://placehold.it/160x160/00a65a/ffffff/&text={{ Auth::user()->name[0] }}" class="img-circle" alt="User Image">
           </div>
-          <div class="pull-left info">
+          -->
+          <!-- div class="pull-left info" -->
+          <div class="info text-center" style="position:static; padding:5px;">
             <p>{{ Auth::user()->name }}</p>
             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
           </div>
@@ -28,7 +31,8 @@
           <li><a><span><i>{{ trans('pigarden.zones_empty') }}</i></span></a></li>
           @endforelse
 
-
+          <li class="header">{{ strtoupper(trans('pigarden.setup')) }}</li>
+          <li><a href="{{route('initial_setup.get')}}"><i class="fa fa-cogs"></i> <span>{{ trans('pigarden.initial_setup.title') }}</span></a></li>
 
           <!-- <li><a href="{{ url('admin/elfinder') }}"><i class="fa fa-files-o"></i> <span>File manager</span></a></li> -->
 
@@ -48,6 +52,7 @@
 
           <!-- ======================================= -->
           <li class="header">{{ trans('backpack::base.user') }}</li>
+          <li><a href="{{ url('admin/user') }}"><i class="fa fa-user"></i> <span>{{trans('pigarden.users')}}</span></a></li>
           <li><a href="{{ url('admin/logout') }}"><i class="fa fa-sign-out"></i> <span>{{ trans('backpack::base.logout') }}</span></a></li>
         </ul>
       </section>

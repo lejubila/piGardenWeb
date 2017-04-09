@@ -103,8 +103,23 @@ return array(
         'success' => 'Schedulazioni confermate',
     ],
 
+    'setup' => 'Setup',
+    'initial_setup' => [
+        'title' => 'Setup iniziale',
+        'description' => "Esegui il setup inziale per impostare i cron per la gestione della centralina:",
+        'description_elements' => [
+            'Inizializzazione piGarden al boot del sistema',
+            'Avvio del socket server per la comunicazione tra piGarden e piGardenWeb',
+            'Gestione del controllo pioggia da sensore e servizio online'
+        ],
+        'success' => 'Setup iniziale seguito con successo',
+        'confirm' => 'Esegui il setup',
+    ],
+
     'add' => 'Aggiungi',
     'cancel' => 'Annulla',
     'confirm' => 'Conferma',
+
+    'users' => 'Utenti',
 
 );

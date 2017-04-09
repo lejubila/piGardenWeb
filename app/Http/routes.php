@@ -64,6 +64,16 @@ Route::group(['prefix' => config('backpack.base.route_prefix')], function () {
             'as' => 'cron.put'
         ]);
 
+        Route::get('initial_setup',[
+            'uses' => 'PiGardenAdminController@getInitialSetup',
+            'as' => 'initial_setup.get'
+        ]);
+
+        Route::post('initial_setup/post',[
+            'uses' => 'PiGardenAdminController@postInitialSetup',
+            'as' => 'initial_setup.post'
+        ]);
+
 
         Route::get('prova', [
             'uses' => 'PiGardenAdminController@getProva',
