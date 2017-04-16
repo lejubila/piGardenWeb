@@ -47,7 +47,7 @@ return [
     |
     */
 
-    'registration_open' => true,
+    'registration_open' => env('REGISTRATION_OPEN', true),
 
 
     /*
