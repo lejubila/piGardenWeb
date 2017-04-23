@@ -16,6 +16,11 @@ class PiGardenPublicController extends PiGardenBaseController {
     }
 
     public function getHome(){
+
+        if( \Auth::check() ) {
+            return \Redirect::route('admin.dashboard');
+        }
+
         $client = new PiGardenSocketClient();
         try {
             $status = $client->getStatus();

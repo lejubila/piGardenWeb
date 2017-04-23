@@ -111,7 +111,7 @@ return array(
         'description' => "Run the initial setup to set the cron for the management of the unit:",
         'description_elements' => [
             'piGarden initialization at boot of the system',
-            'Starting tthe socket server for communication between piGarden and piGardenWeb',
+            'Starting the socket server for communication between piGarden and piGardenWeb',
             'Management the rain control from the sensor and on-line service'
         ],
         'success' => 'Initial Setup successfully',
