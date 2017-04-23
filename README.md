@@ -79,4 +79,4 @@ modify the file /etc/php5/fpm/php.ini, search and uncomment the line with cgi.fi
 11) Sign in to piGardenWeb with the newly created user, and perform the initial setup from the menu "SETUP / Initial setup"
 
 11) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
-    You can also change the language of the interface (LOCALE = en / en) and smtp parameters for sending email notifications to reset the user password.
+    You can also change the language of the interface (LOCALE = en / it) and smtp parameters for sending email notifications to reset the user password.
