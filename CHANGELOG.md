@@ -1,4 +1,4 @@
-## 0.1.1 - xx/xx/2017 - Bugfix
+## 0.1.1 - 28/04/2017 - Bugfix
  - Fix problem lowercase namespace "app" in edit.blade.php
 
 ## 0.1 - 23/04/2017 - First release
