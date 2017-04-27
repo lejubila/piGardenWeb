@@ -111,23 +111,23 @@
           <div class="modal-body">
             <div class="form-group">
                 {{ Form::label('cron-min', trans('cron.min.title')) }}
-                <div>{{ Form::select('cron-min', \app\CronHelper::getMinSelectItemArray('min-*'), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                <div>{{ Form::select('cron-min', \App\CronHelper::getMinSelectItemArray('min-*'), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
             </div>
             <div class="form-group">
                 {{ Form::label('cron-hour', trans('cron.hour.title')) }}
-                <div>{{ Form::select('cron-hour', \app\CronHelper::getHourSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                <div>{{ Form::select('cron-hour', \App\CronHelper::getHourSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
             </div>
             <div class="form-group">
                 {{ Form::label('cron-dom', trans('cron.dom.title')) }}
-                <div>{{ Form::select('cron-dom', \app\CronHelper::getDomSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                <div>{{ Form::select('cron-dom', \App\CronHelper::getDomSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
             </div>
             <div class="form-group">
                 {{ Form::label('cron-month', trans('cron.month.title')) }}
-                <div>{{ Form::select('cron-month', \app\CronHelper::getMonthSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                <div>{{ Form::select('cron-month', \App\CronHelper::getMonthSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
             </div>
             <div class="form-group">
                 {{ Form::label('cron-dow', trans('cron.dow.title')) }}
-                <div>{{ Form::select('cron-dow', \app\CronHelper::getDowSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                <div>{{ Form::select('cron-dow', \App\CronHelper::getDowSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
             </div>
 
             <input name="cron-type" type='hidden' value="" />

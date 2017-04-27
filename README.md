@@ -55,7 +55,7 @@ modify the file /etc/php5/fpm/php.ini, search and uncomment the line with cgi.fi
         ./artisan key:generate
         ./artisan migrate
         sudo chown -R pi:www-data /home/pi/piGardenWeb/
-        sudo chmod -R g+w storage database/piGarden.sqlite
+        sudo chmod -R g+w storage database database/piGarden.sqlite
         ```
         
     * Modify .env to your liking
