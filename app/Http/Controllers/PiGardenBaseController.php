@@ -43,7 +43,7 @@ class PiGardenBaseController extends Controller
                 if(!empty($cron)){
                     $year = date('Y');
                     list($minute, $hour, $dom, $month, $dow) = explode(' ', CronHelper::normalize($cron));
-                    $str_cron = trans('pigarden.start') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i - l');
+                    $str_cron = trans('pigarden.start') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i').' ('.trans('cron.dow.dow-'.$dow).')';
                 }
                 $this->data['cron_open_in'][$zone] = $str_cron;
             }
@@ -55,7 +55,7 @@ class PiGardenBaseController extends Controller
                 if(!empty($cron)){
                     $year = date('Y');
                     list($minute, $hour, $dom, $month, $dow) = explode(' ', CronHelper::normalize($cron));
-                    $str_cron = trans('pigarden.end') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i - l');
+                    $str_cron = trans('pigarden.end') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i').' ('.trans('cron.dow.dow-'.$dow).')';
                 }
                 $this->data['cron_open_in'][$zone] = empty($this->data['cron_open_in'][$zone]) ? '' : $this->data['cron_open_in'][$zone].'<br/>';
                 $this->data['cron_open_in'][$zone] .= $str_cron;
