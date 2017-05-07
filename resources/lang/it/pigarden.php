@@ -2,12 +2,15 @@
 return array(
     'start' => 'Start',
     'pause' => 'Pause',
+    'end' => 'Fine',
     'last_rain_sensor' => 'Ultima pioggia (sensore)',
     'last_rain_online' => 'Ultima pioggia (online)',
     'unknown' => 'sconosciuto',
     'Solenoid not open for rain' => 'Irrigazione non aperta per pioggia recente',
     'Solenoid open' => 'Irrigazione aperta',
     'Solenoid close' => 'Irrigazione chiusa',
+    'Scheduled start successfully performed' => 'Avvio programmato eseguito con successo',
+    'Scheduled start successfully deleted' => 'Avvio programmato eliminato con successo',
     'weather_conditions' => 'Condizioni meteo',
 
     'East' => 'Est',
@@ -121,5 +124,29 @@ return array(
     'confirm' => 'Conferma',
 
     'users' => 'Utenti',
+
+    'cron_in' => [
+        'start' => [
+            '0'   => 'Avvia subito',
+            '5'   => 'fra 5 minuti',
+            '15'  => 'fra 15 minuti',
+            '30'  => 'fra 30 minuti',
+            '60'  => 'fra 1 ora',
+            '120' => 'fra 2 ore',
+            '180' => 'fra 3 ore',
+            '240' => 'fra 4 ore',
+            '300' => 'fra 5 ore',
+            '600' => 'fra 10 ore',
+        ],
+        'length' => [
+            '30'  => 'per 30 minuti',
+            '60'  => 'per 1 ora',
+            '120' => 'per 2 ore',
+            '180' => 'per 3 ore',
+            '240' => 'per 4 ore',
+            '300' => 'per 5 ore',
+        ],
+
+    ],
 
 );

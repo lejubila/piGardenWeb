@@ -2,12 +2,15 @@
 return array(
     'start' => 'Start',
     'pause' => 'Pause',
+    'end' => 'End',
     'last_rain_sensor' => 'Latter rain (sensor)',
     'last_rain_online' => 'Latter rain (online)',
     'unknown' => 'unknown',
     'Solenoid not open for rain' => 'Not open solenoid valve for recent rain',
     'Solenoid open' => 'Open solenoid valve',
     'Solenoid close' => 'Closed solenoid valve',
+    'Scheduled start successfully performed' => 'Scheduled start successfully performed',
+    'Scheduled start successfully deleted' => 'Scheduled start successfully deleted',
     'Solenoid alias not found' => 'Solenoid alias not found',
     'weather_conditions' => 'Weather conditions',
 
@@ -123,5 +126,30 @@ return array(
     'confirm' => 'Confirm',
 
     'users' => 'Users',
+
+    'cron_in' => [
+    'start' => [
+        '0'   => 'Start now',
+        '5'   => 'in 5 minutes',
+        '15'  => 'in 15 minutes',
+        '30'  => 'in 30 minutes',
+        '60'  => 'in 1 hour',
+        '120' => 'in 2 hours',
+        '180' => 'in 3 hours',
+        '240' => 'in 4 hours',
+        '300' => 'in 5 hours',
+        '600' => 'in 10 hours',
+    ],
+    'length' => [
+        '30'  => 'for 30 minutes',
+        '60'  => 'for 1 hour',
+        '120' => 'for 2 hours',
+        '180' => 'for 3 hours',
+        '240' => 'for 4 hours',
+        '300' => 'for 5 hours',
+    ],
+
+],
+
 
 );

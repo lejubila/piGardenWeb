@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\CronHelper;
 use App\PiGardenSocketClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,6 +34,34 @@ class PiGardenBaseController extends Controller
     protected  function setDataFromStatus($status)
     {
         $this->data['status'] = $status;
+
+        $this->data['cron_open_in'] = [];
+        if(property_exists($status, 'cron_open_in') && property_exists($status->cron_open_in, 'open_in') )
+        {
+            foreach($status->cron_open_in->open_in as $zone => $cron){
+                $str_cron = '';
+                if(!empty($cron)){
+                    $year = date('Y');
+                    list($minute, $hour, $dom, $month, $dow) = explode(' ', CronHelper::normalize($cron));
+                    $str_cron = trans('pigarden.start') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i - l');
+                }
+                $this->data['cron_open_in'][$zone] = $str_cron;
+            }
+        }
+        if(property_exists($status, 'cron_open_in') && property_exists($status->cron_open_in, 'open_in_stop') )
+        {
+            foreach($status->cron_open_in->open_in_stop as $zone => $cron){
+                $str_cron = '';
+                if(!empty($cron)){
+                    $year = date('Y');
+                    list($minute, $hour, $dom, $month, $dow) = explode(' ', CronHelper::normalize($cron));
+                    $str_cron = trans('pigarden.end') . ': ' . Carbon::create($year, $month, $dom, $hour, $minute, 0, config('pigarden.tz'))->format('H:i - l');
+                }
+                $this->data['cron_open_in'][$zone] = empty($this->data['cron_open_in'][$zone]) ? '' : $this->data['cron_open_in'][$zone].'<br/>';
+                $this->data['cron_open_in'][$zone] .= $str_cron;
+            }
+        }
+
         if(property_exists($status, 'zones'))
         {
             $this->data['zones'] = collect($status->zones);
@@ -42,6 +71,7 @@ class PiGardenBaseController extends Controller
                 $zone->actionButtonClass = $zone->state == 0 ? 'fa-play' : 'fa-pause';
                 $zone->actionButtonText = trans($zone->state == 0 ? 'pigarden.start' : 'pigarden.pause');
                 $zone->imageSrc = asset('images/sprinkler-'.($zone->state == 0 ? 'pause' : 'play').'.gif');
+                $zone->cronOpenInText = isset($this->data['cron_open_in'][$zone->name]) ? $this->data['cron_open_in'][$zone->name] : null;
             });
         }
         if(property_exists($status, 'error'))

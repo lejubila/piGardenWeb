@@ -23,7 +23,7 @@ class PiGardenPublicController extends PiGardenBaseController {
 
         $client = new PiGardenSocketClient();
         try {
-            $status = $client->getStatus();
+            $status = $client->getStatus(['get_cron_open_in']);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
         } catch (\Exception $e) {

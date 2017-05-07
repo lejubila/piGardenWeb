@@ -39,6 +39,26 @@ function updateZones(status){
             updateElement('#btn-zone-'+zone.name+' .button-zone-text', zone.actionButtonText);
             updateElement('#btn-zone-image-'+zone.name, zone.imageSrc, 'src');
             updateElement('.link-zone-'+zone.name+' i', (zone.state == 0 ? 'fa fa-toggle-off' : 'fa fa-toggle-on'), 'class');
+            if( zone.cronOpenInText !== null){
+                $('#text-btn-zone-open-in-cancel-'+zone.name).html(zone.cronOpenInText);
+                if( zone.cronOpenInText != ""){
+                    $("#box-zone-"+zone.name+" li.open_in_start").addClass('hidden');
+                    $("#box-zone-"+zone.name+" li.open_in_set").removeClass('hidden');
+                    $('#btn-zone-'+zone.name+'+button.dropdown-toggle span.glyphicon').addClass('text-danger');
+                } else {
+                    $("#box-zone-"+zone.name+" li.open_in_start").removeClass('hidden');
+                    $("#box-zone-"+zone.name+" li.open_in_set").addClass('hidden');
+                    $('#btn-zone-'+zone.name+'+button.dropdown-toggle span.glyphicon').removeClass('text-danger');
+                }
+            }
+            var dropdown = $('#btn-zone-'+zone.name+'+button.dropdown-toggle');
+            if(dropdown.length > 0 ){
+                if(zone.state == 0){
+                    dropdown.prop('disabled', false);
+                } else {
+                    dropdown.prop('disabled', true);
+                }
+            }
         });
     }
 }
@@ -67,4 +87,21 @@ function callBackAjaxError(jqXHR, textStatus, errorThrown){
         type: warning,
         icon: false
     });
+}
+
+(function($){
+    $(document).ready(function(){
+        $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            $(this).parent().siblings().removeClass('open');
+            $(this).parent().toggleClass('open');
+        });
+    });
+})(jQuery);
+
+function htmlDecode(input){
+    var e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }

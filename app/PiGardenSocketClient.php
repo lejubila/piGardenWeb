@@ -143,6 +143,28 @@ class PiGardenSocketClient {
     }
 
     /**
+     * @param $zone string
+     * @param int $start
+     * @param int $length
+     * @param bool $force
+     * @throws Exception
+     * @return mixed|string
+     */
+    public function zoneOpenIn( $zone, $start, $length, $force=false )
+    {
+        return $this->execCommand('open_in '.$start.' '.$length.' '.$zone.($force ? ' force' : ''));
+    }
+
+    /**
+     * @param $zone
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function zoneOpenInCancel( $zone ){
+        return $this->execCommand('del_cron_open_in '.$zone);
+    }
+
+    /**
      * @param $zone
      * @return mixed|string
      * @throws Exception

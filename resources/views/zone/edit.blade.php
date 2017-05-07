@@ -154,11 +154,17 @@
     <script>
     $(document).ready(function(){
 
-        $('.btn-zone').click(function(e){
+        $('.btn-zone, .btn-zone-open-in, .btn-zone-open-in-cancel').click(function(e){
             var btn = $(this);
-            var id=$(btn).prop('id').replace('btn-zone-', '');
+            var id;
+            if(btn.hasClass('btn-zone-open-in') || btn.hasClass('btn-zone-open-in-cancel')){
+                id = $(btn.parents('.btn-group-zone').find('.btn-zone')).prop('id').replace('btn-zone-', '');
+            } else {
+                id = $(btn).prop('id').replace('btn-zone-', '');
+            }
+
             var url = btn.attr('href');
-            if(url.indexOf('/play/')>=0 && $($('.force_open').get(0)).prop('checked')){
+            if((url.indexOf('/play/')>=0 || url.indexOf('/play_in/')>=0 ) && $($('.force_open').get(0)).prop('checked')){
                 url = url + '/force';
             }
             $.ajax({

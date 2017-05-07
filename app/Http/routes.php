@@ -54,6 +54,20 @@ Route::group(['prefix' => config('backpack.base.route_prefix')], function () {
             'as' => 'zone.play'
         ])->where('force', '(^$|force)');
 
+        Route::get('zone/play_in/{zone}/{start}/{length}/{force?}', [
+            'uses' => 'PiGardenAdminController@getZonePlayIn',
+            'as' => 'zone.play_in'
+        ])->where([
+            'start' => '[0-9]+',
+            'length' => '[0-9]+',
+            'force' => '(^$|force)'
+        ]);
+
+        Route::get('zone/play_in_cancel/{zone}', [
+            'uses' => 'PiGardenAdminController@getZonePlayInCancel',
+            'as' => 'zone.play_in_cancel'
+        ]);
+
         Route::get('zone/pause/{zone}', [
             'uses' => 'PiGardenAdminController@getZonePause',
             'as' => 'zone.pause'

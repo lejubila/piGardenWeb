@@ -32,7 +32,7 @@ class PiGardenAdminController extends PiGardenBaseController
     {
         $client = new PiGardenSocketClient();
         try {
-            $status = $client->getStatus();
+            $status = $client->getStatus(['get_cron_open_in']);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
         } catch (\Exception $e) {
@@ -56,6 +56,61 @@ class PiGardenAdminController extends PiGardenBaseController
         $status = null;
         try{
             $status = $client->zoneOpen($zone, $force === 'force');
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
+
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
+    }
+
+    /**
+     * Open a solenoid in a delayed manner
+     * @param Request $request
+     * @param $zone
+     * @param $start
+     * @param $length
+     * @param $force
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function getZonePlayIn(Request $request, $zone, $start, $length, $force='')
+    {
+        $client = new PiGardenSocketClient();
+        $status = null;
+        $start = (int)$start;
+        $length = (int)$length;
+        try{
+            if($start > 1440){
+                throw new \Exception("Start time wrong: $start");
+            }
+            if($length > 600 || $length < 1){
+                throw new \Exception("Length time is wrong: $length");
+            }
+
+            $status = $client->zoneOpenIn($zone, $start, $length, $force === 'force');
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
+
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
+    }
+
+    /**
+     * Cancell the programming for open a solenoid in daley manner
+     * @param Request $request
+     * @param $zone
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function getZonePlayInCancel(Request $request, $zone){
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->zoneOpenInCancel($zone);
         } catch (\Exception $e) {
             $status = new \stdClass();
             $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
@@ -101,7 +156,7 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
-            $status = $client->getStatus(['get_cron']);
+            $status = $client->getStatus(['get_cron', 'get_cron_open_in']);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
             if(isset($this->data['zones']) && $this->data['zones']->count()>0){
