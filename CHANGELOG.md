@@ -1,3 +1,6 @@
+## 0.3.0 - xx/xx/2017 - Security server socket connection
+ - Added support for server socket credentials: define PIGARDEN_SOCKET_CLIENT_USER and PIGARDEN_SOCKET_CLIENT_PWD in yur .env. Required piGarden v  
+
 ## 0.2.0 - 07/05/2017 - Delayed startup
  - Added support for delayed startup of zones
 

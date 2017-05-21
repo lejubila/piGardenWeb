@@ -83,6 +83,21 @@ class PiGardenSocketClient {
     }
 
     /**
+     * Add credentials for socket server to commend string
+     * @param $command
+     * @return string
+     */
+    protected function addCredentialsToCommand($command) {
+        $user = config('pigarden.socket_client_user');
+        $pwd = config('pigarden.socket_client_pwd');
+        if ( !empty($user) && !empty($pwd) ){
+            $command = "$user\r\n$pwd\r\n$command";
+        }
+
+        return $command;
+    }
+
+    /**
      * @param $command
      * @return mixed|string
      * @throws Exception
@@ -90,7 +105,7 @@ class PiGardenSocketClient {
     protected  function execCommand($command)
     {
         $this->open();
-        $this->put($command);
+        $this->put($this->addCredentialsToCommand($command));
         $json_response = $this->get();
         if (!$json_response)
         {
