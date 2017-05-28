@@ -221,6 +221,23 @@
     width: auto;
 }
 
+.wrp-cron-item-text{
+    position: relative;
+}
+.tools .overlay-disabled-cron{
+    position: absolute;
+    top: 2%;
+    left: 0;
+    width: 100%;
+    height: 96%;
+    display: none;
+    z-index: 999;
+    background-color: #000;
+    opacity: 0.40;
+    filter: alpha(opacity =40);
+    border-radius: 5px;
+}
+
 .with-tools tr .tools{
     position: relative;
 }
@@ -237,6 +254,7 @@
 .with-tools tr:hover .tools div.tools-wrp {
     display: inline-block;
     visibility: visible;
+    z-index: 1001;
 }
 @media screen and (max-width: 1024px) {
     .with-tools tr .tools div.tools-wrp {
@@ -268,6 +286,15 @@ table.table-borderless th{
 
 table.table-stripped-column tbody td{
     border-left: 1px solid #eceeef;
+}
+
+.wrp-switch-cron-item{
+    text-align: center;
+    padding: 10px 0;
+    position:relative;
+}
+.wrp-switch-cron-item .bootstrap-switch{
+    z-index: 1000;
 }
 
 ul.cron-item-text{

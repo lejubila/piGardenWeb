@@ -17,8 +17,14 @@ class CronHelper {
             'hour' => [],
             'dom' => [],
             'month' => [],
-            'dow' => []
+            'dow' => [],
         ];
+        $enable = 1;
+
+        if ( substr($strCron,0,1) == '#' ){
+            $enable =  0;
+            $strCron = substr($strCron,1);
+        }
 
         $arrCron = explode(' ', $strCron);
         if(!empty($arrCron))
@@ -50,6 +56,8 @@ class CronHelper {
                 }
             }
         }
+
+        $cron['enable'] = $enable;
 
         return $cron;
     }

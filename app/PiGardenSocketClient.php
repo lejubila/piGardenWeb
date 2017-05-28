@@ -216,12 +216,14 @@ class PiGardenSocketClient {
      * @param $dom
      * @param $month
      * @param $dow
+     * @param $enabled
      * @return mixed|string
      * @throws Exception
      */
-    public function addCronOpen( $zone, $min, $hour, $dom, $month, $dow)
+    public function addCronOpen( $zone, $min, $hour, $dom, $month, $dow, $enabled)
     {
-        return $this->execCommand("add_cron_open $zone $min $hour $dom $month $dow");
+        $disabled = $enabled ? '' : 'disabled';
+        return $this->execCommand("add_cron_open $zone $min $hour $dom $month $dow $disabled");
     }
 
     /**
@@ -231,12 +233,14 @@ class PiGardenSocketClient {
      * @param $dom
      * @param $month
      * @param $dow
+     * @param $enabled
      * @return mixed|string
      * @throws Exception
      */
-    public function addCronClose( $zone, $min, $hour, $dom, $month, $dow)
+    public function addCronClose( $zone, $min, $hour, $dom, $month, $dow, $enabled)
     {
-        return $this->execCommand("add_cron_close $zone $min $hour $dom $month $dow");
+        $disabled = $enabled ? '' : 'disabled';
+        return $this->execCommand("add_cron_close $zone $min $hour $dom $month $dow $disabled");
     }
 
     /**
@@ -255,7 +259,7 @@ class PiGardenSocketClient {
         $this->{"delCron$type"}( $zone );
         if(is_array($schedule) && !empty($schedule)){
             foreach($schedule as $s){
-                $this->{"addCron$type"}( $zone, $s['min'], $s['hour'], $s['dom'], $s['month'], $s['dow'] );
+                $this->{"addCron$type"}( $zone, $s['min'], $s['hour'], $s['dom'], $s['month'], $s['dow'], $s['enable'] );
             }
         }
     }

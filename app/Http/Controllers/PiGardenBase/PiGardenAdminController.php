@@ -303,12 +303,14 @@ class PiGardenAdminController extends PiGardenBaseController
                     'dom' => str_replace('dom-', '', $cron['dom']),
                     'month' => str_replace('month-', '', $cron['month']),
                     'dow' => str_replace('dow-', '', $cron['dow']),
+                    'enable' => (isset($cron['enable']) && $cron['enable']) ? true : false,
                 ];
             }
         }
 
         $client = new PiGardenSocketClient();
         $status = null;
+
         try{
             $status = $client->setCronZone($type, $zone, $scheduling);
         } catch (\Exception $e) {

@@ -21,6 +21,7 @@
 @section('after_styles')
     <link href="{{ asset("css/pigarden.css") }}" rel="stylesheet">
     <link href="{{ asset('css/icheck/line/blue.css') }}" rel="stylesheet">
+    <link href="{{ asset("css/bootstrap-switch.min.css") }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -61,6 +62,11 @@
                                 @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
                                 <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
                                     <td class="tools">
+                                        <div class="wrp-switch-cron-item">
+                                            {!! Form::checkbox("{$type}[$k][enable]", '1', (empty($item['enable']) ? false : true), ['class' => 'switch-cron-item', 'id' => "$type-enable-".$k, 'data-crontype' => "$type", 'data-cronrow' => "$k"] ) !!}
+                                            <!-- input class="switch-cron-item" type="checkbox" name="my-checkbox" checked -->
+                                        </div>
+                                        <div class="overlay-disabled-cron"></div>
                                         <ul class="cron-item-text"></ul>
                                         {{-- $item['string']  --}}
                                         {!! Form::hidden("{$type}[$k][min]", (is_array($item['min']) ? implode(',',$item['min']) : $item['min']), ['id'=>"$type-min-".$k]) !!}
@@ -72,7 +78,7 @@
                                             <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </a>
-                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}" data-toggle="confirmation" data-title="Open Google?">
+                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
                                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                             </a>
                                         </div>
@@ -148,6 +154,7 @@
 
 @section('after_scripts')
     <script src="{{ asset('js/icheck.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap-switch.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
     <script src="{{ asset('js/backend.js') }}"></script>
@@ -218,6 +225,18 @@
             e.preventDefault();
         }
 
+        // Abilita / disabilita una schedulazione
+        $(".switch-cron-item").bootstrapSwitch({
+            onSwitchChange: callBackEnableDisableCron
+        });
+        function callBackEnableDisableCron(event, state){
+            var check = $(event.target);
+            var row = check.data('cronrow');
+            var type = check.data('crontype');
+            updateCronItemText(type, row);
+            //alert('type:' + type + ' row:' + row + ' state:' +  state);
+        }
+
         // Prepara i campi nella finestra di editing schedulazione
         $('#cronModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
@@ -269,6 +288,10 @@
                 $('#table-'+type+'-cron tbody').append(
                     '<tr id="'+type+'-row-'+row+'" class="'+type+'-row" data-cronrow="'+row+'">' +
                         '<td class="tools">' +
+                            '<div class="wrp-switch-cron-item">' +
+                                '<input class="switch-cron-item" id="'+type+'-enable-'+row+'" data-crontype="'+type+'" data-cronrow="'+row+'" name="'+type+'['+row+'][enable]" type="checkbox" value="1">' +
+                            '</div>' +
+                            '<div class="overlay-disabled-cron"></div>' +
                             '<ul class="cron-item-text"></ul>' +
                             '<input id="'+type+'-min-'+row+'" name="'+type+'['+row+'][min]" type="hidden" value="">' +
                             '<input id="'+type+'-hour-'+row+'" name="'+type+'['+row+'][hour]" type="hidden" value="">' +
@@ -287,6 +310,9 @@
                     '</tr>'
                 );
                 $('#'+type+'-row-'+row+' .'+type+'-cron-delete').click(callBackDeleteCronSchedule);
+                $('#'+type+'-row-'+row+' .switch-cron-item').bootstrapSwitch({
+                    onSwitchChange: callBackEnableDisableCron
+                });
             }
             $('#'+type+'-min-'+row).val( ($('#cron-min').val() ? $('#cron-min').val().join(',') : 'min-1') );
             $('#'+type+'-hour-'+row).val( ($('#cron-hour').val() ? $('#cron-hour').val().join(',') : 'hour-*') );
@@ -328,6 +354,7 @@
         var dom = $('#'+type+'-dom-'+row).val().split(',');
         var month = $('#'+type+'-month-'+row).val().split(',');
         var dow = $('#'+type+'-dow-'+row).val().split(',');
+        var enable = $('#'+type+'-enable-'+row).is(':checked');
         var html = '';
 
         $.each({'min': min, 'hour': hour, 'dom': dom, 'month': month, 'dow': dow}, function(i, v){
@@ -339,7 +366,12 @@
             });
         });
 
-        $(" #"+type+"-row-"+row+" td .cron-item-text").html(html);
+        $("#"+type+"-row-"+row+" td .cron-item-text").html(html);
+        if(enable){
+            $("#"+type+"-row-"+row+" .overlay-disabled-cron").hide();
+        } else {
+            $("#"+type+"-row-"+row+" .overlay-disabled-cron").show();
+        }
     }
 
     </script>
