@@ -1,5 +1,5 @@
-## 0.3.0 - xx/xx/2017 - Security server socket connection
- - Added support for server socket credentials: define PIGARDEN_SOCKET_CLIENT_USER and PIGARDEN_SOCKET_CLIENT_PWD in yur .env. Required piGarden v 4.0.0 or greeter.
+## 0.3.0 - 14/06/2017 - Security server socket connection and ability to disabled or enabled scheduled item
+ - Added support for server socket credentials: define PIGARDEN_SOCKET_CLIENT_USER and PIGARDEN_SOCKET_CLIENT_PWD in your .env. Required piGarden v 4.0.0 or greeter.
  - Added the ability to disabled or enabled an exists open/close chedule 
 
 ## 0.2.0 - 07/05/2017 - Delayed startup
