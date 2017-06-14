@@ -1,3 +1,6 @@
+## 0.3.1 - 14/06/2017
+ - Add more irrigation time in delayed startup zones (10, 15, 20 minutes)
+
 ## 0.3.0 - 14/06/2017 - Security server socket connection and ability to disabled or enabled scheduled item
  - Added support for server socket credentials: define PIGARDEN_SOCKET_CLIENT_USER and PIGARDEN_SOCKET_CLIENT_PWD in your .env. Required piGarden v 4.0.0 or greeter.
  - Added the ability to disabled or enabled an exists open/close chedule 

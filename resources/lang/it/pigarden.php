@@ -139,6 +139,9 @@ return array(
             '600' => 'fra 10 ore',
         ],
         'length' => [
+            '10'  => 'per 10 minuti',
+            '15'  => 'per 15 minuti',
+            '20'  => 'per 20 minuti',
             '30'  => 'per 30 minuti',
             '60'  => 'per 1 ora',
             '120' => 'per 2 ore',

@@ -141,6 +141,9 @@ return array(
         '600' => 'in 10 hours',
     ],
     'length' => [
+        '10'  => 'for 10 minutes',
+        '15'  => 'for 15 minutes',
+        '20'  => 'for 20 minutes',
         '30'  => 'for 30 minutes',
         '60'  => 'for 1 hour',
         '120' => 'for 2 hours',
