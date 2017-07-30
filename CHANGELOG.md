@@ -1,3 +1,6 @@
+## 0.3.2 - 31/07/2017
+ - Add more irrigation time in delayed startup zones (1, 3, 5, 7 minutes)
+
 ## 0.3.1 - 14/06/2017
  - Add more irrigation time in delayed startup zones (10, 15, 20 minutes)
 
