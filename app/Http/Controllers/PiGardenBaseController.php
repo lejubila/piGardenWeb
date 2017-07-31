@@ -84,6 +84,9 @@ class PiGardenBaseController extends Controller
             try{
                 $weather = new \stdClass();
                 $weather->observation_time = Carbon::createFromTimestamp($status->last_weather_online->observation_epoch, $status->last_weather_online->local_tz_long)->format('d/m/Y H:i');
+                if(property_exists($status->last_weather_online, 'display_location') && property_exists($status->last_weather_online->display_location, 'city') ){
+                    $weather->observation_time = $status->last_weather_online->display_location->city.', '.$weather->observation_time;
+                }
                 $weather->weather = trans('pigarden.'.$status->last_weather_online->weather);
                 if($status->last_weather_online->icon_url && 0 === strpos($status->last_weather_online->icon_url, 'http://icons.wxug.com/i/c/k/')){
                     $i = pathinfo($status->last_weather_online->icon_url);

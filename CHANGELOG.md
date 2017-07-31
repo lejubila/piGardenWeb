@@ -1,3 +1,6 @@
+## 0.3.3 - 01/08/2017
+ - Added city view in weather conditions
+
 ## 0.3.2 - 31/07/2017
  - Add more irrigation time in delayed startup zones (1, 3, 5, 7 minutes)
 
