@@ -1,3 +1,6 @@
+## 0.4.0 - ##/##/2017
+ - Added tool bar in dashboard with buttons for stop all zones, disable all scheduling, reboot and shutdown system
+
 ## 0.3.3 - 01/08/2017
  - Added city view in weather conditions
 

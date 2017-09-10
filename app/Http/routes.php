@@ -73,6 +73,22 @@ Route::group(['prefix' => config('backpack.base.route_prefix')], function () {
             'as' => 'zone.pause'
         ]);
 
+        Route::get('zone/all_stop/{disable_scheduling?}', [
+            'uses' => 'PiGardenAdminController@getZoneAllStop',
+            'as' => 'zone.all_stop'
+        ])->where([
+            'disable_scheduling' => '(^$|disable_scheduling)'
+        ]);
+
+        Route::get('reboot', [
+            'uses' => 'PiGardenAdminController@getReboot',
+            'as' => 'reboot'
+        ]);
+        Route::get('poweroff', [
+            'uses' => 'PiGardenAdminController@getPoweroff',
+            'as' => 'poweroff'
+        ]);
+
         Route::post('cron/put/{zone}', [
             'uses' => 'PiGardenAdminController@postCronPut',
             'as' => 'cron.put'

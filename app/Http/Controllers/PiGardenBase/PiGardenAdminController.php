@@ -370,9 +370,71 @@ class PiGardenAdminController extends PiGardenBaseController
         return redirect()->back();
     }
 
+    /**
+     * @param Request $request
+     * @param string $disable_scheduling
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function getZoneAllStop(Request $request, $disable_scheduling=null) {
 
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->zoneCloseAll(!empty($disable_scheduling));
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
 
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
 
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function getReboot(Request $request) {
+
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->reboot();
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
+
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
+
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function getPoweroff(Request $request) {
+
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->poweroff();
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
+
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
+
+    }
+
+    /*
     public function getProva(){
 
         return view('prova');
@@ -387,5 +449,6 @@ class PiGardenAdminController extends PiGardenBaseController
         return redirect()->back()->withInput(Input::all())->with('message', 'prova messaggio');
 
     }
+    */
 
 } 

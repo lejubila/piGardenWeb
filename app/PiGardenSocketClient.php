@@ -190,6 +190,34 @@ class PiGardenSocketClient {
     }
 
     /**
+     * @param boolean $disable_scheduling
+     * @return mixed|string
+     * @throws Excepion
+     */
+    public function zoneCloseAll( $disable_scheduling=false )
+    {
+        return $this->execCommand('close_all'.($disable_scheduling ? ' disable_scheduling' : ''));
+    }
+
+    /**
+     * @return mixed|string
+     * @throws Excepion
+     */
+    public function reboot( )
+    {
+        return $this->execCommand('reboot');
+    }
+
+    /**
+     * @return mixed|string
+     * @throws Excepion
+     */
+    public function poweroff( )
+    {
+        return $this->execCommand('poweroff');
+    }
+
+    /**
      * @param $zone
      * @return mixed|string
      * @throws Exception

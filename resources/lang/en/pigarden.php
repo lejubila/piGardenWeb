@@ -128,35 +128,47 @@ return array(
     'users' => 'Users',
 
     'cron_in' => [
-    'start' => [
-        '0'   => 'Start now',
-        '5'   => 'in 5 minutes',
-        '15'  => 'in 15 minutes',
-        '30'  => 'in 30 minutes',
-        '60'  => 'in 1 hour',
-        '120' => 'in 2 hours',
-        '180' => 'in 3 hours',
-        '240' => 'in 4 hours',
-        '300' => 'in 5 hours',
-        '600' => 'in 10 hours',
-    ],
-    'length' => [
-        '1'   => 'for 1 minute',
-        '3'   => 'for 3 minutes',
-        '5'   => 'for 5 minutes',
-        '7'   => 'for 7 minutes',
-        '10'  => 'for 10 minutes',
-        '15'  => 'for 15 minutes',
-        '20'  => 'for 20 minutes',
-        '30'  => 'for 30 minutes',
-        '60'  => 'for 1 hour',
-        '120' => 'for 2 hours',
-        '180' => 'for 3 hours',
-        '240' => 'for 4 hours',
-        '300' => 'for 5 hours',
+        'start' => [
+            '0'   => 'Start now',
+            '5'   => 'in 5 minutes',
+            '15'  => 'in 15 minutes',
+            '30'  => 'in 30 minutes',
+            '60'  => 'in 1 hour',
+            '120' => 'in 2 hours',
+            '180' => 'in 3 hours',
+            '240' => 'in 4 hours',
+            '300' => 'in 5 hours',
+            '600' => 'in 10 hours',
+        ],
+        'length' => [
+            '1'   => 'for 1 minute',
+            '3'   => 'for 3 minutes',
+            '5'   => 'for 5 minutes',
+            '7'   => 'for 7 minutes',
+            '10'  => 'for 10 minutes',
+            '15'  => 'for 15 minutes',
+            '20'  => 'for 20 minutes',
+            '30'  => 'for 30 minutes',
+            '60'  => 'for 1 hour',
+            '120' => 'for 2 hours',
+            '180' => 'for 3 hours',
+            '240' => 'for 4 hours',
+            '300' => 'for 5 hours',
+        ],
+
     ],
 
-],
+    'irrigation_stop_all' => "Stop irrigation on all zones",
+    'irrigation_stop_all_and_disable_scheduled' => "Stop irrigation and disable all scheduling",
+
+    'system_reboot' => "System Reboot",
+    'system_shutdown' => "System Power-Off",
+
+    'All solenoid closed' => 'All solenoid closed',
+
+    'System reboot is started' => 'System reboot is started',
+    'System shutdown is started' => 'System shutdown is started',
+
 
 
 );

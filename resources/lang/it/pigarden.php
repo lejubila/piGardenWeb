@@ -156,4 +156,16 @@ return array(
 
     ],
 
+    'irrigation_stop_all' => "Interrompi l'irrigazione di tutte le zone",
+    'irrigation_stop_all_and_disable_scheduled' => "Interrompi l'irrigazione e disabilita tutte le schedulazioni",
+
+    'system_reboot' => "Riavvia il sistema",
+    'system_shutdown' => "Spengi il sistema",
+
+    'All solenoid closed' => 'Tutte le zone sono state chiuse',
+
+    'System reboot is started' => 'Riavvio del sistema in corso',
+    'System shutdown is started' => 'Arresto del sistema in corso',
+
+
 );
