@@ -17,9 +17,10 @@ Route::group(['namespace' => 'PiGardenBase'], function() {
         'as' => 'home',
     ]);
 
-    Route::get('/jsonDashboardStatus', [
+    Route::get('/jsonDashboardStatus/{extra_parameter?}', [
         'as' => 'get.json.dashboard.status',
         'uses' => 'PiGardenPublicController@getJsonDashboardStatus',
+        'extra_parameter' => '(^$|get_cron_open_in)'
     ]);
 
 });

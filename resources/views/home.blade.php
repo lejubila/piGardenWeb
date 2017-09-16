@@ -123,13 +123,13 @@
     <script src="{{ asset('js/base.js') }}"></script>
     <script>
     $(document).ready(function(){
-        updateHome('{{ route('get.json.dashboard.status') }}');
+        updateHome('{{ route('get.json.dashboard.status') }}', true);
     });
-    function updateHome(urlAction)
+    function updateHome(urlAction, first=false)
     {
         $.ajax({
             type : "GET",
-            url : urlAction,
+            url : urlAction + (first ? '/get_cron_open_in' : ''),
             dataType: 'json',
             beforeSend: function(jqXHR) {
             },

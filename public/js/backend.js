@@ -2,13 +2,13 @@
  * Created by david on 08/04/17.
  */
 $(document).ready(function(){
-    updateDashboard('/jsonDashboardStatus');
+    updateDashboard('/jsonDashboardStatus', true);
 });
-function updateDashboard(urlAction)
+function updateDashboard(urlAction, first=false)
 {
     $.ajax({
         type : "GET",
-        url : urlAction,
+        url : urlAction + (first ? '/get_cron_open_in' : ''),
         dataType: 'json',
         beforeSend: function(jqXHR) {
         },

@@ -179,14 +179,19 @@ class PiGardenBaseController extends Controller
     /**
      * Get json dashboard status
      * @param Request $request
+     * @param string $extra_parameter
      * @return string
      */
-    public function getJsonDashboardStatus(Request $request)
+    public function getJsonDashboardStatus(Request $request, $extra_parameter="")
     {
         $client = new PiGardenSocketClient();
         $status = null;
         try {
-            $status = $client->getStatus();
+            $arr_extra_parameter = [];
+            if (!empty($extra_parameter)){
+                $arr_extra_parameter[] = $extra_parameter;
+            }
+            $status = $client->getStatus($arr_extra_parameter);
         } catch (\Exception $e) {
             $status = new \stdClass();
             $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());

@@ -32,7 +32,8 @@ class PiGardenAdminController extends PiGardenBaseController
     {
         $client = new PiGardenSocketClient();
         try {
-            $status = $client->getStatus(['get_cron_open_in']);
+            //$status = $client->getStatus(['get_cron_open_in']);
+            $status = $client->getStatus();
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
         } catch (\Exception $e) {
@@ -156,7 +157,7 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
-            $status = $client->getStatus(['get_cron', 'get_cron_open_in']);
+            $status = $client->getStatus(["get_cron:$zone", "get_cron_open_in:$zone"]);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
             if(isset($this->data['zones']) && $this->data['zones']->count()>0){
