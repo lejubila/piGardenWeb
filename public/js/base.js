@@ -45,10 +45,12 @@ function updateZones(status){
                     $("#box-zone-"+zone.name+" li.open_in_start").addClass('hidden');
                     $("#box-zone-"+zone.name+" li.open_in_set").removeClass('hidden');
                     $('#btn-zone-'+zone.name+'+button.dropdown-toggle span.glyphicon').addClass('text-danger');
+                    $('#text-btn-zone-open-in-cancel-'+zone.name).parents('span.dropdown.hidden').removeClass('hidden');
                 } else {
                     $("#box-zone-"+zone.name+" li.open_in_start").removeClass('hidden');
                     $("#box-zone-"+zone.name+" li.open_in_set").addClass('hidden');
                     $('#btn-zone-'+zone.name+'+button.dropdown-toggle span.glyphicon').removeClass('text-danger');
+                    $('#text-btn-zone-open-in-cancel-'+zone.name).parents('span.dropdown.hidden').addClass('hidden');
                 }
             }
             var dropdown = $('#btn-zone-'+zone.name+'+button.dropdown-toggle');

@@ -56,7 +56,7 @@
 
                     <img id="btn-zone-image-{{ $zone->name }}" class="sprinkler" src="{{ $zone->imageSrc }}" alt="sprinkler" />
 
-                    @if (isset($showButton) && !$showButton && !empty($cron_open_in[$zone->name]))
+                    @if (false || isset($showButton) && !$showButton && !empty($cron_open_in[$zone->name]))
                     &nbsp;&nbsp;
                     <span class="dropdown">
                       <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuInfoIn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -67,6 +67,22 @@
                       </ul>
                     </span>
                     @endif
+
+                    @if (isset($showButton) && !$showButton)
+                    &nbsp;&nbsp;
+                    <span class="dropdown hidden">
+                      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuInfoIn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <span class="glyphicon glyphicon-time text-danger" aria-hidden="true"></span>
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuInfoIn" style="right: 0px; top: 27px; left: auto;">
+                        <li><a href="#"><i class="text-danger"><span id="text-btn-zone-open-in-cancel-{{ $zone->name }}"></span></i></a></li>
+                      </ul>
+                    </span>
+                    @endif
+
+
+
+
 
                     @if(isset($force) && $force)
                     <div style="max-width:180px; margin:0 auto;">
