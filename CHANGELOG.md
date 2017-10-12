@@ -1,5 +1,7 @@
-## 0.4.0 - ##/##/2017
+## 0.4.0 - 12/10/2017
  - Added tool bar in dashboard with buttons for stop all zones, disable all scheduling, reboot and shutdown system
+ - Optimize on dashboards and home viewing zones with delayed startup
+ - Required piGarden 0.5.x to work
 
 ## 0.3.3 - 01/08/2017
  - Added city view in weather conditions
