@@ -16,11 +16,13 @@ class PiGardenSocketClient {
     protected $ip;
     protected $port;
     protected $socket;
+    protected $prevRequest;
 
     public function __construct()
     {
         $this->ip = config('pigarden.socket_client_ip');
         $this->port = config('pigarden.socket_client_port');
+        $prevRequest = [];
     }
 
     /**
@@ -99,11 +101,17 @@ class PiGardenSocketClient {
 
     /**
      * @param $command
+     * @param $getPrevRequest
      * @return mixed|string
      * @throws Exception
      */
-    protected  function execCommand($command)
+    protected  function execCommand($command, $getPrevRequest=false)
     {
+        if ( $getPrevRequest && !empty($this->prevRequest[$command])) 
+        {
+            return $this->prevRequest[$command];
+        }
+
         $this->open();
         $this->put($this->addCredentialsToCommand($command));
         $json_response = $this->get();
@@ -129,21 +137,23 @@ class PiGardenSocketClient {
         }
 
         $this->close();
+        $this->prevRequest[$command] = $response;
         return $response;
     }
 
     /**
      * @return mixed|string
      * @param array|null $additionalParameters
+     * @param boolean $getPrevRequest
      * @throws Exception
      */
-    public function getStatus($additionalParameters=null)
+    public function getStatus($additionalParameters=null, $getPrevRequest=false)
     {
         $ap = '';
         if (!is_null($additionalParameters)){
             $ap = ' '.implode(' ',$additionalParameters);
         }
-        return $this->execCommand('status'.$ap);
+        return $this->execCommand('status'.$ap, $getPrevRequest);
     }
 
     /**

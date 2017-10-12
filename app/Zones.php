@@ -21,7 +21,7 @@ class Zones {
         {
             self::$zones = array();
             $c = new PiGardenSocketClient();
-            $status = $c->getStatus();
+            $status = $c->getStatus(null, true);
             if (!is_null($status)) {
                 if (property_exists($status, 'zones') && count($status->zones)>0) {
                     self::$zones = array();
