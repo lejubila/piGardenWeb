@@ -1,3 +1,7 @@
+## 0.4.1 - xx/11/2017
+ - Fix favicon 76x76 url
+ - Add .env parameter APP_HTTPS_FORCE for automaticaly force all assets url to https
+
 ## 0.4.0 - 12/10/2017
  - Added tool bar in dashboard with buttons for stop all zones, disable all scheduling, reboot and shutdown system
  - Optimize on dashboards and home viewing zones with delayed startup

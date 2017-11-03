@@ -11,6 +11,11 @@
 |
 */
 
+
+if (env('APP_FORCE_HTTPS', false) ) {
+    URL::forceSchema('https');
+}
+
 Route::group(['namespace' => 'PiGardenBase'], function() {
     Route::get('/', [
         'uses' => 'PiGardenPublicController@getHome',
