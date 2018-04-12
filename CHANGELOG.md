@@ -1,3 +1,7 @@
+## 0.4.1 - 11/04/2018
+ - Added configuration file for nginx with php7
+ - Added instruction for instal on raspbian 9 stretch (nginx + php7)
+
 ## 0.4.0 - 12/10/2017
  - Added tool bar in dashboard with buttons for stop all zones, disable all scheduling, reboot and shutdown system
  - Optimize on dashboards and home viewing zones with delayed startup
