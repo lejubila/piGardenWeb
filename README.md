@@ -143,7 +143,7 @@ modify the file /etc/php5/fpm/php.ini, search and uncomment the line with cgi.fi
         ```bash
         cd
         cd piGarden
-        ./piGarden start_socket_server force
+        ./piGarden.sh start_socket_server force
         ```
 9) Remove piGarden crontab scheduling if already present (skip this point if you have NOT already installed the pigarden on your raspberry pi)
 
