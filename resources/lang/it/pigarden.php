@@ -25,7 +25,7 @@ return array(
     'South' => 'Sud',
     'SSE' => 'Sud-SudEst',
     'SSW' => 'Sud-SudOvest',
-    'SW' => 'SudWest',
+    'SW' => 'SudOvest',
     'Variable' => 'Variable',
     'West' => 'Ovest',
     'WNW' => 'Ovest-NordOvest',
