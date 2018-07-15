@@ -2,7 +2,11 @@
  * Created by david on 08/04/17.
  */
 $(document).ready(function(){
-    updateDashboard('/jsonDashboardStatus', true);
+    var url = '/jsonDashboardStatus';
+    if (typeof urlJsonDashboardStatus !== 'undefined') {
+        url = urlJsonDashboardStatus;
+    }
+    updateDashboard(url, true);
 });
 function updateDashboard(urlAction, first=false)
 {
@@ -25,9 +29,14 @@ function updateDashboard(urlAction, first=false)
         }
     });
 
+    var timeout = 20000
+    if (typeof timeoutJsonDashboardStatus !== 'undefined') {
+        timeout = timeoutJsonDashboardStatus;
+    }
+
     setTimeout(function() {
         updateDashboard(urlAction);
-    }, 20000);
+    }, timeout);
 }
 function updateDashboardExec(data){
     //console.log(typeof data);

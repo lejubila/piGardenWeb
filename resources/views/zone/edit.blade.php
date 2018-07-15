@@ -157,6 +157,10 @@
     <script src="{{ asset('js/bootstrap-switch.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
+    <script>
+        var urlJsonDashboardStatus = "{{ route('get.json.dashboard.status') }}";
+        var timeoutJsonDashboardStatus = {{ config('pigarden.timeout_json_dashboard_status') }};
+    </script>
     <script src="{{ asset('js/backend.js') }}"></script>
     <script>
     $(document).ready(function(){

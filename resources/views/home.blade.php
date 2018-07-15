@@ -122,8 +122,12 @@
 @section('after_scripts')
     <script src="{{ asset('js/base.js') }}"></script>
     <script>
+        var urlJsonDashboardStatus = "{{ route('get.json.dashboard.status') }}";
+        var timeoutJsonDashboardStatus = {{ config('pigarden.timeout_json_dashboard_status') }};
+    </script>
+    <script>
     $(document).ready(function(){
-        updateHome('{{ route('get.json.dashboard.status') }}', true);
+        updateHome(urlJsonDashboardStatus, true);
     });
     function updateHome(urlAction, first=false)
     {
@@ -148,7 +152,7 @@
 
         setTimeout(function() {
             updateHome(urlAction);
-        }, 20000);
+        }, timeoutJsonDashboardStatus);
     }
     function updateHomeExec(data){
         //console.log(typeof data);

@@ -1,3 +1,7 @@
+## 0.4.2 - 15/07/2018
+ - Added parameter PIGARDEN_TIMEOUT_DASHBOARD_STATUS in .env for customize time of polling refresh ajax dashboard and zone
+ - Fix to call ajax refresh display when piGardenWeb is placed in a subdirectory of document route 
+
 ## 0.4.1 - 11/04/2018
  - Added configuration file for nginx with php7
  - Added instruction for instal on raspbian 9 stretch (nginx + php7)

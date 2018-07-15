@@ -14,4 +14,6 @@ return [
         'start' => [ 0, 5, 15, 30, 60, 120, 180, 240, 300, 600 ],
         'length' => [ 1, 3 ,5 , 7, 10, 15, 20, 30, 60, 120, 180, 240, 300 ]
     ],
+
+    'timeout_json_dashboard_status' => env('PIGARDEN_TIMEOUT_DASHBOARD_STATUS', 20000),
 ];
