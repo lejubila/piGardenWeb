@@ -1,3 +1,6 @@
+## 0.4.3 - 01/09/2018
+ - Added odd and aven days of month in schedule
+
 ## 0.4.2 - 15/07/2018
  - Added parameter PIGARDEN_TIMEOUT_DASHBOARD_STATUS in .env for customize time of polling refresh ajax dashboard and zone
  - Fix to call ajax refresh display when piGardenWeb is placed in a subdirectory of document route 

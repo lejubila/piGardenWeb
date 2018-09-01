@@ -13,6 +13,8 @@ return [
     'dom' => [
         'title' => 'Day of month',
         'every' => 'Any day of month',
+        'odd' => 'Odd days of month',
+        'even' => 'Even days of month',
     ],
     'month' => [
         'title' => 'Month',

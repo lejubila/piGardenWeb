@@ -180,9 +180,22 @@ class CronHelper {
 
     public static function getDomString($arr)
     {
-         return implode(', ', 
+         return implode(', ',
                    array_map(function($i){
-                       return ($i=='*' ? trans('cron.dom.every') : $i);
+                       if($i=='*'){
+                           return trans('cron.dom.every');
+                       }
+                       elseif($i=='1-31/2'){
+                           return trans('cron.dom.odd');
+                       }
+                       elseif($i=='2-30/2'){
+                           return trans('cron.dom.even');
+                       }
+                       else{
+                           return $i;
+                       }
+
+                       //return ($i=='*' ? trans('cron.dom.every') : $i);
                    },
                    $arr)
                );
@@ -193,13 +206,22 @@ class CronHelper {
             $exclude = [$exclude];
         }
 
-        $itemKeys = ['dom-*'];
+        $itemKeys = ['dom-*', 'dom-1-31/2', 'dom-2-30/2'];
         for($i=1; $i<=31; $i++){ $itemKeys[] = "dom-$i"; }
 
         $items = [];
         foreach($itemKeys as $i){
             if(in_array($i, $exclude)) continue;
-            $items["$i"] = ($i=='dom-*' ? trans('cron.dom.every') : trans('cron.dom.title').' '.substr($i,4));
+
+            if($i=='dom-*')
+                $items["$i"] = trans('cron.dom.every');
+            elseif($i=='dom-1-31/2')
+                $items["$i"] = trans('cron.dom.odd');
+            elseif($i=='dom-2-30/2')
+                $items["$i"] = trans('cron.dom.even');
+            else
+                $items["$i"] = trans('cron.dom.title').' '.substr($i,4);
+            //$items["$i"] = ($i=='dom-*' ? trans('cron.dom.every') : trans('cron.dom.title').' '.substr($i,4));
         }
         return $items;
     }

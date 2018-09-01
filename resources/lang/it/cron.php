@@ -13,6 +13,8 @@ return [
     'dom' => [
         'title' => 'Giorno del mese',
         'every' => 'Ogni giorno del mese',
+        'odd' => 'Giorni dispari del mese',
+        'even' => 'Giorni pari del mese',
     ],
     'month' => [
         'title' => 'Mese',
