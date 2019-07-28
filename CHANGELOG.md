@@ -1,3 +1,7 @@
+## 0.4.4.1 - 28/07/2019
+ - Added instruction for install to Raspbian 10 Duster
+ - Added nginx config file with php7.1 support for install to Raspbian 10 Duster
+
 ## 0.4.3 - 01/09/2018
  - Added odd and aven days of month in schedule
 
