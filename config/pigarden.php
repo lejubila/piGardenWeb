@@ -16,4 +16,10 @@ return [
     ],
 
     'timeout_json_dashboard_status' => env('PIGARDEN_TIMEOUT_DASHBOARD_STATUS', 20000),
+
+    'version' => [
+        'ver' => 0,
+        'sub' => 4,
+        'rel' => 5
+    ],
 ];

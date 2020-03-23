@@ -25,7 +25,7 @@ return [
     'developer_link' => 'http://lejubila.net',
 
     // Show powered by Laravel Backpack in the footer?
-    'show_powered_by' => false,
+    'show_powered_by' => true,
 
     // The AdminLTE skin. Affects menu color and primary/secondary colors used throughout the application.
     'skin' => 'skin-purple',
