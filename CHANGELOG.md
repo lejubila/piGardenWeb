@@ -1,4 +1,4 @@
-## 0.4.4 - xx/03/2020
+## 0.4.4 - 23/03/2020
  - Update to Laravel 5.8 and Backpack 3.6 
  - Added ability to customize zone icons
  - Added release version to bottom of page 
