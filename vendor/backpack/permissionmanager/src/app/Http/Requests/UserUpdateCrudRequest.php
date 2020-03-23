@@ -14,7 +14,7 @@ class UserUpdateCrudRequest extends FormRequest
     public function authorize()
     {
         // only allow updates if the user is logged in
-        return \Auth::check();
+        return backpack_auth()->check();
     }
 
     /**
@@ -24,12 +24,17 @@ class UserUpdateCrudRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
-            'email'    => 'required',
+        $userModel = config('backpack.permissionmanager.models.user');
+        $user = new $userModel();
+
+        if (!$user->find($this->get('id'))) {
+            abort(400, 'Could not find that entry in the database.');
+        }
+
+        return [
+            'email'    => 'required|unique:'.config('permission.table_names.users', 'users').',email,'.$this->get('id'),
             'name'     => 'required',
             'password' => 'confirmed',
-            ];
-
-        return $rules;
+        ];
     }
 }

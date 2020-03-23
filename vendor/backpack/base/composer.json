@@ -7,27 +7,29 @@
         "base"
     ],
     "homepage": "https://github.com/laravel-backpack/base",
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Cristian Tabacitu",
             "email": "hello@tabacitu.ro",
             "homepage": "http://www.tabacitu.ro",
-            "role": "Chief Architect & Developer"
+            "role": "Creator & Maintainer"
         }
     ],
     "require": {
-        "illuminate/support": "~5.1",
-        "php" : "~5.5|~7.0",
-        "almasaeed2010/AdminLTE" : "2.3.*",
-        "laravel/framework": "5.2.*",
-        "prologue/alerts": "0.4.*",
-        "jenssegers/date": "^3.2"
+        "almasaeed2010/adminlte" : "2.4.*",
+        "laravel/framework": "5.8.*|^6.0",
+        "prologue/alerts": "^0.4.1",
+        "creativeorange/gravatar": "~1.0",
+        "nesbot/carbon": "^2.14.0",
+        "laravel/helpers": "^1.1"
     },
     "require-dev": {
-        "phpunit/phpunit" : "4.*",
+        "phpunit/phpunit": "~6.0",
         "scrutinizer/ocular": "~1.1",
-        "squizlabs/php_codesniffer": "~2.3"
+        "squizlabs/php_codesniffer": "~2.3",
+        "backpack/generators": "^1.1",
+        "laracasts/generators": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +47,11 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
+        },
+        "laravel": {
+            "providers": [
+                "Backpack\\Base\\BaseServiceProvider"
+            ]
         }
     }
 }

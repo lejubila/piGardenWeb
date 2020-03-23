@@ -1,11 +1,12 @@
 <?php
 /**
- * Controller for pigardin admin pages
+ * Controller for pigarden admin pages
  */
 namespace App\Http\Controllers\PiGardenBase;
 
 use App\Http\Controllers\PiGardenBaseController;
 use App\PiGardenSocketClient;
+use App\ScheduleHelper;
 use App\CronHelper;
 use Illuminate\Http\Request;
 use Redirect;
@@ -157,7 +158,7 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
-            $status = $client->getStatus(["get_cron:$zone", "get_cron_open_in:$zone"]);
+            $status = $client->getStatus(["get_cron:$zone", "get_cron_open_in:$zone get_schedule"]);
             $this->setDataFromStatus($status);
             $this->setMessagesFromStatus($status);
             if(isset($this->data['zones']) && $this->data['zones']->count()>0){
@@ -212,6 +213,21 @@ class PiGardenAdminController extends PiGardenBaseController
                                 }
                             }
                         }
+                    }
+                }
+
+                $this->data['manageSchedule'] = false;
+                if(property_exists($this->data['status'], 'schedule')) {
+                    $this->data['manageSchedule'] = true;
+                    $this->data['schedule'] = ScheduleHelper::getScheduleFromStatus($this->data['status']);
+                    $this->data['sequenceSchedule'] = ScheduleHelper::getSequence($this->data['schedule']);
+                    $this->data['scheduleZone'] = [];
+                    if(isset($this->data['schedule']['alias'][$zone])) {
+                        $this->data['scheduleZone'] = $this->data['schedule']['alias'][$zone];
+                    }
+                    $this->data['sequenceZone'] = [];
+                    if(isset($this->data['sequenceSchedule'][$zone])){
+                        $this->data['sequenceZone'] = $this->data['sequenceSchedule'][$zone];
                     }
                 }
 
@@ -452,4 +468,4 @@ class PiGardenAdminController extends PiGardenBaseController
     }
     */
 
-} 
+}

@@ -107,7 +107,7 @@ class PiGardenSocketClient {
      */
     protected  function execCommand($command, $getPrevRequest=false)
     {
-        if ( $getPrevRequest && !empty($this->prevRequest[$command])) 
+        if ( $getPrevRequest && !empty($this->prevRequest[$command]))
         {
             return $this->prevRequest[$command];
         }
@@ -311,4 +311,82 @@ class PiGardenSocketClient {
     }
 
 
-} 
+    /**
+     * Set multiple schedule of piGardenSched
+     * @param $zone string
+     * @param $duration integer
+     * @param $time array
+     * @param $frequency integer
+     * @param $seq array
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function setSchedule( $zone, $duration, $time, $frequency, $seq=null ) {
+
+        $this->delSchedule( $zone );
+        if(is_array($time) && !empty($time)){
+            $first = true;
+            foreach($time as $t){
+                if($first) {
+                    $first = false;
+                    $this->addSchedule( $zone, $duration, $t, $frequency );
+                } else {
+                    $this->addTimeSchedule( $zone, $t );
+                }
+            }
+
+            if(is_array($seq) && !empty($seq)) {
+                array_unshift($seq, $zone);
+                $this->seqSchedule( $seq );
+            }
+        }
+
+    }
+
+    /**
+     * @param $zone
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function delSchedule( $zone )
+    {
+        return $this->execCommand('cmd_pigardensched del '.$zone);
+    }
+
+    /**
+     * @param $zone string
+     * @param $duration integer
+     * @param $time string
+     * @param $frequency integer
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function addSchedule( $zone, $duration, $time, $frequency )
+    {
+        return $this->execCommand("cmd_pigardensched add $zone $duration $time $frequency");
+    }
+
+    /**
+     * @param $zone string
+     * @param $time string
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function addTimeSchedule( $zone, $time )
+    {
+        return $this->execCommand("cmd_pigardensched add_time $zone $time");
+    }
+
+    /**
+     * @param $seq array
+     * @return mixed|string
+     * @throws Exception
+     */
+    public function seqSchedule( $seq )
+    {
+        return $this->execCommand('cmd_pigardensched seq '.implode(' ', $seq));
+    }
+
+
+
+}

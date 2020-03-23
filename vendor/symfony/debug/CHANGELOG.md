@@ -1,6 +1,43 @@
 CHANGELOG
 =========
 
+4.4.0
+-----
+
+ * deprecated `FlattenException`, use the `FlattenException` of the `ErrorHandler` component
+ * deprecated the whole component in favor of the `ErrorHandler` component
+
+4.3.0
+-----
+
+* made the `ErrorHandler` and `ExceptionHandler` classes final
+* added `Exception\FlattenException::getAsString` and
+`Exception\FlattenException::getTraceAsString` to increase compatibility to php
+exception objects
+
+4.0.0
+-----
+
+* removed the symfony_debug extension
+* removed `ContextErrorException`
+
+3.4.0
+-----
+
+* deprecated `ErrorHandler::stackErrors()` and `ErrorHandler::unstackErrors()`
+
+3.3.0
+-----
+
+* deprecated the `ContextErrorException` class: use \ErrorException directly now
+
+3.2.0
+-----
+
+* `FlattenException::getTrace()` now returns additional type descriptions
+  `integer` and `float`.
+
+
 3.0.0
 -----
 

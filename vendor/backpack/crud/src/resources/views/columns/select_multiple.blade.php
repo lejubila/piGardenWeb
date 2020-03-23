@@ -1,13 +1,15 @@
 {{-- relationships with pivot table (n-n) --}}
-<td>
-    <?php
-        $results = $entry->{$column['entity']}()->getResults();
+@php
+    $results = data_get($entry, $column['name']);
+@endphp
 
+<span>
+    <?php
         if ($results && $results->count()) {
-            $results_array = $results->pluck($column['attribute'], 'id');
+            $results_array = $results->pluck($column['attribute']);
             echo implode(', ', $results_array->toArray());
         } else {
             echo '-';
         }
     ?>
-</td>
+</span>

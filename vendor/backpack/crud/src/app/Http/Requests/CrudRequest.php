@@ -4,6 +4,9 @@ namespace Backpack\CRUD\app\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @deprecated [3.4] Since authorization is already verified using a middleware, this special form request file is no longer needed. Please make sure all your form requests extend the original Illuminate\Foundation\Http\FormRequest instead. This file might be removed entirely as soon as CRUD version 3.4.
+ */
 class CrudRequest extends FormRequest
 {
     /**
@@ -14,7 +17,7 @@ class CrudRequest extends FormRequest
     public function authorize()
     {
         // only allow creates if the user is logged in
-        return \Auth::check();
+        return backpack_auth()->check();
     }
 
     /**

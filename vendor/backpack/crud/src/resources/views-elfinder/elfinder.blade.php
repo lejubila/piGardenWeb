@@ -14,7 +14,7 @@
     <!-- elFinder JS (REQUIRED) -->
     <script src="<?= asset($dir.'/js/elfinder.min.js') ?>"></script>
 
-    <?php if($locale){ ?>
+    <?php if ($locale) { ?>
     <!-- elFinder translation (OPTIONAL) -->
     <script src="<?= asset($dir."/js/i18n/elfinder.$locale.js") ?>"></script>
     <?php } ?>
@@ -26,13 +26,13 @@
         $().ready(function() {
             $('#elfinder').elfinder({
                 // set your elFinder options here
-                <?php if($locale){ ?>
+                <?php if ($locale) { ?>
                     lang: '<?= $locale ?>', // locale
                 <?php } ?>
                 customData: {
                     _token: '<?= csrf_token() ?>'
                 },
-                url : '<?= route("elfinder.connector") ?>'  // connector URL
+                url : '<?= route('elfinder.connector') ?>'  // connector URL
             });
         });
     </script>
@@ -41,11 +41,11 @@
 @section('header')
     <section class="content-header">
       <h1>
-        File manager
+        {{ trans('backpack::crud.file_manager') }}
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ url('admin') }}">Admin</a></li>
-        <li class="active">File Manager</li>
+        <li><a href="{{ url(config('backpack.base.route_prefix')) }}">Admin</a></li>
+        <li class="active">{{ trans('backpack::crud.file_manager') }}</li>
       </ol>
     </section>
 @endsection

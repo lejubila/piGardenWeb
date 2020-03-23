@@ -15,7 +15,7 @@
  * @category   Mockery
  * @package    Mockery
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2010-2014 Pádraic Brady (http://blog.astrumfutura.com)
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
 
@@ -26,13 +26,12 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
  */
 class Mockery_AdhocTest extends MockeryTestCase
 {
-
-    public function setup()
+    public function mockeryTestSetUp()
     {
         $this->container = new \Mockery\Container(\Mockery::getDefaultGenerator(), \Mockery::getDefaultLoader());
     }
 
-    public function teardown()
+    public function mockeryTestTearDown()
     {
         $this->container->mockery_close();
     }
@@ -40,38 +39,58 @@ class Mockery_AdhocTest extends MockeryTestCase
     public function testSimplestMockCreation()
     {
         $m = $this->container->mock('MockeryTest_NameOfExistingClass');
-        $this->assertTrue($m instanceof MockeryTest_NameOfExistingClass);
+        $this->assertInstanceOf(MockeryTest_NameOfExistingClass::class, $m);
     }
 
     public function testMockeryInterfaceForClass()
     {
         $m = $this->container->mock('SplFileInfo');
-        $this->assertTrue($m instanceof \Mockery\MockInterface);
+        $this->assertInstanceOf(\Mockery\MockInterface::class, $m);
     }
 
     public function testMockeryInterfaceForNonExistingClass()
     {
         $m = $this->container->mock('ABC_IDontExist');
-        $this->assertTrue($m instanceof \Mockery\MockInterface);
+        $this->assertInstanceOf(\Mockery\MockInterface::class, $m);
     }
 
     public function testMockeryInterfaceForInterface()
     {
         $m = $this->container->mock('MockeryTest_NameOfInterface');
-        $this->assertTrue($m instanceof \Mockery\MockInterface);
+        $this->assertInstanceOf(\Mockery\MockInterface::class, $m);
     }
 
     public function testMockeryInterfaceForAbstract()
     {
         $m = $this->container->mock('MockeryTest_NameOfAbstract');
-        $this->assertTrue($m instanceof \Mockery\MockInterface);
+        $this->assertInstanceOf(\Mockery\MockInterface::class, $m);
     }
 
     public function testInvalidCountExceptionThrowsRuntimeExceptionOnIllegalComparativeSymbol()
     {
-        $this->setExpectedException('Mockery\Exception\RuntimeException');
+        $this->expectException('Mockery\Exception\RuntimeException');
         $e = new \Mockery\Exception\InvalidCountException;
         $e->setExpectedCountComparative('X');
+    }
+
+    public function testMockeryConstructAndDestructIsNotCalled()
+    {
+        MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled = false;
+        // We pass no arguments in constructor, so it's not being called. Then destructor shouldn't be called too.
+        $this->container->mock('MockeryTest_NameOfExistingClassWithDestructor');
+        // Clear references to trigger destructor
+        $this->container->mockery_close();
+        $this->assertFalse(MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled);
+    }
+
+    public function testMockeryConstructAndDestructIsCalled()
+    {
+        MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled = false;
+
+        $this->container->mock('MockeryTest_NameOfExistingClassWithDestructor', array());
+        // Clear references to trigger destructor
+        $this->container->mockery_close();
+        $this->assertTrue(MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled);
     }
 }
 
@@ -87,4 +106,14 @@ interface MockeryTest_NameOfInterface
 abstract class MockeryTest_NameOfAbstract
 {
     abstract public function foo();
+}
+
+class MockeryTest_NameOfExistingClassWithDestructor
+{
+    public static $isDestructorWasCalled = false;
+
+    public function __destruct()
+    {
+        self::$isDestructorWasCalled = true;
+    }
 }

@@ -17,27 +17,29 @@ class PermissionManagerServiceProvider extends ServiceProvider
     protected $defer = false;
 
     /**
+     * Where the route file lives, both inside the package and in the app (if overwritten).
+     *
+     * @var string
+     */
+    public $routeFilePath = '/routes/backpack/permissionmanager.php';
+
+    /**
      * Perform post-registration booting of services.
      *
      * @return void
      */
     public function boot()
     {
+        // define the routes for the application
+        $this->setupRoutes($this->app->router);
+
         // use the vendor configuration file as fallback
-        $this->mergeConfigFrom(
-            __DIR__.'/config/laravel-permission.php', 'laravel-permission'
-        );
         $this->mergeConfigFrom(
             __DIR__.'/config/backpack/permissionmanager.php', 'backpack.permissionmanager'
         );
 
-        $this->loadTranslationsFrom(realpath(__DIR__.'/resources/lang'), 'backpack');
-
         // publish config file
         $this->publishes([__DIR__.'/config' => config_path()], 'config');
-
-        // publish migrations
-        $this->publishes([__DIR__.'/database/migrations' => database_path('migrations')], 'migrations');
 
         // publish translation files
         $this->publishes([__DIR__.'/resources/lang' => resource_path('lang/vendor/backpack')], 'lang');
@@ -52,13 +54,15 @@ class PermissionManagerServiceProvider extends ServiceProvider
      */
     public function setupRoutes(Router $router)
     {
-        $router->group(['namespace' => 'Backpack\PermissionManager\app\Http\Controllers'], function ($router) {
-            \Route::group(['prefix' => config('backpack.base.route_prefix', 'admin'), 'middleware' => ['web', 'admin']], function () {
-                \CRUD::resource('permission', 'PermissionCrudController');
-                \CRUD::resource('role', 'RoleCrudController');
-                \CRUD::resource('user', 'UserCrudController');
-            });
-        });
+        // by default, use the routes file provided in vendor
+        $routeFilePathInUse = __DIR__.$this->routeFilePath;
+
+        // but if there's a file with the same name in routes/backpack, use that one
+        if (file_exists(base_path().$this->routeFilePath)) {
+            $routeFilePathInUse = base_path().$this->routeFilePath;
+        }
+
+        $this->loadRoutesFrom($routeFilePathInUse);
     }
 
     /**
@@ -68,8 +72,6 @@ class PermissionManagerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->setupRoutes($this->app->router);
-
         $this->app->register(PermissionServiceProvider::class);
     }
 }

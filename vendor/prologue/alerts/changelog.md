@@ -2,6 +2,47 @@
 
 All notable changes to Prologue Alerts will be documented in this file. This file follows the *[Keep a CHANGELOG](http://keepachangelog.com/)* standards.
 
+
+## [0.4.6] - 2020-03-03
+
+### Added
+
+- support for Laravel 7;
+
+
+## [0.4.5] - 2019-09-04
+
+### Added
+
+- support for Laravel 6;
+
+
+## [0.4.3] - 2019-01-22
+
+### Added
+
+- docblocks;
+- php 7.3 to Travis CI;
+
+### Removed
+- HHVM from Travis CI;
+
+
+## [0.4.2] - 2018-02-12
+
+### Added
+
+- flush() method;
+- Laravel package auto-discovery;
+
+
+## [0.4.1] - 2017-01-24
+
+### Added
+
+- Laravel 5.4 support
+
+
 ## [0.4.0-beta.3] - 2015-03-29
 
 ### Fixed

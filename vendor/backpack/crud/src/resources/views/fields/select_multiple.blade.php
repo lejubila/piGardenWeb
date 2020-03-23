@@ -1,21 +1,34 @@
 <!-- select multiple -->
+@php
+    if (!isset($field['options'])) {
+        $options = $field['model']::all();
+    } else {
+        $options = call_user_func($field['options'], $field['model']::query());
+    }
+@endphp
+
 <div @include('crud::inc.field_wrapper_attributes') >
-    <label>{{ $field['label'] }}</label>
+
+    <label>{!! $field['label'] !!}</label>
+    @include('crud::inc.field_translatable_icon')
+
     <select
     	class="form-control"
         name="{{ $field['name'] }}[]"
         @include('crud::inc.field_attributes')
     	multiple>
 
-    	<option value="">-</option>
+		@if (!isset($field['allows_null']) || $field['allows_null'])
+			<option value="">-</option>
+		@endif
 
-    	@if (isset($field['model']))
-    		@foreach ($field['model']::all() as $connected_entity_entry)
-    			<option value="{{ $connected_entity_entry->getKey() }}"
-					@if ( (isset($field['value']) && in_array($connected_entity_entry->getKey(), $field['value']->pluck($connected_entity_entry->getKeyName(), $connected_entity_entry->getKeyName())->toArray())) || ( old( $field["name"] ) && in_array($connected_entity_entry->getKey(), old( $field["name"])) ) )
-                         selected
-					@endif
-    			>{{ $connected_entity_entry->{$field['attribute']} }}</option>
+    	@if (count($options))
+    		@foreach ($options as $option)
+				@if( (old(square_brackets_to_dots($field["name"])) && in_array($option->getKey(), old(square_brackets_to_dots($field["name"])))) || (is_null(old(square_brackets_to_dots($field["name"]))) && isset($field['value']) && in_array($option->getKey(), $field['value']->pluck($option->getKeyName(), $option->getKeyName())->toArray())))
+					<option value="{{ $option->getKey() }}" selected>{{ $option->{$field['attribute']} }}</option>
+				@else
+					<option value="{{ $option->getKey() }}">{{ $option->{$field['attribute']} }}</option>
+				@endif
     		@endforeach
     	@endif
 

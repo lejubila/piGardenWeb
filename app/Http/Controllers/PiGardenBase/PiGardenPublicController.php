@@ -1,12 +1,13 @@
 <?php
 /**
- * Controller for pigardin public page
+ * Controller for pigarden public page
  */
 
 namespace app\Http\Controllers\PiGardenBase;
 
 
 use App\Http\Controllers\PiGardenBaseController;
+use App\Models\BackpackUser;
 use App\PiGardenSocketClient;
 
 class PiGardenPublicController extends PiGardenBaseController {
@@ -17,7 +18,7 @@ class PiGardenPublicController extends PiGardenBaseController {
 
     public function getHome(){
 
-        if( \Auth::check() ) {
+        if (backpack_auth()->check()) {
             return \Redirect::route('admin.dashboard');
         }
 
@@ -34,4 +35,4 @@ class PiGardenPublicController extends PiGardenBaseController {
     }
 
 
-} 
+}

@@ -3,16 +3,19 @@
 return [
 
     /*
-    | Backpack/PermissionManager configs.
-    */
-
-    /*
     |--------------------------------------------------------------------------
-    | User Fully-Qualified Class Name
+    | Models
     |--------------------------------------------------------------------------
     |
+    | Models used in the User, Role and Permission CRUDs.
+    |
     */
-    'user_model' => 'App\User',
+
+    'models' => [
+        'user'       => App\Models\BackpackUser::class,
+        'permission' => Backpack\PermissionManager\app\Models\Permission::class,
+        'role'       => Backpack\PermissionManager\app\Models\Role::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -27,9 +30,21 @@ return [
     | - creating and updating should be disabled
     */
 
-    'allow_permission_create' => true,
-    'allow_permission_update' => true,
-    'allow_role_create'       => true,
-    'allow_role_update'       => true,
+    'allow_permission_create' => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+    'allow_permission_update' => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+    'allow_permission_delete' => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+    'allow_role_create'       => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+    'allow_role_update'       => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+    'allow_role_delete'       => env('ALLOW_MANAGE_ROLE_AND_PERMISSION', false),
+
+    'allow_manage_user'       => env('ALLOW_MANAGE_USER', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multiple-guards functionality
+    |--------------------------------------------------------------------------
+    |
+    */
+    'multiple_guards' => false,
 
 ];

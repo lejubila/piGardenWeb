@@ -2,13 +2,14 @@
 
 <div @include('crud::inc.field_wrapper_attributes') >
 
-    <label>{{ $field['label'] }}</label>
+    <label>{!! $field['label'] !!}</label>
+    @include('crud::inc.field_translatable_icon')
 	<input
 		type="text"
 		id="{{ $field['name'] }}-filemanager"
 
 		name="{{ $field['name'] }}"
-        value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
+        value="{{ old(square_brackets_to_dots($field['name'])) ?? $field['value'] ?? $field['default'] ?? '' }}"
         @include('crud::inc.field_attributes')
 
 		@if(!isset($field['readonly']) || $field['readonly']) readonly @endif
@@ -30,12 +31,17 @@
 {{-- ########################################## --}}
 {{-- Extra CSS and JS for this particular field --}}
 {{-- If a field type is shown multiple times on a form, the CSS and JS will only be loaded once --}}
-@if ($crud->checkIfFieldIsFirstOfItsType($field, $fields))
+@if ($crud->checkIfFieldIsFirstOfItsType($field))
 
 	{{-- FIELD CSS - will be loaded in the after_styles section --}}
 	@push('crud_fields_styles')
 		<!-- include browse server css -->
 		<link href="{{ asset('vendor/backpack/colorbox/example2/colorbox.css') }}" rel="stylesheet" type="text/css" />
+		<style>
+			#cboxContent, #cboxLoadedContent, .cboxIframe {
+				background: transparent;
+			}
+		</style>
 	@endpush
 
 	@push('crud_fields_scripts')
@@ -57,14 +63,14 @@
 		        href: triggerUrl,
 		        fastIframe: true,
 		        iframe: true,
-		        width: '70%',
-		        height: '50%'
+		        width: '80%',
+		        height: '80%'
 		    });
 		});
 
 		// function to update the file selected by elfinder
 		function processSelectedFile(filePath, requestingField) {
-		    $('#' + requestingField).val(filePath);
+		    $('#' + requestingField).val(filePath.replace(/\\/g,"/"));
 		}
 
 		$(document).on('click','.clear_elfinder_picker[data-inputid={{ $field['name'] }}-filemanager]',function (event) {

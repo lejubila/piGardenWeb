@@ -4,6 +4,7 @@ namespace Illuminate\Foundation\Bootstrap;
 
 use Exception;
 use ErrorException;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Debug\Exception\FatalErrorException;
@@ -11,6 +12,13 @@ use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class HandleExceptions
 {
+    /**
+     * Reserved memory so that errors can be displayed properly on memory exhaustion.
+     *
+     * @var string
+     */
+    public static $reservedMemory;
+
     /**
      * The application instance.
      *
@@ -26,6 +34,8 @@ class HandleExceptions
      */
     public function bootstrap(Application $app)
     {
+        self::$reservedMemory = str_repeat('x', 10240);
+
         $this->app = $app;
 
         error_reporting(-1);
@@ -42,7 +52,7 @@ class HandleExceptions
     }
 
     /**
-     * Convert a PHP error to an ErrorException.
+     * Convert PHP errors to ErrorException instances.
      *
      * @param  int  $level
      * @param  string  $message
@@ -76,7 +86,13 @@ class HandleExceptions
             $e = new FatalThrowableError($e);
         }
 
-        $this->getExceptionHandler()->report($e);
+        try {
+            self::$reservedMemory = null;
+
+            $this->getExceptionHandler()->report($e);
+        } catch (Exception $e) {
+            //
+        }
 
         if ($this->app->runningInConsole()) {
             $this->renderForConsole($e);
@@ -141,7 +157,7 @@ class HandleExceptions
      */
     protected function isFatal($type)
     {
-        return in_array($type, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE]);
+        return in_array($type, [E_COMPILE_ERROR, E_CORE_ERROR, E_ERROR, E_PARSE]);
     }
 
     /**
@@ -151,6 +167,6 @@ class HandleExceptions
      */
     protected function getExceptionHandler()
     {
-        return $this->app->make('Illuminate\Contracts\Debug\ExceptionHandler');
+        return $this->app->make(ExceptionHandler::class);
     }
 }

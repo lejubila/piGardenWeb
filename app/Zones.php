@@ -9,6 +9,7 @@
 namespace app;
 
 use App\PiGardenSocketClient;
+use DebugBar\DebugBar;
 use Illuminate\Support\Facades\Log;
 
 class Zones {
@@ -23,7 +24,7 @@ class Zones {
             $c = new PiGardenSocketClient();
             $status = $c->getStatus(null, true);
             if (!is_null($status)) {
-                if (property_exists($status, 'zones') && count($status->zones)>0) {
+                if (property_exists($status, 'zones') && count((array)$status->zones)>0) {
                     self::$zones = array();
                     foreach ($status->zones as $zone) {
                         $zone->name_stripped = str_replace('_', ' ', $zone->name);
@@ -35,6 +36,11 @@ class Zones {
         catch (\Exception $e)
         {
             self::$zones = array();
+
+            \Debugbar::info([
+                $e,
+                $status,
+            ]);
         }
 
         return self::$zones;

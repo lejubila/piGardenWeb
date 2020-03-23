@@ -7,14 +7,14 @@
 
     @if (!isset($field['attributes']['class']))
     	@if (isset($default_class))
-    		class="{{ $default_class }}""
+    		class="{{ $default_class }}"
     	@else
     		class="form-control"
     	@endif
     @endif
 @else
 	@if (isset($default_class))
-		class="{{ $default_class }}""
+		class="{{ $default_class }}"
 	@else
 		class="form-control"
 	@endif

@@ -46,6 +46,13 @@ class ElfinderController extends Controller
             ->with($this->getViewVars());
     }
 
+    public function showTinyMCE5()
+    {
+        return $this->app['view']
+            ->make($this->package . '::tinymce5')
+            ->with($this->getViewVars());
+    }
+
     public function showCKeditor4()
     {
         return $this->app['view']
@@ -64,10 +71,11 @@ class ElfinderController extends Controller
     public function showFilePicker($input_id)
     {
         $type = Request::input('type');
+        $mimeTypes = implode(',',array_map(function($t){return "'".$t."'";}, explode(',',$type)));
         return $this->app['view']
             ->make($this->package . '::filepicker')
             ->with($this->getViewVars())
-            ->with(compact('input_id','type'));
+            ->with(compact('input_id','type','mimeTypes'));
     }
 
     public function showConnector()

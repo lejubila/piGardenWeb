@@ -1,8 +1,11 @@
 {{-- single relationships (1-1, 1-n) --}}
-<td>
-	<?php
-		if ($entry->{$column['entity']}()->getResults()) {
-	    	echo $entry->{$column['entity']}()->getResults()->{$column['attribute']};
-	    }
-	?>
-</td>
+<span>
+    <?php
+        $attributes = $crud->getModelAttributeFromRelation($entry, $column['entity'], $column['attribute']);
+        if (count($attributes)) {
+            echo e(str_limit(strip_tags(implode(', ', $attributes)), array_key_exists('limit', $column) ? $column['limit'] : 50, '[...]'));
+        } else {
+            echo '-';
+        }
+    ?>
+</span>

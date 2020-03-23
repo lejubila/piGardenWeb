@@ -1,0 +1,54 @@
+body {
+    font-size: 19px;
+}
+
+.form-control {
+    font-size: 18px;
+}
+
+.btn {
+    font-size: 16px;
+}
+
+.btn-group-sm>.btn, .btn-sm {
+    font-size: 14px;
+}
+
+select.input-sm {
+    height: 35px;
+    line-height: 35px;
+}
+
+.main-header .logo {
+    height: 57px;
+    min-height: 57px;
+    line-height: 57px;
+}
+
+.form-control {
+    color: #000;
+    border-color: #bbb;
+}
+.input-group .input-group-addon {
+    border-color: #bbb;
+}
+.dropdown-menu{
+    color: #000;
+    border-color: #bbb;
+}
+
+.btn-default {
+    background-color: #ccc;
+}
+
+.table-bordered,
+.table-bordered>thead>tr>th,
+.table-bordered>tbody>tr>th,
+.table-bordered>tfoot>tr>th,
+.table-bordered>thead>tr>td,
+.table-bordered>tbody>tr>td,
+.table-bordered>tfoot>tr>td {
+    border: 1px solid #ccc;
+}
+
+

@@ -18,7 +18,7 @@
 @endsection
 
 @section('after_styles')
-    <link href="{{ asset("css/pigarden.css") }}" rel="stylesheet">
+    {{-- <link href="{{ asset("css/pigarden.css") }}" rel="stylesheet"> --}}
 @endsection
 
 @section('content')
@@ -36,15 +36,17 @@
 
             <div class="box box-primary box-info">
                 <div class="box-body">
-                    {!! Form::open(['route' => ['initial_setup.post']]) !!}
-                    <p><i>{{trans('pigarden.initial_setup.description')}}</i></p>
-                    <ul>
-                        @foreach(trans('pigarden.initial_setup.description_elements') as $t)
-                        <li>{{$t}}</li>
-                        @endforeach
-                    </ul>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-cogs"></i>&nbsp; {{trans('pigarden.initial_setup.confirm')}}</button>
-                    {!! Form::close() !!}
+                    {{-- !! Form::open(['route' => ['initial_setup.post']]) !! --}}
+                    <form action="{{route('initial_setup.post')}}" method="POST">
+                        {{ csrf_field() }}
+                        <p><i>{{trans('pigarden.initial_setup.description')}}</i></p>
+                        <ul>
+                            @foreach(trans('pigarden.initial_setup.description_elements') as $t)
+                            <li>{{$t}}</li>
+                            @endforeach
+                        </ul>
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-cogs"></i>&nbsp; {{trans('pigarden.initial_setup.confirm')}}</button>
+                    </form>
                 </div>
             </div>
 

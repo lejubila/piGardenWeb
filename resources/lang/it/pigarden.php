@@ -119,6 +119,12 @@ return array(
         'confirm' => 'Esegui il setup',
     ],
 
+    'setup_icons' => [
+        'title' => 'Personalizza icone',
+
+
+    ],
+
     'add' => 'Aggiungi',
     'cancel' => 'Annulla',
     'confirm' => 'Conferma',
@@ -156,6 +162,14 @@ return array(
 
     ],
 
+    'schedule' => [
+        'irrigation_title' => 'Schedulazioni irrigazione',
+        'sequence_title' => 'Sequenza irrigazione',
+        'in_sequence_msg' => 'Questa zona è presente in una sequenza. Non è possibile definire una schedulazione.',
+        'manage_the_sequence' => "Gestisci la sequenza",
+    ],
+
+
     'irrigation_stop_all' => "Interrompi l'irrigazione di tutte le zone",
     'irrigation_stop_all_and_disable_scheduled' => "Interrompi l'irrigazione e disabilita tutte le schedulazioni",
 
@@ -166,6 +180,13 @@ return array(
 
     'System reboot is started' => 'Riavvio del sistema in corso',
     'System shutdown is started' => 'Arresto del sistema in corso',
+
+    'enabled' => 'Abilitato',
+
+    'icon' => [
+        'open' => 'Icona aperto',
+        'close' => 'Icona chiuso',
+    ]
 
 
 );

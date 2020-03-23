@@ -1,7 +1,7 @@
 @extends('backpack::layout')
 
 @section('after_styles')
-    <link rel="stylesheet" href="{{ asset("css/pigarden.css") }}">
+    {{-- <link rel="stylesheet" href="{{ asset("css/pigarden.css") }}"> --}}
 @endsection
 
 @section('content')

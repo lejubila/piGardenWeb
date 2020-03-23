@@ -3,7 +3,8 @@
 @section('header')
 	<section class="content-header">
 	  <h1>
-	    {{ trans('backpack::crud.edit') }} <span class="text-lowercase">{{ $crud->entity_name }}</span>
+        <span class="text-capitalize">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</span>
+        <small>{!! $crud->getSubheading() ?? trans('backpack::crud.edit').' '.$crud->entity_name !!}.</small>
 	  </h1>
 	  <ol class="breadcrumb">
 	    <li><a href="{{ url(config('backpack.base.route_prefix'),'dashboard') }}">{{ trans('backpack::crud.admin') }}</a></li>
@@ -14,33 +15,56 @@
 @endsection
 
 @section('content')
-<div class="row">
-	<div class="col-md-8 col-md-offset-2">
-		<!-- Default box -->
-		@if ($crud->hasAccess('list'))
-			<a href="{{ url($crud->route) }}"><i class="fa fa-angle-double-left"></i> {{ trans('backpack::crud.back_to_all') }} <span class="text-lowercase">{{ $crud->entity_name_plural }}</span></a><br><br>
-		@endif
+@if ($crud->hasAccess('list'))
+	<a href="{{ url($crud->route) }}" class="hidden-print"><i class="fa fa-angle-double-left"></i> {{ trans('backpack::crud.back_to_all') }} <span>{{ $crud->entity_name_plural }}</span></a>
+@endif
 
-		  {!! Form::open(array('url' => $crud->route.'/'.$entry->getKey(), 'method' => 'put')) !!}
-		  <div class="box">
-		    <div class="box-header with-border">
-		      <h3 class="box-title">{{ trans('backpack::crud.edit') }}</h3>
+<div class="row m-t-20">
+	<div class="{{ $crud->getEditContentClass() }}">
+		<!-- Default box -->
+
+		@include('crud::inc.grouped_errors')
+
+		  <form method="post"
+		  		action="{{ url($crud->route.'/'.$entry->getKey()) }}"
+				@if ($crud->hasUploadFields('update', $entry->getKey()))
+				enctype="multipart/form-data"
+				@endif
+		  		>
+		  {!! csrf_field() !!}
+		  {!! method_field('PUT') !!}
+		  <div class="col-md-12">
+		  	@if ($crud->model->translationEnabled())
+		    <div class="row m-b-10">
+		    	<!-- Single button -->
+				<div class="btn-group pull-right">
+				  <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    {{trans('backpack::crud.language')}}: {{ $crud->model->getAvailableLocales()[$crud->request->input('locale')?$crud->request->input('locale'):App::getLocale()] }} &nbsp; <span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu">
+				  	@foreach ($crud->model->getAvailableLocales() as $key => $locale)
+					  	<li><a href="{{ url($crud->route.'/'.$entry->getKey().'/edit') }}?locale={{ $key }}">{{ $locale }}</a></li>
+				  	@endforeach
+				  </ul>
+				</div>
 		    </div>
-		    <div class="box-body row">
+		    @endif
+		    <div class="row display-flex-wrap">
 		      <!-- load the view from the application if it exists, otherwise load the one in the package -->
 		      @if(view()->exists('vendor.backpack.crud.form_content'))
-		      	@include('vendor.backpack.crud.form_content')
+		      	@include('vendor.backpack.crud.form_content', ['fields' => $fields, 'action' => 'edit'])
 		      @else
-		      	@include('crud::form_content', ['fields' => $crud->getFields('update', $entry->getKey())])
+		      	@include('crud::form_content', ['fields' => $fields, 'action' => 'edit'])
 		      @endif
 		    </div><!-- /.box-body -->
-		    <div class="box-footer">
 
-			  <button type="submit" class="btn btn-success ladda-button" data-style="zoom-in"><span class="ladda-label"><i class="fa fa-save"></i> {{ trans('backpack::crud.save') }}</span></button>
-		      <a href="{{ url($crud->route) }}" class="btn btn-default ladda-button" data-style="zoom-in"><span class="ladda-label">{{ trans('backpack::crud.cancel') }}</span></a>
+            <div class="">
+
+                @include('crud::inc.form_save_buttons')
+
 		    </div><!-- /.box-footer-->
 		  </div><!-- /.box -->
-		  {!! Form::close() !!}
+		  </form>
 	</div>
 </div>
 @endsection

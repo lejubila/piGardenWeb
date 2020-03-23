@@ -2,14 +2,13 @@
 
 namespace App;
 
-use Backpack\CRUD\CrudTrait;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use CrudTrait;
-    use HasRoles;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.

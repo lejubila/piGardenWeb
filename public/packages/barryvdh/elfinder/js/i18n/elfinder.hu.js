@@ -3,7 +3,15 @@
  * @author Gáspár Lajos <info@glsys.eu>
  * @version 2016-06-29
  */
-if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object') {
+(function(root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		define(['elfinder'], factory);
+	} else if (typeof exports !== 'undefined') {
+		module.exports = factory(require('elfinder'));
+	} else {
+		factory(root.elFinder);
+	}
+}(this, function(elFinder) {
 	elFinder.prototype.i18.hu = {
 		translator : 'Gáspár Lajos &lt;info@glsys.eu&gt;',
 		language   : 'magyar',
@@ -115,7 +123,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'cmdinfo'      : 'Tulajdonságok',
 			'cmdmkdir'     : 'Új mappa',
 			'cmdmkdirin'   : 'Into new folder', // from v2.1.7 added 19.2.2016
-			'cmdmkfile'    : 'Új szöveges dokumentum',
+			'cmdmkfile'    : 'Új fájl',
 			'cmdopen'      : 'Megnyitás',
 			'cmdpaste'     : 'Beillesztés',
 			'cmdquicklook' : 'Előnézet',
@@ -435,5 +443,5 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'kindVideoOGG'    : 'Ogg film'
 		}
 	};
-}
+}));
 

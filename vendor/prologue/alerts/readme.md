@@ -1,4 +1,4 @@
-# Alerts for Laravel 5
+# Alerts for Laravel 6
 
 [![Build Status](https://img.shields.io/travis/prologuephp/alerts/master.svg?style=flat-square)](https://travis-ci.org/prologuephp/alerts)
 [![Quality Score](https://img.shields.io/scrutinizer/g/prologuephp/alerts.svg?style=flat-square)](https://scrutinizer-ci.com/g/prologuephp/alerts)
@@ -6,13 +6,9 @@
 [![Packagist Version](https://img.shields.io/packagist/v/prologue/alerts.svg?style=flat-square)](https://packagist.org/packages/prologue/alerts)
 [![Total Downloads](https://img.shields.io/packagist/dt/prologue/lock.svg?style=flat-square)](https://packagist.org/packages/prologue/alerts)
 
-Alerts is a package that handles global site messages in Laravel 5.
+Global site messages in Laravel 6. Helps trigger notification bubbles with a simple API, both in the current page, and in the next page (using flash data).
 
-I first got the idea for creating this package after [a blog post](http://toddish.co.uk/blog/global-site-messages-in-laravel-4/) I read by [Todd Francis](http://toddish.co.uk/). This package uses much of the concepts of his blog post as well as the concept of alert levels which [Illuminate's Log package](https://github.com/illuminate/log) uses.
-
-Maintained by [Dries Vints](https://github.com/driesvints)  
-[@driesvints](https://twitter.com/driesvints)  
-[driesvints.com](http://driesvints.com)  
+Created by [Dries Vints](https://github.com/driesvints) - he first got the idea after [a blog post](http://toddish.co.uk/blog/global-site-messages-in-laravel-4/) by [Todd Francis](http://toddish.co.uk/). This package uses much of the concepts of his blog post as well as the concept of alert levels which [Illuminate's Log package](https://github.com/illuminate/log) uses. Maintained by [Cristian Tabacitu](tabacitu) thanks to its use in [Backpack for Laravel](http://backpackforlaravel.com/).
 
 ## Table of Contents
 
@@ -28,13 +24,13 @@ Maintained by [Dries Vints](https://github.com/driesvints)
 
 ## Installation
 
-You can install the package for your Laravel 5 project through Composer.
+You can install the package for your Laravel 6 project through Composer.
 
 ```bash
 $ composer require prologue/alerts
 ```
 
-Register the service provider in `app/config/app.php`.
+For Laravel 5.4 and below, register the service provider in `app/config/app.php`.
 
 ```php
 'Prologue\Alerts\AlertsServiceProvider',
@@ -50,7 +46,7 @@ Add the alias to the list of aliases in `app/config/app.php`.
 
 The packages provides you with some configuration options.
 
-To create the configuration file run this command in your command line app:
+To create the configuration file, run this command in your command line app:
 
 ```bash
 $ php artisan vendor:publish --provider="Prologue\Alerts\AlertsServiceProvider"
@@ -62,7 +58,7 @@ The configuration file will be published here: `config/prologue/alerts.php`.
 
 ### Adding Alerts
 
-Since the main `AlertsMessageBag` class which powers the package is an extension of Illuminate's `MessageBag` class we can leverage its functionality to easily add messages.
+Since the main `AlertsMessageBag` class which powers the package is an extension of Illuminate's `MessageBag` class, we can leverage its functionality to easily add messages.
 
 ```php
 Alert::add('error', 'Error message');
@@ -83,7 +79,7 @@ You can of course add your own alert levels by adding them to your own config fi
 
 ### Flashing Alerts To The Session
 
-At some times you want to remember alerts when you're, for example, redirecting to another route. This can be done by calling the `flash` method. The `AlertsMessageBag` class will put the current set alerts into the current session which can then be used after the redirect.
+Sometimes you want to remember alerts when you're, for example, redirecting to another route. This can be done by calling the `flash` method. The `AlertsMessageBag` class will put the current set alerts into the current session which can then be used after the redirect.
 
 ```php
 // Add some alerts and flash them to the session.

@@ -14,7 +14,7 @@ class UserStoreCrudRequest extends FormRequest
     public function authorize()
     {
         // only allow updates if the user is logged in
-        return \Auth::check();
+        return backpack_auth()->check();
     }
 
     /**
@@ -24,12 +24,10 @@ class UserStoreCrudRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
-            'email'    => 'required|unique:users,email',
+        return [
+            'email'    => 'required|unique:'.config('permission.table_names.users', 'users').',email',
             'name'     => 'required',
             'password' => 'required|confirmed',
-            ];
-
-        return $rules;
+        ];
     }
 }

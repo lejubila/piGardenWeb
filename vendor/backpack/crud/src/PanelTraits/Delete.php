@@ -13,15 +13,25 @@ trait Delete
     /**
      * Delete a row from the database.
      *
-     * @param  [int] The id of the item to be deleted.
-     * @param int $id
+     * @param  int $id The id of the item to be deleted.
      *
-     * @return [bool] Deletion confirmation.
+     * @return bool True if the item was deleted.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the model was not found.
      *
      * TODO: should this delete items with relations to it too?
      */
     public function delete($id)
     {
-        return $this->model->destroy($id);
+        return (string) $this->model->findOrFail($id)->delete();
+    }
+
+    /**
+     * Add the bulk delete button to the bottom stack.
+     */
+    public function addBulkDeleteButton()
+    {
+        // bottom stack
+        $this->addButton('bottom', 'bulk_delete', 'view', 'crud::buttons.bulk_delete');
     }
 }

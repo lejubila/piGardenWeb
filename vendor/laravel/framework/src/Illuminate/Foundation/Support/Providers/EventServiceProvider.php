@@ -2,8 +2,9 @@
 
 namespace Illuminate\Foundation\Support\Providers;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Foundation\Events\DiscoverEvents;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -24,28 +25,21 @@ class EventServiceProvider extends ServiceProvider
     /**
      * Register the application's event listeners.
      *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
      * @return void
      */
-    public function boot(DispatcherContract $events)
+    public function boot()
     {
-        foreach ($this->listens() as $event => $listeners) {
-            foreach ($listeners as $listener) {
-                $events->listen($event, $listener);
+        $events = $this->getEvents();
+
+        foreach ($events as $event => $listeners) {
+            foreach (array_unique($listeners) as $listener) {
+                Event::listen($event, $listener);
             }
         }
 
         foreach ($this->subscribe as $subscriber) {
-            $events->subscribe($subscriber);
+            Event::subscribe($subscriber);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function register()
-    {
-        //
     }
 
     /**
@@ -56,5 +50,77 @@ class EventServiceProvider extends ServiceProvider
     public function listens()
     {
         return $this->listen;
+    }
+
+    /**
+     * Get the discovered events and listeners for the application.
+     *
+     * @return array
+     */
+    public function getEvents()
+    {
+        if ($this->app->eventsAreCached()) {
+            $cache = require $this->app->getCachedEventsPath();
+
+            return $cache[get_class($this)] ?? [];
+        } else {
+            return array_merge_recursive(
+                $this->discoveredEvents(),
+                $this->listens()
+            );
+        }
+    }
+
+    /**
+     * Get the discovered events for the application.
+     *
+     * @return array
+     */
+    protected function discoveredEvents()
+    {
+        return $this->shouldDiscoverEvents()
+                    ? $this->discoverEvents()
+                    : [];
+    }
+
+    /**
+     * Determine if events and listeners should be automatically discovered.
+     *
+     * @return bool
+     */
+    public function shouldDiscoverEvents()
+    {
+        return false;
+    }
+
+    /**
+     * Discover the events and listeners for the application.
+     *
+     * @return array
+     */
+    public function discoverEvents()
+    {
+        return collect($this->discoverEventsWithin())
+                    ->reject(function ($directory) {
+                        return ! is_dir($directory);
+                    })
+                    ->reduce(function ($discovered, $directory) {
+                        return array_merge_recursive(
+                            $discovered,
+                            DiscoverEvents::within($directory, base_path())
+                        );
+                    }, []);
+    }
+
+    /**
+     * Get the listener directories that should be used to discover events.
+     *
+     * @return array
+     */
+    protected function discoverEventsWithin()
+    {
+        return [
+            $this->app->path('Listeners'),
+        ];
     }
 }

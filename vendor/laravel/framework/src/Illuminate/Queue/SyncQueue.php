@@ -7,22 +7,34 @@ use Throwable;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class SyncQueue extends Queue implements QueueContract
 {
+    /**
+     * Get the size of the queue.
+     *
+     * @param  string|null  $queue
+     * @return int
+     */
+    public function size($queue = null)
+    {
+        return 0;
+    }
+
     /**
      * Push a new job onto the queue.
      *
      * @param  string  $job
      * @param  mixed   $data
-     * @param  string  $queue
+     * @param  string|null  $queue
      * @return mixed
      *
      * @throws \Exception|\Throwable
      */
     public function push($job, $data = '', $queue = null)
     {
-        $queueJob = $this->resolveJob($this->createPayload($job, $data, $queue));
+        $queueJob = $this->resolveJob($this->createPayload($job, $queue, $data), $queue);
 
         try {
             $this->raiseBeforeJobEvent($queueJob);
@@ -31,69 +43,24 @@ class SyncQueue extends Queue implements QueueContract
 
             $this->raiseAfterJobEvent($queueJob);
         } catch (Exception $e) {
-            $this->raiseExceptionOccurredJobEvent($queueJob, $e);
-
-            $this->handleFailedJob($queueJob);
-
-            throw $e;
+            $this->handleException($queueJob, $e);
         } catch (Throwable $e) {
-            $this->raiseExceptionOccurredJobEvent($queueJob, $e);
-
-            $this->handleFailedJob($queueJob);
-
-            throw $e;
+            $this->handleException($queueJob, new FatalThrowableError($e));
         }
 
         return 0;
     }
 
     /**
-     * Push a raw payload onto the queue.
-     *
-     * @param  string  $payload
-     * @param  string  $queue
-     * @param  array   $options
-     * @return mixed
-     */
-    public function pushRaw($payload, $queue = null, array $options = [])
-    {
-        //
-    }
-
-    /**
-     * Push a new job onto the queue after a delay.
-     *
-     * @param  \DateTime|int  $delay
-     * @param  string  $job
-     * @param  mixed   $data
-     * @param  string  $queue
-     * @return mixed
-     */
-    public function later($delay, $job, $data = '', $queue = null)
-    {
-        return $this->push($job, $data, $queue);
-    }
-
-    /**
-     * Pop the next job off of the queue.
-     *
-     * @param  string  $queue
-     * @return \Illuminate\Contracts\Queue\Job|null
-     */
-    public function pop($queue = null)
-    {
-        //
-    }
-
-    /**
      * Resolve a Sync job instance.
      *
      * @param  string  $payload
+     * @param  string  $queue
      * @return \Illuminate\Queue\Jobs\SyncJob
      */
-    protected function resolveJob($payload)
+    protected function resolveJob($payload, $queue)
     {
-        return new SyncJob($this->container, $payload);
+        return new SyncJob($this->container, $payload, $this->connectionName, $queue);
     }
 
     /**
@@ -104,10 +71,8 @@ class SyncQueue extends Queue implements QueueContract
      */
     protected function raiseBeforeJobEvent(Job $job)
     {
-        $data = json_decode($job->getRawBody(), true);
-
         if ($this->container->bound('events')) {
-            $this->container['events']->fire(new Events\JobProcessing('sync', $job, $data));
+            $this->container['events']->dispatch(new Events\JobProcessing($this->connectionName, $job));
         }
     }
 
@@ -119,10 +84,8 @@ class SyncQueue extends Queue implements QueueContract
      */
     protected function raiseAfterJobEvent(Job $job)
     {
-        $data = json_decode($job->getRawBody(), true);
-
         if ($this->container->bound('events')) {
-            $this->container['events']->fire(new Events\JobProcessed('sync', $job, $data));
+            $this->container['events']->dispatch(new Events\JobProcessed($this->connectionName, $job));
         }
     }
 
@@ -130,43 +93,69 @@ class SyncQueue extends Queue implements QueueContract
      * Raise the exception occurred queue job event.
      *
      * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @param  \Throwable  $exception
+     * @param  \Exception  $e
      * @return void
      */
-    protected function raiseExceptionOccurredJobEvent(Job $job, $exception)
+    protected function raiseExceptionOccurredJobEvent(Job $job, $e)
     {
-        $data = json_decode($job->getRawBody(), true);
-
         if ($this->container->bound('events')) {
-            $this->container['events']->fire(new Events\JobExceptionOccurred('sync', $job, $data, $exception));
+            $this->container['events']->dispatch(new Events\JobExceptionOccurred($this->connectionName, $job, $e));
         }
     }
 
     /**
-     * Handle the failed job.
+     * Handle an exception that occurred while processing a job.
      *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @return array
+     * @param  \Illuminate\Queue\Jobs\Job  $queueJob
+     * @param  \Exception  $e
+     * @return void
+     *
+     * @throws \Exception
      */
-    protected function handleFailedJob(Job $job)
+    protected function handleException($queueJob, $e)
     {
-        $job->failed();
+        $this->raiseExceptionOccurredJobEvent($queueJob, $e);
 
-        $this->raiseFailedJobEvent($job);
+        $queueJob->fail($e);
+
+        throw $e;
     }
 
     /**
-     * Raise the failed queue job event.
+     * Push a raw payload onto the queue.
      *
-     * @param  \Illuminate\Contracts\Queue\Job  $job
-     * @return void
+     * @param  string  $payload
+     * @param  string|null  $queue
+     * @param  array   $options
+     * @return mixed
      */
-    protected function raiseFailedJobEvent(Job $job)
+    public function pushRaw($payload, $queue = null, array $options = [])
     {
-        $data = json_decode($job->getRawBody(), true);
+        //
+    }
 
-        if ($this->container->bound('events')) {
-            $this->container['events']->fire(new Events\JobFailed('sync', $job, $data));
-        }
+    /**
+     * Push a new job onto the queue after a delay.
+     *
+     * @param  \DateTimeInterface|\DateInterval|int  $delay
+     * @param  string  $job
+     * @param  mixed   $data
+     * @param  string|null  $queue
+     * @return mixed
+     */
+    public function later($delay, $job, $data = '', $queue = null)
+    {
+        return $this->push($job, $data, $queue);
+    }
+
+    /**
+     * Pop the next job off of the queue.
+     *
+     * @param  string|null  $queue
+     * @return \Illuminate\Contracts\Queue\Job|null
+     */
+    public function pop($queue = null)
+    {
+        //
     }
 }

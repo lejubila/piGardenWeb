@@ -49,7 +49,7 @@ class PublishCommand extends Command {
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
 
         $package = 'barryvdh/elfinder';
@@ -90,7 +90,7 @@ class PublishCommand extends Command {
     protected function copyElfinderFiles($destination)
     {
         $result = true;
-        $directories = array('js', 'css', 'img');
+        $directories = array('js', 'css', 'img', 'sounds');
         $elfinderPath = $this->getElfinderPath();
         foreach($directories as $dir){
             $path = $elfinderPath.'/'.$dir;

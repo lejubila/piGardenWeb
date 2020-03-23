@@ -36,7 +36,7 @@ class Driver extends elFinderVolumeDriver
     /** @var CacheInterface $fs */
     protected $fscache;
 
-    /** @var UrlBuilderFactory $urlBuilder */
+    /** @var UrlBuilder $urlBuilder */
     protected $urlBuilder = null;
 
     /** @var ImageManager $imageManager */
@@ -154,7 +154,7 @@ class Driver extends elFinderVolumeDriver
 
         $this->fs->addPlugin(new GetUrl());
 
-        $this->options['icon'] = $this->options['icon'] ?: $this->getIcon();
+        $this->options['icon'] = $this->options['icon'] ?: (empty($this->options['rootCssClass'])? $this->getIcon() : '');
         $this->root = $this->options['path'];
 
         if ($this->options['glideURL']) {
@@ -280,9 +280,8 @@ class Driver extends elFinderVolumeDriver
             return array();
         }
 
-        // return empty on failure
-        if (!$meta) {
-            return array();
+        if(false === $meta) {
+            return $stat;
         }
 
         // Set item filename.extension to `name` if exists
@@ -303,7 +302,11 @@ class Driver extends elFinderVolumeDriver
 
         // Check if file, if so, check mimetype when available
         if ($meta['type'] == 'file') {
-            $stat['mime'] = isset($meta['mimetype']) ? $meta['mimetype'] : null;
+            if(isset($meta['mimetype'])) {
+                $stat['mime'] = $meta['mimetype'];
+            } else {
+                $stat['mime'] = $this->fs->getMimetype($path);
+            }
 
             $imgMimes = ['image/jpeg', 'image/png', 'image/gif'];
             if ($this->urlBuilder && in_array($stat['mime'], $imgMimes)) {
@@ -341,8 +344,9 @@ class Driver extends elFinderVolumeDriver
         $filter = function ($item) {
             return $item['type'] == 'dir';
         };
-        
-        return !empty(array_filter($contents, $filter));
+
+        $dirs = array_filter($contents, $filter);
+        return !empty($dirs);
     }
 
     /**
@@ -759,6 +763,8 @@ class Driver extends elFinderVolumeDriver
             $result = (string)$image->encode();
         }
         if ($result && $this->_filePutContents($path, $result)) {
+            $this->rmTmb($file);
+            $this->clearstatcache();
             $stat = $this->stat($path);
             $stat['width'] = $image->width();
             $stat['height'] = $image->height();

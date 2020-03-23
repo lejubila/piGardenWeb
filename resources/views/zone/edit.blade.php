@@ -15,7 +15,7 @@
 @endsection
 
 @section('before_styles')
-    <link href="{{ asset("vendor/adminlte/plugins/select2/select2.min.css") }}" rel="stylesheet">
+    <link href="{{ asset("vendor/adminlte/bower_components/select2/dist/css/select2.min.css") }}" rel="stylesheet">
 @endsection
 
 @section('after_styles')
@@ -42,66 +42,138 @@
         </div>
     </div>
 
-    {!! Form::open(['route' => ['cron.put', $zone->name]]) !!}
-    {!! Form::hidden('type', '', ['id' => 'cron_type'])!!}
-    <div class="row">
-        @foreach(['open', 'close'] as $type)
-        <div class="col-md-6 col-sm-12 col-xs-12">
-            <div class="box box-primary box-cron
-             box-info">
-                <div class="box-header with-border text-center">
-                    <div class="box-title">{{ trans('pigarden.cron.'.$type.'_title') }}</div>
-                </div>
-                <div class="box-body">
-                    <div class="table-responsive">
-                        <table id="table-{{$type}}-cron" class="table table-cron table-striped table-hover table-borderless no-margin with-tools">
-                            <tbody>
-                                @if( !is_null(old($type)) && false )
-                                    <div><pre><?php print_r(old($type))?></pre></div>
-                                @else
-                                @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
-                                <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
-                                    <td class="tools">
-                                        <div class="wrp-switch-cron-item">
-                                            {!! Form::checkbox("{$type}[$k][enable]", '1', (empty($item['enable']) ? false : true), ['class' => 'switch-cron-item', 'id' => "$type-enable-".$k, 'data-crontype' => "$type", 'data-cronrow' => "$k"] ) !!}
-                                            <!-- input class="switch-cron-item" type="checkbox" name="my-checkbox" checked -->
-                                        </div>
-                                        <div class="overlay-disabled-cron"></div>
-                                        <ul class="cron-item-text"></ul>
-                                        {{-- $item['string']  --}}
-                                        {!! Form::hidden("{$type}[$k][min]", (is_array($item['min']) ? implode(',',$item['min']) : $item['min']), ['id'=>"$type-min-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][hour]", (is_array($item['hour']) ? implode(',',$item['hour']) : $item['hour']), ['id'=>"$type-hour-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dom]", (is_array($item['dom']) ? implode(',',$item['dom']) : $item['dom']), ['id'=>"$type-dom-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][month]", (is_array($item['month']) ? implode(',',$item['month']) : $item['month']), ['id'=>"$type-month-".$k]) !!}
-                                        {!! Form::hidden("{$type}[$k][dow]", (is_array($item['dow']) ? implode(',',$item['dow']) : $item['dow']), ['id'=>"$type-dow-".$k]) !!}
-                                        <div class="tools-wrp">
-                                            <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
-                                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                                            </a>
-                                            <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                                @endif
-                            </tbody>
-                            <tfoot>
-                                <tr><td><i>{{trans('cron.no_scheduling')}}</i></td></tr>
-                            </tfoot>
-                        </table>
+    <form action="{{route('cron.put', [$zone->name])}}" method="post">
+        {{ csrf_field() }}
+        {{-- !! Form::hidden('type', '', ['id' => 'cron_type'])!! --}}
+        <input type="hidden" name="type" value="" id="cron_type">
+        <div class="row">
+            @foreach(['open', 'close'] as $type)
+            <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="box box-primary box-cron
+                 box-info">
+                    <div class="box-header with-border text-center">
+                        <div class="box-title">{{ trans('pigarden.cron.'.$type.'_title') }}</div>
                     </div>
-                    <div class="box-footer clearfix" style="display: block;">
-                        <button type="submit" class="btn btn-primary pull-left" onclick="$('#cron_type').val('{{$type}}')"><i class="glyphicon glyphicon-save"></i> {{trans('cron.save')}}</button>
-                        <a hred="#" class="btn btn-default pull-right" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow=""><i class="fa fa-plus"></i> {{trans('cron.add')}}</a>
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table id="table-{{$type}}-cron" class="table table-cron table-striped table-hover table-borderless no-margin with-tools">
+                                <tbody>
+                                    @if( !is_null(old($type)) && false )
+                                        <div><pre><?php print_r(old($type))?></pre></div>
+                                    @else
+                                    @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
+                                    <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
+                                        <td class="tools">
+                                            <div class="wrp-switch-cron-item">
+                                                {{-- !! Form::checkbox("{$type}[$k][enable]", '1', (empty($item['enable']) ? false : true), ['class' => 'switch-cron-item', 'id' => "$type-enable-".$k, 'data-crontype' => "$type", 'data-cronrow' => "$k"] ) !! --}}
+                                                <input
+                                                    type="checkbox"
+                                                    name="{{"{$type}[$k][enable]"}}"
+                                                    value="1"
+                                                    {{ (empty($item['enable']) ? '' : 'checked') }}
+                                                    class="switch-cron-item"
+                                                    id="{{"$type-enable-".$k}}"
+                                                    data-crontype="{{$type}}"
+                                                    data-cronrow="{{$k}}"
+                                                />
+                                            </div>
+                                            <div class="overlay-disabled-cron"></div>
+                                            <ul class="cron-item-text"></ul>
+                                            {{-- $item['string']  --}}
+                                            {{-- !! Form::hidden("{$type}[$k][min]", (is_array($item['min']) ? implode(',',$item['min']) : $item['min']), ['id'=>"$type-min-".$k]) !! --}}
+                                            {{-- !! Form::hidden("{$type}[$k][hour]", (is_array($item['hour']) ? implode(',',$item['hour']) : $item['hour']), ['id'=>"$type-hour-".$k]) !! --}}
+                                            {{-- !! Form::hidden("{$type}[$k][dom]", (is_array($item['dom']) ? implode(',',$item['dom']) : $item['dom']), ['id'=>"$type-dom-".$k]) !! --}}
+                                            {{-- !! Form::hidden("{$type}[$k][month]", (is_array($item['month']) ? implode(',',$item['month']) : $item['month']), ['id'=>"$type-month-".$k]) !! --}}
+                                            {{-- !! Form::hidden("{$type}[$k][dow]", (is_array($item['dow']) ? implode(',',$item['dow']) : $item['dow']), ['id'=>"$type-dow-".$k]) !! --}}
+
+                                            <input type="hidden" name="{{ "{$type}[$k][min]" }}" value="{{ (is_array($item['min']) ? implode(',',$item['min']) : $item['min']) }}" id="{{"$type-min-".$k}}" />
+                                            <input type="hidden" name="{{ "{$type}[$k][hour]" }}" value="{{ (is_array($item['hour']) ? implode(',',$item['hour']) : $item['hour']) }}" id="{{"$type-hour-".$k}}" />
+                                            <input type="hidden" name="{{ "{$type}[$k][dom]" }}" value="{{ (is_array($item['dom']) ? implode(',',$item['dom']) : $item['dom']) }}" id="{{"$type-dom-".$k}}" />
+                                            <input type="hidden" name="{{ "{$type}[$k][month]" }}" value="{{ (is_array($item['month']) ? implode(',',$item['month']) : $item['month']) }}" id="{{"$type-month-".$k}}" />
+                                            <input type="hidden" name="{{ "{$type}[$k][dow]" }}" value="{{ (is_array($item['dow']) ? implode(',',$item['dow']) : $item['dow']) }}" id="{{"$type-dow-".$k}}" />
+
+
+
+
+                                            <div class="tools-wrp">
+                                                <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
+                                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                </a>
+                                                <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                    @endif
+                                </tbody>
+                                <tfoot>
+                                    <tr><td><i>{{trans('cron.no_scheduling')}}</i></td></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="box-footer clearfix" style="display: block;">
+                            <button type="submit" class="btn btn-primary pull-left" onclick="$('#cron_type').val('{{$type}}')"><i class="glyphicon glyphicon-save"></i> {{trans('cron.save')}}</button>
+                            <a hred="#" class="btn btn-default pull-right" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow=""><i class="fa fa-plus"></i> {{trans('cron.add')}}</a>
+                        </div>
                     </div>
                 </div>
             </div>
+            @endforeach
         </div>
-        @endforeach
+    </form>
+
+    @if($manageSchedule)
+    {{--
+    <div class="row">
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="box box-primary box-cron box-info">
+                <div class="box-header with-border text-center">
+                    <div class="box-title">{{ trans('pigarden.schedule.irrigation_title') }}</div>
+                </div>
+                <div class="box-body">
+                    @if(!empty($scheduleZone['after']))
+                        <p class="text-center font-italic">{{ trans('pigarden.schedule.in_sequence_msg') }}</p>
+                        <p class="text-center font-italic"><a href="{{route('zone.edit', ['zone' => App\ScheduleHelper::aliasIsInSequence($zone->name, $sequenceSchedule)])}}">{{ trans('pigarden.schedule.manage_the_sequence') }}</a></p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="box box-primary box-cron box-info">
+                <div class="box-header with-border text-center">
+                    <div class="box-title">{{ trans('pigarden.schedule.sequence_title') }}</div>
+                </div>
+                <div class="box-body">
+                    @forelse($sequenceZone as $seq)
+                        <p>
+                            <span>{{$seq['alias']}}}</span>
+                            <input name="duration[{{$seq['alias']}}]" value="{{$seq['duration']}}" />
+                        </p>
+                    @empty
+                        <p class="text-center font-italic">Nessuna sequenza definita</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
     </div>
-    {!! Form::close() !!}
+
+        <pre>
+            {{ print_r($sequenceSchedule) }}
+
+
+            {{ print_r($schedule) }}
+
+        </pre>
+    --}}
+    @endif
+
+
+
+
+
 
 
 
@@ -116,24 +188,66 @@
           </div>
           <div class="modal-body">
             <div class="form-group">
+                {{--
                 {{ Form::label('cron-min', trans('cron.min.title')) }}
                 <div>{{ Form::select('cron-min', \App\CronHelper::getMinSelectItemArray('min-*'), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                --}}
+                <label for="cron-min">{{trans('cron.min.title')}}</label>
+                <div>
+                    <select name="cron-min" id="cron-min" multiple="multiple" class="form-control" style="width:100%;">
+                        @foreach(\App\CronHelper::getMinSelectItemArray('min-*') as $v => $t)
+                        <option value="{{$v}}">{{$t}}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
             <div class="form-group">
+                {{--
                 {{ Form::label('cron-hour', trans('cron.hour.title')) }}
                 <div>{{ Form::select('cron-hour', \App\CronHelper::getHourSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                --}}
+                <label for="cron-hour">{{trans('cron.hour.title')}}</label>
+                <select name="cron-hour" id="cron-hour" multiple="multiple" class="form-control" style="width:100%;">
+                    @foreach(\App\CronHelper::getHourSelectItemArray() as $v => $t)
+                        <option value="{{$v}}">{{$t}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
+                {{--
                 {{ Form::label('cron-dom', trans('cron.dom.title')) }}
                 <div>{{ Form::select('cron-dom', \App\CronHelper::getDomSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                --}}
+                <label for="cron-dom">{{trans('cron.dom.title')}}</label>
+                <select name="cron-dom" id="cron-dom" multiple="multiple" class="form-control" style="width:100%;">
+                    @foreach(\App\CronHelper::getDomSelectItemArray() as $v => $t)
+                        <option value="{{$v}}">{{$t}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
+                {{--
                 {{ Form::label('cron-month', trans('cron.month.title')) }}
                 <div>{{ Form::select('cron-month', \App\CronHelper::getMonthSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                --}}
+                <label for="cron-month">{{trans('cron.month.title')}}</label>
+                <select name="cron-month" id="cron-month" multiple="multiple" class="form-control" style="width:100%;">
+                    @foreach(\App\CronHelper::getMonthSelectItemArray() as $v => $t)
+                        <option value="{{$v}}">{{$t}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group">
+                {{--
                 {{ Form::label('cron-dow', trans('cron.dow.title')) }}
                 <div>{{ Form::select('cron-dow', \App\CronHelper::getDowSelectItemArray(), null, ['multiple' => 'multiple', 'class' => 'form-control', 'style' => 'width:100%;']) }}</div>
+                --}}
+                <label for="cron-dow">{{trans('cron.dow.title')}}</label>
+                <select name="cron-dow" id="cron-dow" multiple="multiple" class="form-control" style="width:100%;">
+                    @foreach(\App\CronHelper::getDowSelectItemArray() as $v => $t)
+                        <option value="{{$v}}">{{$t}}</option>
+                    @endforeach
+                </select>
             </div>
 
             <input name="cron-type" type='hidden' value="" />
@@ -155,7 +269,7 @@
 @section('after_scripts')
     <script src="{{ asset('js/icheck.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap-switch.js') }}"></script>
-    <script src="{{ asset('vendor/adminlte/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/adminlte/bower_components/select2/dist/js/select2.min.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
     <script>
         var urlJsonDashboardStatus = "{{ route('get.json.dashboard.status') }}";

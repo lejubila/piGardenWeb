@@ -1,34 +1,38 @@
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
+jobs:
+  include:
+    - &COLLECT_CODE_COVERAGE
 
-env:
-  matrix:
-    - DEPENDENCIES="high"
-    - DEPENDENCIES="low"
+      stage: Collect Code Coverage
 
-sudo: false
+      php: 7.1
 
-before_install:
-  - composer self-update
-  - composer clear-cache
+      if: type = pull_request
 
-install:
-  - if [[ "$DEPENDENCIES" = 'high' ]]; then travis_retry composer update --no-interaction --no-ansi --no-progress --no-suggest --optimize-autoloader --prefer-stable; fi
-  - if [[ "$DEPENDENCIES" = 'low' ]]; then travis_retry composer update --no-interaction --no-ansi --no-progress --no-suggest --optimize-autoloader --prefer-stable --prefer-lowest; fi
+      before_install:
+        - ./tools/composer clear-cache
 
-script:
-  - ./phpunit
-  - ./phpunit --configuration ./build/travis-ci-fail.xml > /dev/null; if [ $? -eq 0 ]; then echo "SHOULD FAIL"; false; else echo "fail checked"; fi;
-  - xmllint --noout --schema phpunit.xsd phpunit.xml
-  - xmllint --noout --schema phpunit.xsd tests/_files/configuration.xml
-  - xmllint --noout --schema phpunit.xsd tests/_files/configuration_empty.xml
-  - xmllint --noout --schema phpunit.xsd tests/_files/configuration_xinclude.xml -xinclude
+      install:
+        - travis_retry ./tools/composer update --no-ansi --no-interaction --no-progress --no-suggest
+
+      before_script:
+        - echo 'zend.assertions=1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+        - echo 'assert.exception=On' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
+      script:
+        - ./phpunit --coverage-clover=coverage.xml
+
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+
+    - <<: *COLLECT_CODE_COVERAGE
+
+      php: 7.2
+
+    - <<: *COLLECT_CODE_COVERAGE
+
+      php: 7.3
 
 notifications:
   email: false
-

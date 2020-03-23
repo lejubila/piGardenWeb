@@ -23,7 +23,7 @@ class ElfinderServiceProvider extends ServiceProvider {
         $this->mergeConfigFrom($configPath, 'elfinder');
         $this->publishes([$configPath => config_path('elfinder.php')], 'config');
 
-        $this->app['command.elfinder.publish'] = $this->app->share(function($app)
+        $this->app->singleton('command.elfinder.publish', function($app)
         {
 			$publicPath = $app['path.public'];
             return new Console\PublishCommand($app['files'], $publicPath);
@@ -54,12 +54,13 @@ class ElfinderServiceProvider extends ServiceProvider {
 
         $router->group($config, function($router)
         {
-            $router->get('/', 'ElfinderController@showIndex');
+            $router->get('/',  ['as' => 'elfinder.index', 'uses' =>'ElfinderController@showIndex']);
             $router->any('connector', ['as' => 'elfinder.connector', 'uses' => 'ElfinderController@showConnector']);
             $router->get('popup/{input_id}', ['as' => 'elfinder.popup', 'uses' => 'ElfinderController@showPopup']);
             $router->get('filepicker/{input_id}', ['as' => 'elfinder.filepicker', 'uses' => 'ElfinderController@showFilePicker']);
             $router->get('tinymce', ['as' => 'elfinder.tinymce', 'uses' => 'ElfinderController@showTinyMCE']);
             $router->get('tinymce4', ['as' => 'elfinder.tinymce4', 'uses' => 'ElfinderController@showTinyMCE4']);
+            $router->get('tinymce5', ['as' => 'elfinder.tinymce5', 'uses' => 'ElfinderController@showTinyMCE5']);
             $router->get('ckeditor', ['as' => 'elfinder.ckeditor', 'uses' => 'ElfinderController@showCKeditor4']);
         });
 	}

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\CronHelper;
+use App\Models\Icon;
 use App\PiGardenSocketClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ class PiGardenBaseController extends Controller
     protected  function setDataFromStatus($status)
     {
         $this->data['status'] = $status;
+        $icons = $this->getIcons();
+        $this->data['icons'] = $icons;
 
         $this->data['cron_open_in'] = [];
         if(property_exists($status, 'cron_open_in') && property_exists($status->cron_open_in, 'open_in') )
@@ -65,12 +68,19 @@ class PiGardenBaseController extends Controller
         if(property_exists($status, 'zones'))
         {
             $this->data['zones'] = collect($status->zones);
-            $this->data['zones']->each(function( &$zone, $id_zone){
+            $this->data['zones']->each(function( &$zone, $id_zone) use ($icons) {
                 $zone->name_stripped = str_replace('_', ' ', $zone->name);
                 $zone->actionHref = route($zone->state == 0 ? 'zone.play' : 'zone.pause', ['zone' => $zone->name]);
                 $zone->actionButtonClass = $zone->state == 0 ? 'fa-play' : 'fa-pause';
                 $zone->actionButtonText = trans($zone->state == 0 ? 'pigarden.start' : 'pigarden.pause');
-                $zone->imageSrc = asset('images/sprinkler-'.($zone->state == 0 ? 'pause' : 'play').'.gif');
+
+                if(isset($icons[$zone->name]) && $zone->state == 0 && $icons[$zone->name]->icon_close)
+                    $zone->imageSrc = asset($icons[$zone->name]->icon_close);
+                elseif(isset($icons[$zone->name]) && $zone->state == 1 && $icons[$zone->name]->icon_open)
+                    $zone->imageSrc = asset($icons[$zone->name]->icon_open);
+                else
+                    $zone->imageSrc = asset('images/sprinkler-'.($zone->state == 0 ? 'pause' : 'play').'.gif');
+
                 $zone->cronOpenInText = isset($this->data['cron_open_in'][$zone->name]) ? $this->data['cron_open_in'][$zone->name] : null;
             });
         }
@@ -202,4 +212,8 @@ class PiGardenBaseController extends Controller
         return json_encode($this->data);
     }
 
-} 
+    public function getIcons() {
+        return Icon::where('enabled', 1)->get()->keyBy('zone');
+    }
+
+}

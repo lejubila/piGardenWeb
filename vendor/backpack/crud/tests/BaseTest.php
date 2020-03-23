@@ -1,14 +1,18 @@
 <?php
 
-class BaseTest extends PHPUnit_Framework_TestCase
+namespace Backpack\CRUD\Tests;
+
+use Orchestra\Testbench\TestCase;
+
+abstract class BaseTest extends TestCase
 {
     /**
-     * A basic test example.
+     * Setup the test environment.
      *
      * @return void
      */
-    public function testExample()
+    protected function setUp(): void
     {
-        $this->assertTrue(true);
+        parent::setUp();
     }
 }

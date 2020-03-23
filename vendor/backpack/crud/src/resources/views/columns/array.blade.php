@@ -1,17 +1,19 @@
 {{-- enumerate the values in an array  --}}
-<td>
-    <?php
-    	$value = $entry->{$column['name']};
+@php
+    $value = data_get($entry, $column['name']);
 
-    	// the value should be an array wether or not attribute casting is used
-    	if (!is_array($value)) {
-    		$value = json_decode($value, true);
-    	}
+    // the value should be an array wether or not attribute casting is used
+    if (!is_array($value)) {
+        $value = json_decode($value, true);
+    }
+@endphp
 
-        if ($value && count($value)) {
-            echo implode(', ', $value);
-        } else {
-            echo '-';
-        }
-    ?>
-</td>
+<span>
+    @php
+    if ($value && count($value)) {
+        echo implode(', ', $value);
+    } else {
+        echo '-';
+    }
+    @endphp
+</span>

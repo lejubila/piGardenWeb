@@ -2,6 +2,7 @@ filter:
     paths:
         - 'app/*'
         - 'src/*'
+        - 'tests/*'
     excluded_paths:
         - 'bootstrap/*'
         - 'config/*'
@@ -23,6 +24,7 @@ tools:
         excluded_dirs:
             - vendor
             - tests
+    external_code_coverage: true
 checks:
     php:
         code_rating: true

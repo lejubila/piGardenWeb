@@ -3,10 +3,18 @@
 namespace Backpack\CRUD;
 
 use Illuminate\Support\ServiceProvider;
-use Route;
 
 class CrudServiceProvider extends ServiceProvider
 {
+    use CrudUsageStats;
+
+    const VERSION = '3.5.1';
+
+    protected $commands = [
+        \Backpack\CRUD\app\Console\Commands\Install::class,
+        \Backpack\CRUD\app\Console\Commands\Publish::class,
+    ];
+
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -21,15 +29,17 @@ class CrudServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $_SERVER['BACKPACK_CRUD_VERSION'] = $this::VERSION;
+        $customViewsFolder = resource_path('views/vendor/backpack/crud');
+
         // LOAD THE VIEWS
 
         // - first the published/overwritten views (in case they have any changes)
-        $this->loadViewsFrom(resource_path('views/vendor/backpack/crud'), 'crud');
+        if (file_exists($customViewsFolder)) {
+            $this->loadViewsFrom($customViewsFolder, 'crud');
+        }
         // - then the stock views that come with the package, in case a published view might be missing
         $this->loadViewsFrom(realpath(__DIR__.'/resources/views'), 'crud');
-
-        $this->loadTranslationsFrom(realpath(__DIR__.'/resources/lang'), 'backpack');
-
 
         // PUBLISH FILES
 
@@ -40,22 +50,34 @@ class CrudServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/resources/views' => resource_path('views/vendor/backpack/crud')], 'views');
 
         // publish config file
-        $this->publishes([__DIR__.'/config/backpack/crud.php' => resource_path('config/backpack/crud.php')], 'config');
+        $this->publishes([__DIR__.'/config' => config_path()], 'config');
 
         // publish public Backpack CRUD assets
         $this->publishes([__DIR__.'/public' => public_path('vendor/backpack')], 'public');
 
         // publish custom files for elFinder
         $this->publishes([
-                            __DIR__.'/config/elfinder.php'      => config_path('elfinder.php'),
-                            __DIR__.'/resources/views-elfinder' => resource_path('views/vendor/elfinder'),
-                            ], 'elfinder');
+            __DIR__.'/config/elfinder.php'      => config_path('elfinder.php'),
+            __DIR__.'/resources/views-elfinder' => resource_path('views/vendor/elfinder'),
+        ], 'elfinder');
 
+        // AUTO PUBLISH
+        if (\App::environment('local')) {
+            if ($this->shouldAutoPublishPublic()) {
+                \Artisan::call('vendor:publish', [
+                    '--provider' => 'Backpack\CRUD\CrudServiceProvider',
+                    '--tag' => 'public',
+                ]);
+            }
+        }
 
         // use the vendor configuration file as fallback
         $this->mergeConfigFrom(
-            __DIR__.'/config/backpack/crud.php', 'backpack.crud'
+            __DIR__.'/config/backpack/crud.php',
+            'backpack.crud'
         );
+
+        $this->sendUsageStats();
     }
 
     /**
@@ -69,54 +91,45 @@ class CrudServiceProvider extends ServiceProvider
             return new CRUD($app);
         });
 
-        // register its dependencies
-        $this->app->register(\Backpack\Base\BaseServiceProvider::class);
-        $this->app->register(\Collective\Html\HtmlServiceProvider::class);
-        $this->app->register(\Barryvdh\Elfinder\ElfinderServiceProvider::class);
+        // register the helper functions
+        $this->loadHelpers();
 
-        // register their aliases
-        $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-        $loader->alias('CRUD', \Backpack\CRUD\CrudServiceProvider::class);
-        $loader->alias('Form', \Collective\Html\FormFacade::class);
-        $loader->alias('Html', \Collective\Html\HtmlFacade::class);
+        // register the artisan commands
+        $this->commands($this->commands);
+
+        // map the elfinder prefix
+        if (! \Config::get('elfinder.route.prefix')) {
+            \Config::set('elfinder.route.prefix', \Config::get('backpack.base.route_prefix').'/elfinder');
+        }
     }
 
     public static function resource($name, $controller, array $options = [])
     {
-        // CRUD routes
-        Route::post($name.'/search', [
-            'as' => 'crud.'.$name.'.search',
-            'uses' => $controller.'@search',
-          ]);
-        Route::get($name.'/reorder', [
-            'as' => 'crud.'.$name.'.reorder',
-            'uses' => $controller.'@reorder',
-          ]);
-        Route::post($name.'/reorder', [
-            'as' => 'crud.'.$name.'.save.reorder',
-            'uses' => $controller.'@saveReorder',
-          ]);
-        Route::get($name.'/{id}/details', [
-            'as' => 'crud.'.$name.'.showDetailsRow',
-            'uses' => $controller.'@showDetailsRow',
-          ]);
-        Route::get($name.'/{id}/translate/{lang}', [
-            'as' => 'crud.'.$name.'.translateItem',
-            'uses' => $controller.'@translateItem',
-          ]);
+        return new CrudRouter($name, $controller, $options);
+    }
 
-        $options_with_default_route_names = array_merge([
-            'names' => [
-                'index'     => 'crud.'.$name.'.index',
-                'create'    => 'crud.'.$name.'.create',
-                'store'     => 'crud.'.$name.'.store',
-                'edit'      => 'crud.'.$name.'.edit',
-                'update'    => 'crud.'.$name.'.update',
-                'show'      => 'crud.'.$name.'.show',
-                'destroy'   => 'crud.'.$name.'.destroy',
-                ],
-            ], $options);
+    /**
+     * Load the Backpack helper methods, for convenience.
+     */
+    public function loadHelpers()
+    {
+        require_once __DIR__.'/helpers.php';
+    }
 
-        Route::resource($name, $controller, $options_with_default_route_names);
+    /**
+     * Checks to see if we should automatically publish
+     * vendor files from the public tag.
+     *
+     * @return bool
+     */
+    private function shouldAutoPublishPublic()
+    {
+        $crudPubPath = public_path('vendor/backpack/crud');
+
+        if (! is_dir($crudPubPath)) {
+            return true;
+        }
+
+        return false;
     }
 }

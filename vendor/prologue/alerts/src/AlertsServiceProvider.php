@@ -1,4 +1,5 @@
 <?php
+
 namespace Prologue\Alerts;
 
 use Illuminate\Support\ServiceProvider;
@@ -23,7 +24,7 @@ class AlertsServiceProvider extends ServiceProvider
 
     private function registerAlertsMessageBagClass()
     {
-        $this->app['alerts'] = $this->app->share(function ($app) {
+        $this->app->singleton('alerts', function ($app) {
             return new AlertsMessageBag($app['session.store'], $app['config']);
         });
     }

@@ -5,89 +5,85 @@
 @section('header')
     <section class="content-header">
       <h1>
-        {{ trans('pigarden.dashboard') }}<small></small>
+        {{ trans('backpack::base.dashboard') }}<small></small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="{{ url('admin') }}">{{ config('backpack.base.project_name') }}</a></li>
+        <li><a href="{{ backpack_url() }}">{{ config('backpack.base.project_name') }}</a></li>
         <li class="active">{{ trans('pigarden.dashboard') }}</li>
       </ol>
     </section>
 @endsection
 
-@section('after_styles')
-    <link rel="stylesheet" href="{{ asset("css/pigarden.css") }}">
-@endsection
 
 @section('content')
-
     @if(!empty($error->description))
-    <div class="callout callout-danger lead">
-        <h4>PiGarden server error</h4>
-        <pre><?php print_r($error) ?></pre>
-    </div>
+        <div class="callout callout-danger lead">
+            <h4>PiGarden server error</h4>
+            <pre><?php print_r($error) ?></pre>
+        </div>
     @endif
 
     @if(!empty($zones) && $zones->count() > 0)
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="box box-solid bg-gray-light">
-                <div class="box-body text-right">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="box box-solid bg-gray-light">
+                    <div class="box-body text-right">
 
-                    <div class="btn-group">
-                        <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
-                            <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>
-                        </a>
-                        <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-                            <span class="caret"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-close-all" role="menu" style="right:0; left:auto;">
-                            <li><a href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-stop"></i> {{ trans('pigarden.irrigation_stop_all') }}</a></li>
-                            <li><a href="{{ route('zone.all_stop', ['disable_scheduling' => 'disable_scheduling']) }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-clock-o"></i> {{ trans('pigarden.irrigation_stop_all_and_disable_scheduled') }}</a></li>
-                        </ul>
+                        <div class="btn-group">
+                            <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
+                                <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>
+                            </a>
+                            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-close-all" role="menu" style="right:0; left:auto;">
+                                <li><a href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-stop"></i> {{ trans('pigarden.irrigation_stop_all') }}</a></li>
+                                <li><a href="{{ route('zone.all_stop', ['disable_scheduling' => 'disable_scheduling']) }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-clock-o"></i> {{ trans('pigarden.irrigation_stop_all_and_disable_scheduled') }}</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="btn-group">
+                            <a class="btn btn-danger" href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.system_reboot') }}">
+                                <i class="fa fa-power-off"></i> <span class="hide">&nbsp;{{ trans('pigarden.system_reboot') }}</span>
+                            </a>
+                            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-reboot" role="menu" style="right:0; left:auto;">
+                                <li><a href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-refresh"></i> {{ trans('pigarden.system_reboot') }}</a></li>
+                                <li><a href="{{ route('poweroff') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-power-off"></i> {{ trans('pigarden.system_shutdown') }}</a></li>
+                            </ul>
+                        </div>
+
                     </div>
-
-                    <div class="btn-group">
-                        <a class="btn btn-danger" href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.system_reboot') }}">
-                            <i class="fa fa-power-off"></i> <span class="hide">&nbsp;{{ trans('pigarden.system_reboot') }}</span>
-                        </a>
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                            <span class="caret"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-reboot" role="menu" style="right:0; left:auto;">
-                            <li><a href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-refresh"></i> {{ trans('pigarden.system_reboot') }}</a></li>
-                            <li><a href="{{ route('poweroff') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-power-off"></i> {{ trans('pigarden.system_shutdown') }}</a></li>
-                        </ul>
-                    </div>
-
                 </div>
+
+
+
+
+
+
+
+
+
+
+
             </div>
-
-
-
-
-
-
-
-
-
-
-
         </div>
-    </div>
     @endif
 
     @if(!empty($zones) && $zones->count() > 0)
-    <div class="row">
-    @foreach($zones->chunk(3) as $chunk)
-        @foreach($chunk as $id => $zone)
-        <div class="col-md-4 col-sm-6 col-xs-12">
-            @include('_partials.zone', ['zone' => $zone])
+        <div class="row">
+            @foreach($zones->chunk(3) as $chunk)
+                @foreach($chunk as $id => $zone)
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        @include('_partials.zone', ['zone' => $zone])
+                    </div>
+                @endforeach
+            @endforeach
         </div>
-        @endforeach
-    @endforeach
-    </div>
     @endif
 
     <div class="row">
@@ -110,78 +106,77 @@
     </div>
 
     @if(!empty($weather))
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box box-info">
-                <div class="box-header with-border text-center">
-                    <div class="box-title">{{trans('pigarden.weather_conditions')}} (<span id="observation_time">{{$weather->observation_time}}</span>)</div>
-                </div>
-                <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border text-center">
+                        <div class="box-title">{{trans('pigarden.weather_conditions')}} (<span id="observation_time">{{$weather->observation_time}}</span>)</div>
+                    </div>
+                    <div class="box-body">
 
-                    <div class="row text-center">
-                        <div class="col-md-4 col-sm-12 col-xs-12">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
-                                    <img id="icon_url" src="{{ $weather->icon_url }}" alt="{{ $weather->weather }}" />
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
-                                    <div class="weather-text">
-                                        @if(!empty($weather->weather))
-                                        <strong><span id="weather">{{ $weather->weather }}</span></strong>
-                                        <br/>
-                                        @endif
-                                        {{ trans('pigarden.temp_c') }} <strong><span id="temp_c">{{ $weather->temp_c }}</span></strong> C°
-                                        <br/>
-                                        {{ trans('pigarden.feelslike_c') }} <strong><span id="feelslike_c">{{ $weather->feelslike_c }}</span></strong> C°
+                        <div class="row text-center">
+                            <div class="col-md-4 col-sm-12 col-xs-12">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                        <img id="icon_url" src="{{ $weather->icon_url }}" alt="{{ $weather->weather }}" />
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-12 col-xs-12">
-                            <div class="row">
-                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
-                                    <div id="curWind">
-                                        <div id="windCompassContainer">
-                                            <div id="windCompass" class="wx-data" style="transform:rotate({{$weather->wind_degrees}}deg);-ms-transform:rotate({{$weather->wind_degrees}}deg);-webkit-transform:rotate({{$weather->wind_degrees}}deg);">
-                                                <div class="dial">
-                                                    <div class="arrow-direction"></div>
-                                                </div>
-                                            </div>
-                                            <div id="windN">N</div>
-                                            <div id="windCompassSpeed" class="wx-data" >
-                                                <span class="wx-value" id="wind_kph">{{$weather->wind_kph}}</span>
-                                            </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                        <div class="weather-text">
+                                            @if(!empty($weather->weather))
+                                                <strong><span id="weather">{{ $weather->weather }}</span></strong>
+                                                <br/>
+                                            @endif
+                                            {{ trans('pigarden.temp_c') }} <strong><span id="temp_c">{{ $weather->temp_c }}</span></strong> C°
+                                            <br/>
+                                            {{ trans('pigarden.feelslike_c') }} <strong><span id="feelslike_c">{{ $weather->feelslike_c }}</span></strong> C°
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
-                                    <div class="weather-text">
-                                        {{ trans('pigarden.wind_dir') }} <strong><span id='wind_dir'>{{ $weather->wind_dir }}</span></strong>
-                                        <br/>
-                                        {{ trans('pigarden.wind_gust_kph') }} <strong><span id='wind_gust_kph'>{{$weather->wind_gust_kph}}</span></strong> km/h
+                            </div>
+                            <div class="col-md-4 col-sm-12 col-xs-12">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                        <div id="curWind">
+                                            <div id="windCompassContainer">
+                                                <div id="windCompass" class="wx-data" style="transform:rotate({{$weather->wind_degrees}}deg);-ms-transform:rotate({{$weather->wind_degrees}}deg);-webkit-transform:rotate({{$weather->wind_degrees}}deg);">
+                                                    <div class="dial">
+                                                        <div class="arrow-direction"></div>
+                                                    </div>
+                                                </div>
+                                                <div id="windN">N</div>
+                                                <div id="windCompassSpeed" class="wx-data" >
+                                                    <span class="wx-value" id="wind_kph">{{$weather->wind_kph}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                        <div class="weather-text">
+                                            {{ trans('pigarden.wind_dir') }} <strong><span id='wind_dir'>{{ $weather->wind_dir }}</span></strong>
+                                            <br/>
+                                            {{ trans('pigarden.wind_gust_kph') }} <strong><span id='wind_gust_kph'>{{$weather->wind_gust_kph}}</span></strong> km/h
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-4 col-sm-12 col-xs-12 box-weather weather-text">
+                                {{ trans('pigarden.pressure_mb') }} <strong><span id='pressure_mb'>{{ $weather->pressure_mb }}</span></strong> hPa
+                                <br/>
+                                {{ trans('pigarden.relative_humidity') }} <strong><span id='relative_humidity'>{{ $weather->relative_humidity }}</span></strong>
+                                <br/>
+                                {{ trans('pigarden.dewpoint_c') }} <strong><span id='dewpoint_c'>{{ $weather->dewpoint_c }}</span></strong> C°
+                            </div>
+
                         </div>
 
-                        <div class="col-md-4 col-sm-12 col-xs-12 box-weather weather-text">
-                            {{ trans('pigarden.pressure_mb') }} <strong><span id='pressure_mb'>{{ $weather->pressure_mb }}</span></strong> hPa
-                            <br/>
-                            {{ trans('pigarden.relative_humidity') }} <strong><span id='relative_humidity'>{{ $weather->relative_humidity }}</span></strong>
-                            <br/>
-                            {{ trans('pigarden.dewpoint_c') }} <strong><span id='dewpoint_c'>{{ $weather->dewpoint_c }}</span></strong> C°
-                        </div>
+                        <?php //echo '<pre>'; print_r($status); echo '</pre>'; ?>
 
                     </div>
-
-                    <?php //echo '<pre>'; print_r($status); echo '</pre>'; ?>
-
                 </div>
             </div>
         </div>
-    </div>
     @endif
-
 @endsection
 
 @section('after_scripts')
@@ -193,40 +188,40 @@
     <script src="{{ asset('js/backend.js') }}"></script>
     <script>
 
-    $(document).ready(function(){
-        $('.btn-zone, .btn-zone-open-in, .btn-zone-open-in-cancel').click(function(e){
-            var btn = $(this);
-            var id;
+        $(document).ready(function(){
+            $('.btn-zone, .btn-zone-open-in, .btn-zone-open-in-cancel').click(function(e){
+                var btn = $(this);
+                var id;
 
-            if(btn.hasClass('btn-zone-open-in') || btn.hasClass('btn-zone-open-in-cancel')){
-                id = $(btn.parents('.btn-group-zone').find('.btn-zone')).prop('id').replace('btn-zone-', '');
-            } else {
-                id = $(btn).prop('id').replace('btn-zone-', '');
-            }
-
-            $.ajax({
-                type : "GET",
-                url : btn.attr('href'),
-                dataType: 'json',
-                beforeSend: function(jqXHR) {
-                    $('#box-zone-'+id).append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
-                },
-                success: function (data, textStatus, jqXHR) {
-                    console.log(data);
-                    updateZones(data);
-                    updateNotify(data);
-                },
-                error: function( jqXHR, textStatus, errorThrown ){
-                    callBackAjaxError(jqXHR, textStatus, errorThrown);
-                },
-                complete: function(jqXHR, textStatus){
-                    $('#box-zone-'+id+' .overlay').remove();
+                if(btn.hasClass('btn-zone-open-in') || btn.hasClass('btn-zone-open-in-cancel')){
+                    id = $(btn.parents('.btn-group-zone').find('.btn-zone')).prop('id').replace('btn-zone-', '');
+                } else {
+                    id = $(btn).prop('id').replace('btn-zone-', '');
                 }
-            });
 
-            e.preventDefault();
+                $.ajax({
+                    type : "GET",
+                    url : btn.attr('href'),
+                    dataType: 'json',
+                    beforeSend: function(jqXHR) {
+                        $('#box-zone-'+id).append('<div class="overlay"><i class="fa fa-refresh fa-spin"></i></div>');
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                        console.log(data);
+                        updateZones(data);
+                        updateNotify(data);
+                    },
+                    error: function( jqXHR, textStatus, errorThrown ){
+                        callBackAjaxError(jqXHR, textStatus, errorThrown);
+                    },
+                    complete: function(jqXHR, textStatus){
+                        $('#box-zone-'+id+' .overlay').remove();
+                    }
+                });
+
+                e.preventDefault();
+            });
         });
-    });
 
     </script>
 @endsection
