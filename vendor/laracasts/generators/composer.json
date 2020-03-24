@@ -1,0 +1,31 @@
+{
+  "name": "laracasts/generators",
+  "description": "Advanced Laravel generators, that include schema information.",
+  "keywords": ["laravel", "generators"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jeffrey Way",
+      "email": "jeffrey@laracasts.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "illuminate/support": "^5.8|~6.0|~7.0"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "~2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Laracasts\\Generators\\": "src/"
+    }
+  },
+  "extra": {
+      "laravel": {
+          "providers": [
+              "Laracasts\\Generators\\GeneratorsServiceProvider"
+          ]
+      }
+  }
+}
