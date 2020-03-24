@@ -36,6 +36,7 @@ class PiGardenBaseController extends Controller
     {
         $this->data['status'] = $status;
         $icons = $this->getIcons();
+
         $this->data['icons'] = $icons;
 
         $this->data['cron_open_in'] = [];
@@ -76,7 +77,7 @@ class PiGardenBaseController extends Controller
 
                 if(isset($icons[$zone->name]) && $zone->state == 0 && $icons[$zone->name]->icon_close)
                     $zone->imageSrc = asset($icons[$zone->name]->icon_close);
-                elseif(isset($icons[$zone->name]) && $zone->state == 1 && $icons[$zone->name]->icon_open)
+                elseif(isset($icons[$zone->name]) && $zone->state != 0 && $icons[$zone->name]->icon_open)
                     $zone->imageSrc = asset($icons[$zone->name]->icon_open);
                 else
                     $zone->imageSrc = asset('images/sprinkler-'.($zone->state == 0 ? 'pause' : 'play').'.gif');
