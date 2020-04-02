@@ -1,3 +1,6 @@
+## 0.4.4.1 - 02/04/2020
+ - Update Laravel vendor libreries
+
 ## 0.4.4 - 23/03/2020
  - Update to Laravel 5.8 and Backpack 3.6 
  - Added ability to customize zone icons
