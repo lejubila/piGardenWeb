@@ -1,3 +1,7 @@
+## 0.4.4.2 - 05/0402020
+ - Add more irrigation time in delayed startup zones
+ - Add missing lines in .env.example
+
 ## 0.4.4.1 - 02/04/2020
  - Update Laravel vendor libreries
 
