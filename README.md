@@ -1,6 +1,8 @@
 # piGardenWeb
 Web control panel to manage your piGarden (system irrigation with Raspberry Pi)
 
+![piGardenWeb v.0.4.4](https://www.lejubila.net/wp-content/uploads/2020/04/pigarden044.png)
+
 ## Official documentation 
 Documentation of piGarden and build system irrigation with Raspberry Pi can be found on the [www.lejubila.net/tag/pigarden/](http://www.lejubila.net/tag/pigarden/)
 
