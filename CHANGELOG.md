@@ -1,4 +1,8 @@
-## 0.4.4.2 - 05/0402020
+## 0.4.4.3 - 06/040/2020
+ - Add more irrigation time in delayed startup zones
+ - Add fallback to REGISTRATION_OPEN on when missing BACKPACK_REGISTRATION_OPEN in .env.local
+
+## 0.4.4.2 - 05/040/2020
  - Add more irrigation time in delayed startup zones
  - Add missing lines in .env.example
 
