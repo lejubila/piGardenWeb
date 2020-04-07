@@ -13,6 +13,23 @@
     </div>
     @endif
 
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box box-solid bg-gray-light">
+                <div class="box-body text-right">
+
+                    <div class="text-center wrp-pigarden-date-time">
+                        <span id="pigarden-date-time">{{$date_time}}</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     @if(!empty($zones) && $zones->count() > 0)
     <div class="row">
     @foreach($zones->chunk(3) as $chunk)
@@ -141,6 +158,7 @@
                 //console.log(data);
                 updateHomeExec(data);
                 updateZones(data);
+                updateDateTime(data);
                 updateNotify(data);
             },
             error: function( jqXHR, textStatus, errorThrown ){

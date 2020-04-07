@@ -1,8 +1,11 @@
-## 0.4.4.3 - 06/040/2020
+## 0.4.5 - xx/04/2020
+ - Add piGarden host date and time to topbar 
+
+## 0.4.4.3 - 06/04/2020
  - Add more irrigation time in delayed startup zones
  - Add fallback to REGISTRATION_OPEN on when missing BACKPACK_REGISTRATION_OPEN in .env.local
 
-## 0.4.4.2 - 05/040/2020
+## 0.4.4.2 - 05/04/2020
  - Add more irrigation time in delayed startup zones
  - Add missing lines in .env.example
 

@@ -65,6 +65,10 @@ function updateZones(status){
     }
 }
 
+function updateDateTime(status){
+    updateElement('#pigarden-date-time', status.date_time);
+}
+
 function updateNotify(status){
     if(!(typeof status['messages'] === undefined)){
         $.each(status['messages'],function(type, messages){

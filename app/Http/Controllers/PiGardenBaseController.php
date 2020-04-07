@@ -26,6 +26,7 @@ class PiGardenBaseController extends Controller
         $this->data['weather'] = null;
         $this->data['last_rain_sensor'] = null;
         $this->data['last_rain_online'] = null;
+        $this->data['date_time'] = null;
     }
 
     /**
@@ -128,6 +129,10 @@ class PiGardenBaseController extends Controller
         if(property_exists($status, 'last_rain_online'))
         {
             $this->data['last_rain_online'] = $status->last_rain_online ? Carbon::createFromTimestamp($status->last_rain_online, config('pigarden.tz'))->format('d/m/Y H:i') : trans('pigarden.unknown');
+        }
+        if(property_exists($status, 'timestamp'))
+        {
+            $this->data['date_time'] = $status->timestamp ? Carbon::createFromTimestamp($status->timestamp, config('pigarden.tz'))->format('d/m/Y H:i') : '';
         }
 
     }

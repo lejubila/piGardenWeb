@@ -341,6 +341,17 @@ ul.cron-item-text li.dow{
     border: 1px solid #a59237;
 }
 
+.wrp-pigarden-date-time{
+    padding: 3px 8px;
+    border-radius: 4px;
+    background-color: #605ca8;
+}
+#pigarden-date-time{
+    font-size: 18px;
+    color: #fff;
+}
+
+
 /* Dropdown submenu */
 .marginBottom-0 {margin-bottom:0;}
 .dropdown-submenu{position:relative;}

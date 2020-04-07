@@ -29,46 +29,43 @@
                 <div class="box box-solid bg-gray-light">
                     <div class="box-body text-right">
 
-                        <div class="btn-group">
-                            <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
-                                <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>
-                            </a>
-                            <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-close-all" role="menu" style="right:0; left:auto;">
-                                <li><a href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-stop"></i> {{ trans('pigarden.irrigation_stop_all') }}</a></li>
-                                <li><a href="{{ route('zone.all_stop', ['disable_scheduling' => 'disable_scheduling']) }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-clock-o"></i> {{ trans('pigarden.irrigation_stop_all_and_disable_scheduled') }}</a></li>
-                            </ul>
+                        <div class="pull-left wrp-pigarden-date-time">
+                            <span id="pigarden-date-time">{{$date_time}}</span>
                         </div>
 
-                        <div class="btn-group">
-                            <a class="btn btn-danger" href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.system_reboot') }}">
-                                <i class="fa fa-power-off"></i> <span class="hide">&nbsp;{{ trans('pigarden.system_reboot') }}</span>
-                            </a>
-                            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
-                                <span class="caret"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-reboot" role="menu" style="right:0; left:auto;">
-                                <li><a href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-refresh"></i> {{ trans('pigarden.system_reboot') }}</a></li>
-                                <li><a href="{{ route('poweroff') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-power-off"></i> {{ trans('pigarden.system_shutdown') }}</a></li>
-                            </ul>
+
+                        <div class="pull-right">
+                            <div class="btn-group">
+                                <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
+                                    <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>
+                                </a>
+                                <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-close-all" role="menu" style="right:0; left:auto;">
+                                    <li><a href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-stop"></i> {{ trans('pigarden.irrigation_stop_all') }}</a></li>
+                                    <li><a href="{{ route('zone.all_stop', ['disable_scheduling' => 'disable_scheduling']) }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-clock-o"></i> {{ trans('pigarden.irrigation_stop_all_and_disable_scheduled') }}</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="btn-group">
+                                <a class="btn btn-danger" href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.system_reboot') }}">
+                                    <i class="fa fa-power-off"></i> <span class="hide">&nbsp;{{ trans('pigarden.system_reboot') }}</span>
+                                </a>
+                                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-reboot" role="menu" style="right:0; left:auto;">
+                                    <li><a href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-refresh"></i> {{ trans('pigarden.system_reboot') }}</a></li>
+                                    <li><a href="{{ route('poweroff') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-power-off"></i> {{ trans('pigarden.system_shutdown') }}</a></li>
+                                </ul>
+                            </div>
                         </div>
 
                     </div>
                 </div>
-
-
-
-
-
-
-
-
-
-
 
             </div>
         </div>

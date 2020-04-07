@@ -20,6 +20,7 @@ function updateDashboard(urlAction, first=false)
             //console.log(data);
             updateDashboardExec(data);
             updateZones(data);
+            updateDateTime(data);
             updateNotify(data);
         },
         error: function( jqXHR, textStatus, errorThrown ){
