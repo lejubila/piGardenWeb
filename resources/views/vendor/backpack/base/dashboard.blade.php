@@ -35,6 +35,10 @@
 
 
                         <div class="pull-right">
+
+                            <a class="btn btn-success" href="{{ route('zone.all_enable_cron') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_enable_all_schduling') }}">
+                                <i class="fa fa-clock-o"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_enable_all_schduling') }}</span>
+                            </a>
                             <div class="btn-group">
                                 <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
                                     <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>

@@ -179,11 +179,13 @@ return array(
 
     'irrigation_stop_all' => "Stop irrigation on all zones",
     'irrigation_stop_all_and_disable_scheduled' => "Stop irrigation and disable all scheduling",
+    'irrigation_enable_all_schduling' => 'Enable all scheduling',
 
     'system_reboot' => "System Reboot",
     'system_shutdown' => "System Power-Off",
 
     'All solenoid closed' => 'All solenoid closed',
+    'All solenoid enabled' => 'All scheduling enabled',
 
     'System reboot is started' => 'System reboot is started',
     'System shutdown is started' => 'System shutdown is started',

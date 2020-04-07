@@ -1,5 +1,6 @@
-## 0.4.5 - xx/04/2020
- - Add piGarden host date and time to topbar 
+## 0.5.0 - xx/04/2020
+ - Added piGarden host date and time to topbar 
+ - Added button for anable all scheduling to topbar
 
 ## 0.4.4.3 - 06/04/2020
  - Add more irrigation time in delayed startup zones

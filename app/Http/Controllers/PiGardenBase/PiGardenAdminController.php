@@ -413,6 +413,29 @@ class PiGardenAdminController extends PiGardenBaseController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|string
      */
+    public function getZoneAllCronEnable(Request $request) {
+
+        $client = new PiGardenSocketClient();
+        $status = null;
+        try{
+            $status = $client->zoneAllCronEnable();
+        } catch (\Exception $e) {
+            $status = new \stdClass();
+            $status->error = $this->makeError($e->getMessage().' at line '.$e->getLine().' of file '.$e->getFile(), $e->getCode());
+        }
+        $this->setDataFromStatus($status);
+        $this->setMessagesFromStatus($status, !$request->ajax());
+
+        return $request->ajax() ? json_encode($this->data) : Redirect::back();
+
+    }
+
+
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
     public function getReboot(Request $request) {
 
         $client = new PiGardenSocketClient();

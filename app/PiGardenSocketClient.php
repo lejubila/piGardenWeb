@@ -213,6 +213,15 @@ class PiGardenSocketClient {
      * @return mixed|string
      * @throws Excepion
      */
+    public function zoneAllCronEnable()
+    {
+        return $this->execCommand('cron_enable_all_open_close');
+    }
+
+    /**
+     * @return mixed|string
+     * @throws Excepion
+     */
     public function reboot( )
     {
         return $this->execCommand('reboot');

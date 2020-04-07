@@ -7,7 +7,7 @@ return [
     'tz' => env('PIGARDEN_TZ', 'Europe/Rome'),
     'pigarden_version_support' => [
         'ver' => 0,
-        'sub' => 5,
+        'sub' => 6,
     ],
 
     'cron_in' => [
@@ -19,7 +19,7 @@ return [
 
     'version' => [
         'ver' => 0,
-        'sub' => 4,
-        'rel' => 4
+        'sub' => 5,
+        'rel' => 0
     ],
 ];

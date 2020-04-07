@@ -68,6 +68,11 @@ Route::group([
         'disable_scheduling' => '(^$|disable_scheduling)'
     ]);
 
+    Route::get('zone/all_enable_cron', [
+        'uses' => 'PiGardenAdminController@getZoneAllCronEnable',
+        'as' => 'zone.all_enable_cron'
+    ]);
+
     Route::get('reboot', [
         'uses' => 'PiGardenAdminController@getReboot',
         'as' => 'reboot'
