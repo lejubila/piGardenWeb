@@ -138,6 +138,7 @@ return array(
         'start' => [
             '0'   => 'Start now',
             '5'   => 'in 5 minutes',
+            '10'  => 'in 10 minutes',
             '15'  => 'in 15 minutes',
             '30'  => 'in 30 minutes',
             '60'  => 'in 1 hour',

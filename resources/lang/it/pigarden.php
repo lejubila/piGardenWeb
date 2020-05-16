@@ -135,6 +135,7 @@ return array(
         'start' => [
             '0'   => 'Avvia subito',
             '5'   => 'fra 5 minuti',
+            '10'  => 'fra 10 minuti',
             '15'  => 'fra 15 minuti',
             '30'  => 'fra 30 minuti',
             '60'  => 'fra 1 ora',
