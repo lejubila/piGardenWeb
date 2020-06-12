@@ -12,7 +12,7 @@
 */
 
 if (env('APP_FORCE_HTTPS', false) ) {
-    URL::forceSchema('https');
+    URL::forceScheme('https');
 }
 
 Route::group(['namespace' => 'PiGardenBase'], function() {

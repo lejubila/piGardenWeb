@@ -1,3 +1,6 @@
+## 0.5.1 - 13/06/2020
+ - Fix bug when setting on true the APP_FORCE_HTTPS parameter in .app configuration file
+
 ## 0.5.0 - 16/05/2020
  - Added piGarden host date and time to topbar 
  - Added button for enable all scheduling to topbar
