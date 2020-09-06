@@ -19,7 +19,7 @@ return [
 
     'version' => [
         'ver' => 0,
-        'sub' => 5,
-        'rel' => 1
+        'sub' => 6,
+        'rel' => 0
     ],
 ];

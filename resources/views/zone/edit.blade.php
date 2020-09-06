@@ -64,6 +64,7 @@
                                     @foreach( (!is_null(old($type)) ? old($type) : ( !is_null(old('type')) ? array() : $cron[$type]) ) as $k => $item)
                                     <tr id="{{$type}}-row-{{$k}}" class="{{$type}}-row" data-cronrow="{{$k}}">
                                         <td class="tools">
+                                            @if(backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
                                             <div class="wrp-switch-cron-item">
                                                 {{-- !! Form::checkbox("{$type}[$k][enable]", '1', (empty($item['enable']) ? false : true), ['class' => 'switch-cron-item', 'id' => "$type-enable-".$k, 'data-crontype' => "$type", 'data-cronrow' => "$k"] ) !! --}}
                                                 <input
@@ -77,6 +78,7 @@
                                                     data-cronrow="{{$k}}"
                                                 />
                                             </div>
+                                            @endif
                                             <div class="overlay-disabled-cron"></div>
                                             <ul class="cron-item-text"></ul>
                                             {{-- $item['string']  --}}
@@ -92,16 +94,15 @@
                                             <input type="hidden" name="{{ "{$type}[$k][month]" }}" value="{{ (is_array($item['month']) ? implode(',',$item['month']) : $item['month']) }}" id="{{"$type-month-".$k}}" />
                                             <input type="hidden" name="{{ "{$type}[$k][dow]" }}" value="{{ (is_array($item['dow']) ? implode(',',$item['dow']) : $item['dow']) }}" id="{{"$type-dow-".$k}}" />
 
-
-
-
                                             <div class="tools-wrp">
+                                                @if(backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
                                                 <a href="#" class="{{$type}}-cron-modify" id="{{$type}}-cron-modify-{{$k}}" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow="{{$k}}">
                                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                                 </a>
                                                 <a href="#" class="{{$type}}-cron-delete" id="{{$type}}-cron-delete-{{$k}}">
                                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                                 </a>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -114,8 +115,10 @@
                             </table>
                         </div>
                         <div class="box-footer clearfix" style="display: block;">
+                            @if(backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
                             <button type="submit" class="btn btn-primary pull-left" onclick="$('#cron_type').val('{{$type}}')"><i class="glyphicon glyphicon-save"></i> {{trans('cron.save')}}</button>
                             <a hred="#" class="btn btn-default pull-right" data-toggle="modal" data-target="#cronModal" data-crontype="{{$type}}" data-cronrow=""><i class="fa fa-plus"></i> {{trans('cron.add')}}</a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -124,7 +127,7 @@
         </div>
     </form>
 
-    @if($manageSchedule)
+    @if(false && $manageSchedule)
     <div class="row">
         <div class="col-md-6 col-sm-12 col-xs-12">
             <div class="box box-primary box-cron box-info">
@@ -159,6 +162,7 @@
         </div>
     </div>
 
+    {{--
         <pre>
             {{ print_r($sequenceSchedule) }}
 
@@ -166,6 +170,7 @@
             {{ print_r($schedule) }}
 
         </pre>
+    --}}
     @endif
 
 

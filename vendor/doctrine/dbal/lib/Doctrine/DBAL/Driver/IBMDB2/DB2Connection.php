@@ -6,8 +6,8 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\ParameterType;
 use stdClass;
-use const DB2_AUTOCOMMIT_OFF;
-use const DB2_AUTOCOMMIT_ON;
+
+use function assert;
 use function db2_autocommit;
 use function db2_commit;
 use function db2_conn_error;
@@ -23,6 +23,10 @@ use function db2_rollback;
 use function db2_server_info;
 use function db2_stmt_errormsg;
 use function func_get_args;
+use function is_bool;
+
+use const DB2_AUTOCOMMIT_OFF;
+use const DB2_AUTOCOMMIT_ON;
 
 class DB2Connection implements Connection, ServerInfoAwareConnection
 {
@@ -59,8 +63,8 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
      */
     public function getServerVersion()
     {
-        /** @var stdClass $serverInfo */
         $serverInfo = db2_server_info($this->conn);
+        assert($serverInfo instanceof stdClass);
 
         return $serverInfo->DBMS_VER;
     }
@@ -102,23 +106,23 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
     /**
      * {@inheritdoc}
      */
-    public function quote($input, $type = ParameterType::STRING)
+    public function quote($value, $type = ParameterType::STRING)
     {
-        $input = db2_escape_string($input);
+        $value = db2_escape_string($value);
 
         if ($type === ParameterType::INTEGER) {
-            return $input;
+            return $value;
         }
 
-        return "'" . $input . "'";
+        return "'" . $value . "'";
     }
 
     /**
      * {@inheritdoc}
      */
-    public function exec($statement)
+    public function exec($sql)
     {
-        $stmt = @db2_exec($this->conn, $statement);
+        $stmt = @db2_exec($this->conn, $sql);
 
         if ($stmt === false) {
             throw new DB2Exception(db2_stmt_errormsg());
@@ -140,7 +144,10 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
      */
     public function beginTransaction()
     {
-        db2_autocommit($this->conn, DB2_AUTOCOMMIT_OFF);
+        $result = db2_autocommit($this->conn, DB2_AUTOCOMMIT_OFF);
+        assert(is_bool($result));
+
+        return $result;
     }
 
     /**
@@ -151,7 +158,11 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
         if (! db2_commit($this->conn)) {
             throw new DB2Exception(db2_conn_errormsg($this->conn));
         }
-        db2_autocommit($this->conn, DB2_AUTOCOMMIT_ON);
+
+        $result = db2_autocommit($this->conn, DB2_AUTOCOMMIT_ON);
+        assert(is_bool($result));
+
+        return $result;
     }
 
     /**
@@ -162,7 +173,11 @@ class DB2Connection implements Connection, ServerInfoAwareConnection
         if (! db2_rollback($this->conn)) {
             throw new DB2Exception(db2_conn_errormsg($this->conn));
         }
-        db2_autocommit($this->conn, DB2_AUTOCOMMIT_ON);
+
+        $result = db2_autocommit($this->conn, DB2_AUTOCOMMIT_ON);
+        assert(is_bool($result));
+
+        return $result;
     }
 
     /**

@@ -1,3 +1,26 @@
+2020-06-05  Naoki Sawada  <hypweb+elfinder@gmail.com>
+	* elFinder (2.1.57):
+		- [js] Fixed #3148 to support jQuery 3.5.0 update
+		- [php:core] Fixed #3154 volume that require online access cannot be specified
+		- [VD:abstract] Fixed #3161 fix option data of cwd results on after change files
+		- [VD:abstract] Fixed #3167 added "none" (no image library check) to `imgLib`
+		- [cmd:resize] Fixed #3158 to make able to change quality without changing dimensions
+		- And some minor bug fixes
+
+
+2020-04-09  Naoki Sawada  <hypweb+elfinder@gmail.com>
+
+	* elFinder (2.1.56):
+		- [js:extras:editors.default] remove Pixlr editor it is no longer possible to display in IFRAME
+		- [php:core] Fixed #3134 close file pointer before deleting temporary file on shutdown
+		- [VD:abstract] change prefix of zipdl temp file
+		- [php:core] Fixed #3136 zipdl fails on Chrome on iOS / iPadOS
+		- [cmd:netmount] Fixed #3138 OAuth not possible with CORS due to new ITP
+		- [VD:MySQL,OneDrive] Fixed #3142 remove debug code
+		- [i18n:pl,ko] Updated translations
+		- And some minor bug fixes
+
+
 2020-03-18  Naoki Sawada  <hypweb+elfinder@gmail.com>
 
 	* elFinder (2.1.55):

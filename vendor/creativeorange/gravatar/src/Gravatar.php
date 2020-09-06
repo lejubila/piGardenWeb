@@ -4,6 +4,7 @@ namespace Creativeorange\Gravatar;
 
 use Creativeorange\Gravatar\Exceptions\InvalidEmailException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Class Gravatar
@@ -38,7 +39,7 @@ class Gravatar
 	private $config;
 
 	/**
-	 * @var string
+	 * @var string|false
 	 */
 	private $fallback;
 
@@ -52,9 +53,14 @@ class Gravatar
 	 */
 	public function fallback($fallback)
 	{
+		// Gravatar changed mm to mp. 
+		// This way we make sure everything keeps working
+		if ($fallback === 'mm')
+			$fallback = 'mp';
+		
 		if (
 			filter_var($fallback, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)
-			|| in_array($fallback, array('mm', 'identicon', 'monsterid', 'wavatar', 'retro', 'blank'))
+			|| in_array($fallback, array('mp', 'identicon', 'monsterid', 'wavatar', 'retro', 'robohash', 'blank'))
 		) {
 			$this->fallback = $fallback;
 		} else {
@@ -67,7 +73,7 @@ class Gravatar
 	/**
 	 * Check if Gravatar has an avatar for the given email address
 	 *
-	 * @param $email
+	 * @param string $email
 	 * @return bool
 	 * @throws InvalidEmailException
 	 */
@@ -86,7 +92,7 @@ class Gravatar
 	/**
 	 * Get the gravatar url
 	 *
-	 * @param $email
+	 * @param string $email
 	 * @param string $configGroup
 	 * @return string
 	 * @throws InvalidEmailException
@@ -129,9 +135,9 @@ class Gravatar
 	/**
 	 * Helper function to retrieve config settings.
 	 *
-	 * @param $value
-	 * @param null $default
-	 * @return null
+	 * @param string $value
+	 * @param mixed $default
+	 * @return mixed
 	 */
 	protected function c($value, $default = null)
 	{
@@ -207,12 +213,12 @@ class Gravatar
 	}
 
 	/**
-	 * @return array|null
+	 * @return array
 	 */
 	private function defaultParameter()
 	{
-		if (!$this->fallback) {
-            $this->fallback = $this->c('fallback') ? $this->c('fallback') : null;
+		if ($this->fallback === false) {
+			$this->fallback = $this->c('fallback') ? $this->c('fallback') : null;
 		}
 
 		return array('d' => $this->fallback);
@@ -250,12 +256,14 @@ class Gravatar
 	/**
 	 * Check if the provided email address is valid
 	 *
-	 * @param $email
+	 * @param string $email
 	 * @throws InvalidEmailException
 	 */
 	private function checkEmail($email)
 	{
-		if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+		$validator = Validator::make(['email' => $email], ['email' => 'required|email']);
+
+		if ($validator->fails())
 			throw new InvalidEmailException('Please specify a valid email address');
 	}
 }

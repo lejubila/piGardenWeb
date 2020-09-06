@@ -29,6 +29,9 @@ class IconCrudController extends CrudController
         $this->crud->setRoute(config('backpack.base.route_prefix') . '/icon');
         $this->crud->setEntityNameStrings('icon', 'icons');
 
+        if (!backpack_user()->hasPermissionTo('manage setup', backpack_guard_name()))
+            $this->crud->denyAccess(['list', 'create', 'update', 'delete', 'view']);
+
         /*
         |--------------------------------------------------------------------------
         | CrudPanel Configuration

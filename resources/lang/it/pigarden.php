@@ -194,7 +194,11 @@ return array(
     'icon' => [
         'open' => 'Icona aperto',
         'close' => 'Icona chiuso',
-    ]
+    ],
+
+    'log' => [
+        'title' => "Mostra i log"
+    ],
 
 
 );

@@ -8,17 +8,21 @@
     <li><a><span><i>{{ trans('pigarden.zones_empty') }}</i></span></a></li>
 @endforelse
 
+<li class="header">LOG</li>
+<li><a href="{{backpack_url('log')}}"><i class="fa fa-list"></i> <span>{{ trans('pigarden.log.title') }}</span></a></li>
+
 <li class="header">{{ strtoupper(trans('pigarden.setup')) }}</li>
+@if(backpack_user()->hasPermissionTo('manage setup', backpack_guard_name()))
 <li><a href="{{route('initial_setup.get')}}"><i class="fa fa-cogs"></i> <span>{{ trans('pigarden.initial_setup.title') }}</span></a></li>
 <li><a href="{{backpack_url('icon')}}"><i class="fa fa-picture-o"></i> <span>{{ trans('pigarden.setup_icons.title') }}</span></a></li>
-
+@endif
 
 <li><a href="{{ backpack_url('elfinder') }}"><i class="fa fa-files-o"></i> <span>{{ trans('backpack::crud.file_manager') }}</span></a></li>
 
 <!-- Users, Roles Permissions -->
 @if(
     config('backpack.permissionmanager.allow_manage_user') ||
-    backpack_user()->hasPermissionTo('manage users')
+    backpack_user()->hasPermissionTo('manage users', backpack_guard_name())
 )
 <li class="treeview">
     <a href="#"><i class="fa fa-group"></i> <span>Users, Roles, Perm</span> <i class="fa fa-angle-left pull-right"></i></a>

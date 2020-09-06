@@ -49,12 +49,9 @@ use ProxyManager\Proxy\ProxyInterface;
 class DebugClassLoader
 {
     private const SPECIAL_RETURN_TYPES = [
-        'mixed' => 'mixed',
         'void' => 'void',
         'null' => 'null',
         'resource' => 'resource',
-        'static' => 'object',
-        '$this' => 'object',
         'boolean' => 'bool',
         'true' => 'bool',
         'false' => 'bool',
@@ -69,7 +66,13 @@ class DebugClassLoader
         'string' => 'string',
         'self' => 'self',
         'parent' => 'parent',
-    ];
+    ] + (\PHP_VERSION_ID >= 80000 ? [
+        '$this' => 'static',
+    ] : [
+        'mixed' => 'mixed',
+        'static' => 'object',
+        '$this' => 'object',
+    ]);
 
     private const BUILTIN_RETURN_TYPES = [
         'void' => true,
@@ -83,7 +86,10 @@ class DebugClassLoader
         'string' => true,
         'self' => true,
         'parent' => true,
-    ];
+    ] + (\PHP_VERSION_ID >= 80000 ? [
+        'mixed' => true,
+        'static' => true,
+    ] : []);
 
     private const MAGIC_METHODS = [
         '__set' => 'void',
@@ -407,7 +413,7 @@ class DebugClassLoader
         }
         $deprecations = [];
 
-        $className = isset($class[15]) && "\0" === $class[15] && 0 === strpos($class, "class@anonymous\x00") ? get_parent_class($class).'@anonymous' : $class;
+        $className = false !== strpos($class, "@anonymous\0") ? (get_parent_class($class) ?: key(class_implements($class)) ?: 'class').'@anonymous' : $class;
 
         // Don't trigger deprecations for classes in the same vendor
         if ($class !== $className) {
@@ -856,7 +862,7 @@ class DebugClassLoader
             }
         }
 
-        if ('void' === $normalizedType) {
+        if ('void' === $normalizedType || (\PHP_VERSION_ID >= 80000 && 'mixed' === $normalizedType)) {
             $nullable = false;
         } elseif (!isset(self::BUILTIN_RETURN_TYPES[$normalizedType]) && isset(self::SPECIAL_RETURN_TYPES[$normalizedType])) {
             // ignore other special return types

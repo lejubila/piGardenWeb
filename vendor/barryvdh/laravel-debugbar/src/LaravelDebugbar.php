@@ -22,7 +22,7 @@ use DebugBar\DataCollector\DataCollectorInterface;
 use DebugBar\DataCollector\ExceptionsCollector;
 use DebugBar\DataCollector\MemoryCollector;
 use DebugBar\DataCollector\MessagesCollector;
-use DebugBar\DataCollector\PhpInfoCollector;
+use Barryvdh\Debugbar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use Barryvdh\Debugbar\DataFormatter\QueryFormatter;
@@ -307,6 +307,11 @@ class LaravelDebugbar extends DebugBar
                 $queryCollector->setFindSource(true, $middleware);
             }
 
+            if ($this->app['config']->get('debugbar.options.db.backtrace_exclude_paths')) {
+                $excludePaths = $this->app['config']->get('debugbar.options.db.backtrace_exclude_paths');
+                $queryCollector->mergeBacktraceExcludePaths($excludePaths);
+            }
+
             if ($this->app['config']->get('debugbar.options.db.explain.enabled')) {
                 $types = $this->app['config']->get('debugbar.options.db.explain.types');
                 $queryCollector->setExplainSource(true, $types);
@@ -351,50 +356,47 @@ class LaravelDebugbar extends DebugBar
             }
 
             try {
-                $db->getEventDispatcher()->listen([
+                $db->getEventDispatcher()->listen(
                     \Illuminate\Database\Events\TransactionBeginning::class,
-                    'connection.*.beganTransaction',
-                ], function ($transaction) use ($queryCollector) {
-
-                    // Laravel 5.2 changed the way some core events worked. We must account for
-                    // the first argument being an "event object", where arguments are passed
-                    // via object properties, instead of individual arguments.
-                    if($transaction instanceof \Illuminate\Database\Events\TransactionBeginning) {
-                        $connection = $transaction->connection;
-                    } else {
-                        $connection = $transaction;
+                    function ($transaction) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Begin Transaction', $transaction->connection);
                     }
+                );
 
-                    $queryCollector->collectTransactionEvent('Begin Transaction', $connection);
-                });
-
-                $db->getEventDispatcher()->listen([
+                $db->getEventDispatcher()->listen(
                     \Illuminate\Database\Events\TransactionCommitted::class,
-                    'connection.*.committed',
-                ], function ($transaction) use ($queryCollector) {
-
-                    if($transaction instanceof \Illuminate\Database\Events\TransactionCommitted) {
-                        $connection = $transaction->connection;
-                    } else {
-                        $connection = $transaction;
+                    function ($transaction) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Commit Transaction', $transaction->connection);
                     }
+                );
 
-                    $queryCollector->collectTransactionEvent('Commit Transaction', $connection);
-                });
-
-                $db->getEventDispatcher()->listen([
+                $db->getEventDispatcher()->listen(
                     \Illuminate\Database\Events\TransactionRolledBack::class,
-                    'connection.*.rollingBack',
-                ], function ($transaction) use ($queryCollector) {
-
-                    if($transaction instanceof \Illuminate\Database\Events\TransactionRolledBack) {
-                        $connection = $transaction->connection;
-                    } else {
-                        $connection = $transaction;
+                    function ($transaction) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Rollback Transaction', $transaction->connection);
                     }
+                );
 
-                    $queryCollector->collectTransactionEvent('Rollback Transaction', $connection);
-                });
+                $db->getEventDispatcher()->listen(
+                    'connection.*.beganTransaction',
+                    function ($event, $params) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Begin Transaction', $params[0]);
+                    }
+                );
+
+                $db->getEventDispatcher()->listen(
+                    'connection.*.committed',
+                    function ($event, $params) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Commit Transaction', $params[0]);
+                    }
+                );
+
+                $db->getEventDispatcher()->listen(
+                    'connection.*.rollingBack',
+                    function ($event, $params) use ($queryCollector) {
+                        $queryCollector->collectTransactionEvent('Rollback Transaction', $params[0]);
+                    }
+                );
             } catch (\Exception $e) {
                 $this->addThrowable(
                     new Exception(
@@ -406,12 +408,23 @@ class LaravelDebugbar extends DebugBar
             }
         }
 
-        if ($this->shouldCollect('models', false)) {
+        if ($this->shouldCollect('models', true)) {
             try {
                 $modelsCollector = $this->app->make('Barryvdh\Debugbar\DataCollector\ModelsCollector');
                 $this->addCollector($modelsCollector);
             } catch (\Exception $e){
                 // No Models collector
+            }
+        }
+
+        if ($this->shouldCollect('livewire', true) && $this->app->bound('livewire')) {
+            try {
+                $livewireCollector = $this->app->make('Barryvdh\Debugbar\DataCollector\LivewireCollector');
+                $this->addCollector($livewireCollector);
+            } catch (\Exception $e){
+                $this->addThrowable(
+                    new Exception('Cannot add Livewire Collector: ' . $e->getMessage(), $e->getCode(), $e)
+                );
             }
         }
 
@@ -792,8 +805,8 @@ class LaravelDebugbar extends DebugBar
      */
     protected function isJsonRequest(Request $request)
     {
-        // If XmlHttpRequest, return true
-        if ($request->isXmlHttpRequest()) {
+        // If XmlHttpRequest or Live, return true
+        if ($request->isXmlHttpRequest() || $request->headers->get('X-Livewire')) {
             return true;
         }
 
@@ -903,16 +916,18 @@ class LaravelDebugbar extends DebugBar
      *
      * @param string $label
      * @param \Closure $closure
+     * @return mixed
      */
     public function measure($label, \Closure $closure)
     {
         if ($this->hasCollector('time')) {
             /** @var \DebugBar\DataCollector\TimeDataCollector $collector */
             $collector = $this->getCollector('time');
-            $collector->measure($label, $closure);
+            $result = $collector->measure($label, $closure);
         } else {
-            $closure();
+            $result = $closure();
         }
+        return $result;
     }
 
     /**
@@ -1069,7 +1084,7 @@ class LaravelDebugbar extends DebugBar
 
             $headers = [];
             foreach ($collector->collect()['measures'] as $k => $m) {
-                $headers[] = sprintf('%d=%F; "%s"', $k, $m['duration'] * 1000, str_replace('"', "'", $m['label']));
+                $headers[] = sprintf('app;desc="%s";dur=%F', str_replace('"', "'", $m['label']), $m['duration'] * 1000);
             }
 
             $response->headers->set('Server-Timing', $headers, false);

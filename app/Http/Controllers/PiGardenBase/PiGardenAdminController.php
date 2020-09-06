@@ -9,6 +9,7 @@ use App\PiGardenSocketClient;
 use App\ScheduleHelper;
 use App\CronHelper;
 use Illuminate\Http\Request;
+use mysql_xdevapi\Exception;
 use Redirect;
 use Illuminate\Support\Facades\Input;
 use Validator;
@@ -57,6 +58,8 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
             $status = $client->zoneOpen($zone, $force === 'force');
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -84,6 +87,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $start = (int)$start;
         $length = (int)$length;
         try{
+            if(!backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             if($start > 1440){
                 throw new \Exception("Start time wrong: $start");
             }
@@ -112,6 +118,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $status = $client->zoneOpenInCancel($zone);
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -134,6 +143,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $status = $client->zoneClose($zone);
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -329,6 +341,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $status = null;
 
         try{
+            if(!backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $status = $client->setCronZone($type, $zone, $scheduling);
         } catch (\Exception $e) {
             //return $e->getMessage();
@@ -352,6 +367,9 @@ class PiGardenAdminController extends PiGardenBaseController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getInitialSetup(Request $request){
+        if(!backpack_user()->hasPermissionTo('manage setup', backpack_guard_name()))
+            abort(403, "permission denied");
+
         $client = new PiGardenSocketClient();
         $status = null;
 
@@ -378,6 +396,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('manage setup', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $client->setGeneralCron();
             \Alert::success(trans('pigarden.initial_setup.success'))->flash();
         } catch (\Exception $e) {
@@ -397,6 +418,12 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
+            if($disable_scheduling && !backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $status = $client->zoneCloseAll(!empty($disable_scheduling));
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -418,6 +445,9 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
+                throw new \Exception("Permission denied");
+
             $status = $client->zoneAllCronEnable();
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -441,6 +471,8 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('shutdown restart', backpack_guard_name()))
+                throw new \Exception("Permission denied");
             $status = $client->reboot();
         } catch (\Exception $e) {
             $status = new \stdClass();
@@ -462,6 +494,8 @@ class PiGardenAdminController extends PiGardenBaseController
         $client = new PiGardenSocketClient();
         $status = null;
         try{
+            if(!backpack_user()->hasPermissionTo('shutdown restart', backpack_guard_name()))
+                throw new \Exception("Permission denied");
             $status = $client->poweroff();
         } catch (\Exception $e) {
             $status = new \stdClass();

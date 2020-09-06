@@ -8,7 +8,7 @@
                 </div>
                 <div class="box-body text-center">
                     <!-- Split button -->
-                    @if (!isset($showButton) || $showButton)
+                    @if (  backpack_user() && backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()) && (!isset($showButton) || $showButton))
                     <div class="btn-group btn-group-zone">
                         <a class="btn btn-app btn-zone" id="btn-zone-{{ $zone->name }}" href="{{ $zone->actionHref }}" style="margin-bottom: 0px;">
                             <i class="fa {{ $zone->actionButtonClass }}"></i> <span class="button-zone-text">{{ $zone->actionButtonText }}</span>

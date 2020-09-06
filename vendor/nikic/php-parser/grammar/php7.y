@@ -28,6 +28,7 @@ reserved_non_modifiers:
     | T_FUNCTION | T_CONST | T_RETURN | T_PRINT | T_YIELD | T_LIST | T_SWITCH | T_ENDSWITCH | T_CASE | T_DEFAULT
     | T_BREAK | T_ARRAY | T_CALLABLE | T_EXTENDS | T_IMPLEMENTS | T_NAMESPACE | T_TRAIT | T_INTERFACE | T_CLASS
     | T_CLASS_C | T_TRAIT_C | T_FUNC_C | T_METHOD_C | T_LINE | T_FILE | T_DIR | T_NS_C | T_HALT_COMPILER | T_FN
+    | T_MATCH
 ;
 
 semi_reserved:
@@ -48,13 +49,20 @@ reserved_non_modifiers_identifier:
       reserved_non_modifiers                                { $$ = Node\Identifier[$1]; }
 ;
 
-namespace_name_parts:
-      T_STRING                                              { init($1); }
-    | namespace_name_parts T_NS_SEPARATOR T_STRING          { push($1, $3); }
+namespace_declaration_name:
+      T_STRING                                              { $$ = Name[$1]; }
+    | semi_reserved                                         { $$ = Name[$1]; }
+    | T_NAME_QUALIFIED                                      { $$ = Name[$1]; }
 ;
 
 namespace_name:
-      namespace_name_parts                                  { $$ = Name[$1]; }
+      T_STRING                                              { $$ = Name[$1]; }
+    | T_NAME_QUALIFIED                                      { $$ = Name[$1]; }
+;
+
+legacy_namespace_name:
+      namespace_name                                        { $$ = $1; }
+    | T_NAME_FULLY_QUALIFIED                                { $$ = Name[substr($1, 1)]; }
 ;
 
 plain_variable:
@@ -81,11 +89,11 @@ top_statement:
     | class_declaration_statement                           { $$ = $1; }
     | T_HALT_COMPILER
           { $$ = Stmt\HaltCompiler[$this->lexer->handleHaltCompiler()]; }
-    | T_NAMESPACE namespace_name semi
+    | T_NAMESPACE namespace_declaration_name semi
           { $$ = Stmt\Namespace_[$2, null];
             $$->setAttribute('kind', Stmt\Namespace_::KIND_SEMICOLON);
             $this->checkNamespace($$); }
-    | T_NAMESPACE namespace_name '{' top_statement_list '}'
+    | T_NAMESPACE namespace_declaration_name '{' top_statement_list '}'
           { $$ = Stmt\Namespace_[$2, $4];
             $$->setAttribute('kind', Stmt\Namespace_::KIND_BRACED);
             $this->checkNamespace($$); }
@@ -104,16 +112,11 @@ use_type:
     | T_CONST                                               { $$ = Stmt\Use_::TYPE_CONSTANT; }
 ;
 
-/* Using namespace_name_parts here to avoid s/r conflict on T_NS_SEPARATOR */
 group_use_declaration:
-      T_USE use_type namespace_name_parts T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($3, stackAttributes(#3)), $6, $2]; }
-    | T_USE use_type T_NS_SEPARATOR namespace_name_parts T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($4, stackAttributes(#4)), $7, $2]; }
-    | T_USE namespace_name_parts T_NS_SEPARATOR '{' inline_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($2, stackAttributes(#2)), $5, Stmt\Use_::TYPE_UNKNOWN]; }
-    | T_USE T_NS_SEPARATOR namespace_name_parts T_NS_SEPARATOR '{' inline_use_declarations '}'
-          { $$ = Stmt\GroupUse[new Name($3, stackAttributes(#3)), $6, Stmt\Use_::TYPE_UNKNOWN]; }
+      T_USE use_type legacy_namespace_name T_NS_SEPARATOR '{' unprefixed_use_declarations '}'
+          { $$ = Stmt\GroupUse[$3, $6, $2]; }
+    | T_USE legacy_namespace_name T_NS_SEPARATOR '{' inline_use_declarations '}'
+          { $$ = Stmt\GroupUse[$2, $5, Stmt\Use_::TYPE_UNKNOWN]; }
 ;
 
 unprefixed_use_declarations:
@@ -153,8 +156,10 @@ unprefixed_use_declaration:
 ;
 
 use_declaration:
-      unprefixed_use_declaration                            { $$ = $1; }
-    | T_NS_SEPARATOR unprefixed_use_declaration             { $$ = $2; }
+      legacy_namespace_name
+          { $$ = Stmt\UseUse[$1, null, Stmt\Use_::TYPE_UNKNOWN]; $this->checkUseUse($$, #1); }
+    | legacy_namespace_name T_AS identifier
+          { $$ = Stmt\UseUse[$1, $3, Stmt\Use_::TYPE_UNKNOWN]; $this->checkUseUse($$, #3); }
 ;
 
 inline_use_declaration:
@@ -232,9 +237,18 @@ non_empty_statement:
     | T_RETURN optional_expr semi                           { $$ = Stmt\Return_[$2]; }
     | T_GLOBAL global_var_list semi                         { $$ = Stmt\Global_[$2]; }
     | T_STATIC static_var_list semi                         { $$ = Stmt\Static_[$2]; }
-    | T_ECHO expr_list semi                                 { $$ = Stmt\Echo_[$2]; }
+    | T_ECHO expr_list_forbid_comma semi                    { $$ = Stmt\Echo_[$2]; }
     | T_INLINE_HTML                                         { $$ = Stmt\InlineHTML[$1]; }
-    | expr semi                                             { $$ = Stmt\Expression[$1]; }
+    | expr semi {
+        $e = $1;
+        if ($e instanceof Expr\Throw_) {
+            // For backwards-compatibility reasons, convert throw in statement position into
+            // Stmt\Throw_ rather than Stmt\Expression(Expr\Throw_).
+            $$ = Stmt\Throw_[$e->expr];
+        } else {
+            $$ = Stmt\Expression[$e];
+        }
+    }
     | T_UNSET '(' variables_list ')' semi                   { $$ = Stmt\Unset_[$3]; }
     | T_FOREACH '(' expr T_AS foreach_variable ')' foreach_statement
           { $$ = Stmt\Foreach_[$3, $5[0], ['keyVar' => null, 'byRef' => $5[1], 'stmts' => $7]]; }
@@ -245,7 +259,6 @@ non_empty_statement:
     | T_DECLARE '(' declare_list ')' declare_statement      { $$ = Stmt\Declare_[$3, $5]; }
     | T_TRY '{' inner_statement_list '}' catches optional_finally
           { $$ = Stmt\TryCatch[$3, $5, $6]; $this->checkTryCatch($$); }
-    | T_THROW expr semi                                     { $$ = Stmt\Throw_[$2]; }
     | T_GOTO identifier semi                                { $$ = Stmt\Goto_[$2]; }
     | identifier ':'                                        { $$ = Stmt\Label[$1]; }
     | error                                                 { $$ = array(); /* means: no statement */ }
@@ -269,7 +282,7 @@ name_union:
 ;
 
 catch:
-    T_CATCH '(' name_union plain_variable ')' '{' inner_statement_list '}'
+    T_CATCH '(' name_union optional_plain_variable ')' '{' inner_statement_list '}'
         { $$ = Stmt\Catch_[$3, $4, $7]; }
 ;
 
@@ -399,6 +412,25 @@ case_separator:
     | ';'
 ;
 
+match:
+      T_MATCH '(' expr ')' '{' match_arm_list '}'           { $$ = Expr\Match_[$3, $6]; }
+;
+
+match_arm_list:
+      /* empty */                                           { $$ = []; }
+    | non_empty_match_arm_list optional_comma               { $$ = $1; }
+;
+
+non_empty_match_arm_list:
+      match_arm                                             { init($1); }
+    | non_empty_match_arm_list ',' match_arm                { push($1, $3); }
+;
+
+match_arm:
+      expr_list_allow_comma T_DOUBLE_ARROW expr             { $$ = Node\MatchArm[$1, $3]; }
+    | T_DEFAULT optional_comma T_DOUBLE_ARROW expr          { $$ = Node\MatchArm[null, $4]; }
+;
+
 while_statement:
       statement                                             { $$ = toArray($1); }
     | ':' inner_statement_list T_ENDWHILE ';'               { $$ = $2; }
@@ -440,7 +472,7 @@ foreach_variable:
 ;
 
 parameter_list:
-      non_empty_parameter_list no_comma                     { $$ = $1; }
+      non_empty_parameter_list optional_comma               { $$ = $1; }
     | /* empty */                                           { $$ = array(); }
 ;
 
@@ -449,13 +481,22 @@ non_empty_parameter_list:
     | non_empty_parameter_list ',' parameter                { push($1, $3); }
 ;
 
+optional_visibility_modifier:
+      /* empty */               { $$ = 0; }
+    | T_PUBLIC                  { $$ = Stmt\Class_::MODIFIER_PUBLIC; }
+    | T_PROTECTED               { $$ = Stmt\Class_::MODIFIER_PROTECTED; }
+    | T_PRIVATE                 { $$ = Stmt\Class_::MODIFIER_PRIVATE; }
+;
+
 parameter:
-      optional_type optional_ref optional_ellipsis plain_variable
-          { $$ = Node\Param[$4, null, $1, $2, $3]; $this->checkParam($$); }
-    | optional_type optional_ref optional_ellipsis plain_variable '=' expr
-          { $$ = Node\Param[$4, $6, $1, $2, $3]; $this->checkParam($$); }
-    | optional_type optional_ref optional_ellipsis error
-          { $$ = Node\Param[Expr\Error[], null, $1, $2, $3]; }
+      optional_visibility_modifier optional_type_without_static optional_ref optional_ellipsis plain_variable
+          { $$ = new Node\Param($5, null, $2, $3, $4, attributes(), $1);
+            $this->checkParam($$); }
+    | optional_visibility_modifier optional_type_without_static optional_ref optional_ellipsis plain_variable '=' expr
+          { $$ = new Node\Param($5, $7, $2, $3, $4, attributes(), $1);
+            $this->checkParam($$); }
+    | optional_visibility_modifier optional_type_without_static optional_ref optional_ellipsis error
+          { $$ = new Node\Param(Expr\Error[], null, $2, $3, $4, attributes(), $1); }
 ;
 
 type_expr:
@@ -465,6 +506,11 @@ type_expr:
 ;
 
 type:
+      type_without_static                                   { $$ = $1; }
+    | T_STATIC                                              { $$ = Node\Name['static']; }
+;
+
+type_without_static:
       name                                                  { $$ = $this->handleBuiltinTypes($1); }
     | T_ARRAY                                               { $$ = Node\Identifier['array']; }
     | T_CALLABLE                                            { $$ = Node\Identifier['callable']; }
@@ -475,9 +521,20 @@ union_type:
     | union_type '|' type                                   { push($1, $3); }
 ;
 
-optional_type:
+union_type_without_static:
+      type_without_static '|' type_without_static           { init($1, $3); }
+    | union_type_without_static '|' type_without_static     { push($1, $3); }
+;
+
+type_expr_without_static:
+      type_without_static                                   { $$ = $1; }
+    | '?' type_without_static                               { $$ = Node\NullableType[$2]; }
+    | union_type_without_static                             { $$ = Node\UnionType[$1]; }
+;
+
+optional_type_without_static:
       /* empty */                                           { $$ = null; }
-    | type_expr                                             { $$ = $1; }
+    | type_expr_without_static                              { $$ = $1; }
 ;
 
 optional_return_type:
@@ -500,6 +557,8 @@ argument:
       expr                                                  { $$ = Node\Arg[$1, false, false]; }
     | '&' variable                                          { $$ = Node\Arg[$2, true, false]; }
     | T_ELLIPSIS expr                                       { $$ = Node\Arg[$2, false, true]; }
+    | identifier_ex ':' expr
+          { $$ = new Node\Arg($3, false, false, attributes(), $1); }
 ;
 
 global_var_list:
@@ -541,7 +600,7 @@ class_statement_list:
 ;
 
 class_statement:
-      variable_modifiers optional_type property_declaration_list ';'
+      variable_modifiers optional_type_without_static property_declaration_list ';'
           { $attrs = attributes();
             $$ = new Stmt\Property($1, $3, $attrs, $2); $this->checkProperty($$, #1); }
     | method_modifiers T_CONST class_const_list ';'
@@ -632,8 +691,12 @@ property_declaration:
     | property_decl_name '=' expr                           { $$ = Stmt\PropertyProperty[$1, $3]; }
 ;
 
-expr_list:
+expr_list_forbid_comma:
       non_empty_expr_list no_comma                          { $$ = $1; }
+;
+
+expr_list_allow_comma:
+      non_empty_expr_list optional_comma                    { $$ = $1; }
 ;
 
 non_empty_expr_list:
@@ -643,7 +706,7 @@ non_empty_expr_list:
 
 for_expr:
       /* empty */                                           { $$ = array(); }
-    | expr_list                                             { $$ = $1; }
+    | expr_list_forbid_comma                                { $$ = $1; }
 ;
 
 expr:
@@ -653,6 +716,7 @@ expr:
     | variable '=' expr                                     { $$ = Expr\Assign[$1, $3]; }
     | variable '=' '&' variable                             { $$ = Expr\AssignRef[$1, $4]; }
     | new_expr                                              { $$ = $1; }
+    | match                                                 { $$ = $1; }
     | T_CLONE expr                                          { $$ = Expr\Clone_[$2]; }
     | variable T_PLUS_EQUAL expr                            { $$ = Expr\AssignOp\Plus      [$1, $3]; }
     | variable T_MINUS_EQUAL expr                           { $$ = Expr\AssignOp\Minus     [$1, $3]; }
@@ -706,7 +770,7 @@ expr:
     | expr '?' expr ':' expr                                { $$ = Expr\Ternary[$1, $3,   $5]; }
     | expr '?' ':' expr                                     { $$ = Expr\Ternary[$1, null, $4]; }
     | expr T_COALESCE expr                                  { $$ = Expr\BinaryOp\Coalesce[$1, $3]; }
-    | T_ISSET '(' variables_list ')'                        { $$ = Expr\Isset_[$3]; }
+    | T_ISSET '(' expr_list_allow_comma ')'                 { $$ = Expr\Isset_[$3]; }
     | T_EMPTY '(' expr ')'                                  { $$ = Expr\Empty_[$3]; }
     | T_INCLUDE expr                                        { $$ = Expr\Include_[$2, Expr\Include_::TYPE_INCLUDE]; }
     | T_INCLUDE_ONCE expr                                   { $$ = Expr\Include_[$2, Expr\Include_::TYPE_INCLUDE_ONCE]; }
@@ -735,6 +799,7 @@ expr:
     | T_YIELD expr                                          { $$ = Expr\Yield_[$2, null]; }
     | T_YIELD expr T_DOUBLE_ARROW expr                      { $$ = Expr\Yield_[$4, $2]; }
     | T_YIELD_FROM expr                                     { $$ = Expr\YieldFrom[$2]; }
+    | T_THROW expr                                          { $$ = Expr\Throw_[$2]; }
 
     | T_FN optional_ref '(' parameter_list ')' optional_return_type T_DOUBLE_ARROW expr
           { $$ = Expr\ArrowFunction[['static' => false, 'byRef' => $2, 'params' => $4, 'returnType' => $6, 'expr' => $8]]; }
@@ -767,7 +832,7 @@ lexical_vars:
 ;
 
 lexical_var_list:
-      non_empty_lexical_var_list no_comma                   { $$ = $1; }
+      non_empty_lexical_var_list optional_comma             { $$ = $1; }
 ;
 
 non_empty_lexical_var_list:
@@ -792,20 +857,22 @@ class_name:
 ;
 
 name:
-      namespace_name_parts                                  { $$ = Name[$1]; }
-    | T_NS_SEPARATOR namespace_name_parts                   { $$ = Name\FullyQualified[$2]; }
-    | T_NAMESPACE T_NS_SEPARATOR namespace_name_parts       { $$ = Name\Relative[$3]; }
+      T_STRING                                              { $$ = Name[$1]; }
+    | T_NAME_QUALIFIED                                      { $$ = Name[$1]; }
+    | T_NAME_FULLY_QUALIFIED                                { $$ = Name\FullyQualified[substr($1, 1)]; }
+    | T_NAME_RELATIVE                                       { $$ = Name\Relative[substr($1, 10)]; }
 ;
 
 class_name_reference:
       class_name                                            { $$ = $1; }
     | new_variable                                          { $$ = $1; }
+    | '(' expr ')'                                          { $$ = $2; }
     | error                                                 { $$ = Expr\Error[]; $this->errorState = 2; }
 ;
 
 class_name_or_var:
       class_name                                            { $$ = $1; }
-    | dereferencable                                        { $$ = $1; }
+    | fully_dereferencable                                  { $$ = $1; }
 ;
 
 exit_expr:
@@ -827,9 +894,20 @@ ctor_arguments:
 
 constant:
       name                                                  { $$ = Expr\ConstFetch[$1]; }
-    | class_name_or_var T_PAAMAYIM_NEKUDOTAYIM identifier_ex
+    | T_LINE                                                { $$ = Scalar\MagicConst\Line[]; }
+    | T_FILE                                                { $$ = Scalar\MagicConst\File[]; }
+    | T_DIR                                                 { $$ = Scalar\MagicConst\Dir[]; }
+    | T_CLASS_C                                             { $$ = Scalar\MagicConst\Class_[]; }
+    | T_TRAIT_C                                             { $$ = Scalar\MagicConst\Trait_[]; }
+    | T_METHOD_C                                            { $$ = Scalar\MagicConst\Method[]; }
+    | T_FUNC_C                                              { $$ = Scalar\MagicConst\Function_[]; }
+    | T_NS_C                                                { $$ = Scalar\MagicConst\Namespace_[]; }
+;
+
+class_constant:
+      class_name_or_var T_PAAMAYIM_NEKUDOTAYIM identifier_ex
           { $$ = Expr\ClassConstFetch[$1, $3]; }
-    /* We interpret and isolated FOO:: as an unfinished class constant fetch. It could also be
+    /* We interpret an isolated FOO:: as an unfinished class constant fetch. It could also be
        an unfinished static property fetch or unfinished scoped call. */
     | class_name_or_var T_PAAMAYIM_NEKUDOTAYIM error
           { $$ = Expr\ClassConstFetch[$1, new Expr\Error(stackAttributes(#3))]; $this->errorState = 2; }
@@ -849,28 +927,21 @@ dereferencable_scalar:
     | T_CONSTANT_ENCAPSED_STRING
           { $attrs = attributes(); $attrs['kind'] = strKind($1);
             $$ = new Scalar\String_(Scalar\String_::parse($1), $attrs); }
+    | '"' encaps_list '"'
+          { $attrs = attributes(); $attrs['kind'] = Scalar\String_::KIND_DOUBLE_QUOTED;
+            parseEncapsed($2, '"', true); $$ = new Scalar\Encapsed($2, $attrs); }
 ;
 
 scalar:
       T_LNUMBER                                             { $$ = $this->parseLNumber($1, attributes()); }
     | T_DNUMBER                                             { $$ = Scalar\DNumber[Scalar\DNumber::parse($1)]; }
-    | T_LINE                                                { $$ = Scalar\MagicConst\Line[]; }
-    | T_FILE                                                { $$ = Scalar\MagicConst\File[]; }
-    | T_DIR                                                 { $$ = Scalar\MagicConst\Dir[]; }
-    | T_CLASS_C                                             { $$ = Scalar\MagicConst\Class_[]; }
-    | T_TRAIT_C                                             { $$ = Scalar\MagicConst\Trait_[]; }
-    | T_METHOD_C                                            { $$ = Scalar\MagicConst\Method[]; }
-    | T_FUNC_C                                              { $$ = Scalar\MagicConst\Function_[]; }
-    | T_NS_C                                                { $$ = Scalar\MagicConst\Namespace_[]; }
     | dereferencable_scalar                                 { $$ = $1; }
     | constant                                              { $$ = $1; }
+    | class_constant                                        { $$ = $1; }
     | T_START_HEREDOC T_ENCAPSED_AND_WHITESPACE T_END_HEREDOC
           { $$ = $this->parseDocString($1, $2, $3, attributes(), stackAttributes(#3), true); }
     | T_START_HEREDOC T_END_HEREDOC
           { $$ = $this->parseDocString($1, '', $2, attributes(), stackAttributes(#2), true); }
-    | '"' encaps_list '"'
-          { $attrs = attributes(); $attrs['kind'] = Scalar\String_::KIND_DOUBLE_QUOTED;
-            parseEncapsed($2, '"', true); $$ = new Scalar\Encapsed($2, $attrs); }
     | T_START_HEREDOC encaps_list T_END_HEREDOC
           { $$ = $this->parseDocString($1, $2, $3, attributes(), stackAttributes(#3), true); }
 ;
@@ -880,10 +951,16 @@ optional_expr:
     | expr                                                  { $$ = $1; }
 ;
 
-dereferencable:
+fully_dereferencable:
       variable                                              { $$ = $1; }
     | '(' expr ')'                                          { $$ = $2; }
     | dereferencable_scalar                                 { $$ = $1; }
+    | class_constant                                        { $$ = $1; }
+;
+
+array_object_dereferencable:
+      fully_dereferencable                                  { $$ = $1; }
+    | constant                                              { $$ = $1; }
 ;
 
 callable_expr:
@@ -894,18 +971,27 @@ callable_expr:
 
 callable_variable:
       simple_variable                                       { $$ = Expr\Variable[$1]; }
-    | dereferencable '[' optional_expr ']'                  { $$ = Expr\ArrayDimFetch[$1, $3]; }
-    | constant '[' optional_expr ']'                        { $$ = Expr\ArrayDimFetch[$1, $3]; }
-    | dereferencable '{' expr '}'                           { $$ = Expr\ArrayDimFetch[$1, $3]; }
+    | array_object_dereferencable '[' optional_expr ']'     { $$ = Expr\ArrayDimFetch[$1, $3]; }
+    | array_object_dereferencable '{' expr '}'              { $$ = Expr\ArrayDimFetch[$1, $3]; }
     | function_call                                         { $$ = $1; }
-    | dereferencable T_OBJECT_OPERATOR property_name argument_list
+    | array_object_dereferencable T_OBJECT_OPERATOR property_name argument_list
           { $$ = Expr\MethodCall[$1, $3, $4]; }
+    | array_object_dereferencable T_NULLSAFE_OBJECT_OPERATOR property_name argument_list
+          { $$ = Expr\NullsafeMethodCall[$1, $3, $4]; }
+;
+
+optional_plain_variable:
+      /* empty */                                           { $$ = null; }
+    | plain_variable                                        { $$ = $1; }
 ;
 
 variable:
       callable_variable                                     { $$ = $1; }
     | static_member                                         { $$ = $1; }
-    | dereferencable T_OBJECT_OPERATOR property_name        { $$ = Expr\PropertyFetch[$1, $3]; }
+    | array_object_dereferencable T_OBJECT_OPERATOR property_name
+          { $$ = Expr\PropertyFetch[$1, $3]; }
+    | array_object_dereferencable T_NULLSAFE_OBJECT_OPERATOR property_name
+          { $$ = Expr\NullsafePropertyFetch[$1, $3]; }
 ;
 
 simple_variable:
@@ -930,6 +1016,7 @@ new_variable:
     | new_variable '[' optional_expr ']'                    { $$ = Expr\ArrayDimFetch[$1, $3]; }
     | new_variable '{' expr '}'                             { $$ = Expr\ArrayDimFetch[$1, $3]; }
     | new_variable T_OBJECT_OPERATOR property_name          { $$ = Expr\PropertyFetch[$1, $3]; }
+    | new_variable T_NULLSAFE_OBJECT_OPERATOR property_name { $$ = Expr\NullsafePropertyFetch[$1, $3]; }
     | class_name T_PAAMAYIM_NEKUDOTAYIM static_member_prop_name
           { $$ = Expr\StaticPropertyFetch[$1, $3]; }
     | new_variable T_PAAMAYIM_NEKUDOTAYIM static_member_prop_name
@@ -938,34 +1025,19 @@ new_variable:
 
 member_name:
       identifier_ex                                         { $$ = $1; }
-    | '{' expr '}'	                                        { $$ = $2; }
-    | simple_variable	                                    { $$ = Expr\Variable[$1]; }
+    | '{' expr '}'                                          { $$ = $2; }
+    | simple_variable                                       { $$ = Expr\Variable[$1]; }
 ;
 
 property_name:
       identifier                                            { $$ = $1; }
-    | '{' expr '}'	                                        { $$ = $2; }
-    | simple_variable	                                    { $$ = Expr\Variable[$1]; }
+    | '{' expr '}'                                          { $$ = $2; }
+    | simple_variable                                       { $$ = Expr\Variable[$1]; }
     | error                                                 { $$ = Expr\Error[]; $this->errorState = 2; }
 ;
 
 list_expr:
-      T_LIST '(' list_expr_elements ')'                     { $$ = Expr\List_[$3]; }
-;
-
-list_expr_elements:
-      list_expr_elements ',' list_expr_element              { push($1, $3); }
-    | list_expr_element                                     { init($1); }
-;
-
-list_expr_element:
-      variable                                              { $$ = Expr\ArrayItem[$1, null, false]; }
-    | '&' variable                                          { $$ = Expr\ArrayItem[$2, null, true]; }
-    | list_expr                                             { $$ = Expr\ArrayItem[$1, null, false]; }
-    | expr T_DOUBLE_ARROW variable                          { $$ = Expr\ArrayItem[$3, $1, false]; }
-    | expr T_DOUBLE_ARROW '&' variable                      { $$ = Expr\ArrayItem[$4, $1, true]; }
-    | expr T_DOUBLE_ARROW list_expr                         { $$ = Expr\ArrayItem[$3, $1, false]; }
-    | /* empty */                                           { $$ = null; }
+      T_LIST '(' inner_array_pair_list ')'                  { $$ = Expr\List_[$3]; }
 ;
 
 array_pair_list:
@@ -985,10 +1057,12 @@ inner_array_pair_list:
 ;
 
 array_pair:
-      expr T_DOUBLE_ARROW expr                              { $$ = Expr\ArrayItem[$3, $1,   false]; }
-    | expr                                                  { $$ = Expr\ArrayItem[$1, null, false]; }
-    | expr T_DOUBLE_ARROW '&' variable                      { $$ = Expr\ArrayItem[$4, $1,   true]; }
+      expr                                                  { $$ = Expr\ArrayItem[$1, null, false]; }
     | '&' variable                                          { $$ = Expr\ArrayItem[$2, null, true]; }
+    | list_expr                                             { $$ = Expr\ArrayItem[$1, null, false]; }
+    | expr T_DOUBLE_ARROW expr                              { $$ = Expr\ArrayItem[$3, $1,   false]; }
+    | expr T_DOUBLE_ARROW '&' variable                      { $$ = Expr\ArrayItem[$4, $1,   true]; }
+    | expr T_DOUBLE_ARROW list_expr                         { $$ = Expr\ArrayItem[$3, $1,   false]; }
     | T_ELLIPSIS expr                                       { $$ = Expr\ArrayItem[$2, null, false, attributes(), true]; }
     | /* empty */                                           { $$ = null; }
 ;
@@ -1012,6 +1086,7 @@ encaps_var:
       plain_variable                                        { $$ = $1; }
     | plain_variable '[' encaps_var_offset ']'              { $$ = Expr\ArrayDimFetch[$1, $3]; }
     | plain_variable T_OBJECT_OPERATOR identifier           { $$ = Expr\PropertyFetch[$1, $3]; }
+    | plain_variable T_NULLSAFE_OBJECT_OPERATOR identifier  { $$ = Expr\NullsafePropertyFetch[$1, $3]; }
     | T_DOLLAR_OPEN_CURLY_BRACES expr '}'                   { $$ = Expr\Variable[$2]; }
     | T_DOLLAR_OPEN_CURLY_BRACES T_STRING_VARNAME '}'       { $$ = Expr\Variable[$2]; }
     | T_DOLLAR_OPEN_CURLY_BRACES encaps_str_varname '[' expr ']' '}'

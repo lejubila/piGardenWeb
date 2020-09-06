@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+
 use Backpack\PermissionManager\app\Models\Permission;
 use Backpack\PermissionManager\app\Models\Role;
 
@@ -15,53 +16,24 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
-        /*
-        $records = [
-            [
-                'name' => 'manage users'
-            ],
-            [
-                'name' => 'manage articles'
-            ],
-            [
-                'name' => 'manage customers'
-            ],
-        ];
 
-        foreach($records as $r) {
-            $p = new Permission($r);
-            $p->save();
-        }
-        */
+        $roleAdmin = Role::findOrCreate('admin', backpack_guard_name());
 
+        $permissionManageUsers = Permission::findOrCreate('manage users', backpack_guard_name());
+        $permissionStartStopZones = Permission::findOrCreate('start stop zones', backpack_guard_name());
+        $permissionManageCronZone = Permission::findOrCreate('manage cron zones', backpack_guard_name());
+        $permissionManageSetup = Permission::findOrCreate('manage setup', backpack_guard_name());
+        $permissionShutdownRestart = Permission::findOrCreate('shutdown restart', backpack_guard_name());
+        $permissionApiLog = Permission::findOrCreate('api log', backpack_guard_name());
 
-        $permissionManageUsers = new Permission(['name' => 'manage users']);
-        $permissionManageUsers->save();
-        /*
-        $permissionManageArticles = new Permission(['name' => 'manage articles']);
-        $permissionManageArticles->save();
-        $permissionCustomers = new Permission(['name' => 'manage customers']);
-        $permissionCustomers->save();
-        */
-
-        $roleAdmin = Role::create(['name' => 'admin']);
         $roleAdmin->givePermissionTo([
             $permissionManageUsers,
-            //$permissionManageArticles,
-            //$permissionCustomers,
+            $permissionStartStopZones,
+            $permissionManageCronZone,
+            $permissionManageSetup,
+            $permissionShutdownRestart,
+            $permissionApiLog,
         ]);
-
-        /*
-        $roleProduzione = Role::create(['name' => 'produzione']);
-        $roleProduzione->givePermissionTo(
-            $permissionManageArticles
-        );
-
-        $roleCommerciale = Role::create(['name' => 'commerciale']);
-        $roleCommerciale->givePermissionTo(
-            $permissionCustomers
-        );
-        */
 
     }
 

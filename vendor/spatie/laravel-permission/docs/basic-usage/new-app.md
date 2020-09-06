@@ -9,6 +9,8 @@ If you want to just try out the features of this package you can get started wit
 
 The examples on this page are primarily added for assistance in creating a quick demo app for troubleshooting purposes, to post the repo on github for convenient sharing to collaborate or get support.
 
+If you're new to Laravel or to any of the concepts mentioned here, you can learn more in the [Laravel documentation](https://laravel.com/docs/) and in the free videos at Laracasts such as this series: https://laracasts.com/series/laravel-6-from-scratch/
+
 ### Initial setup:
 
 ```sh
@@ -88,21 +90,18 @@ class PermissionsDemoSeeder extends Seeder
         $user = Factory(App\User::class)->create([
             'name' => 'Example User',
             'email' => 'test@example.com',
-            // factory default password is 'secret'
         ]);
         $user->assignRole($role1);
 
         $user = Factory(App\User::class)->create([
             'name' => 'Example Admin User',
             'email' => 'admin@example.com',
-            // factory default password is 'secret'
         ]);
         $user->assignRole($role2);
 
         $user = Factory(App\User::class)->create([
             'name' => 'Example Super-Admin User',
             'email' => 'superadmin@example.com',
-            // factory default password is 'secret'
         ]);
         $user->assignRole($role3);
     }

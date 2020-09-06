@@ -36,9 +36,12 @@
 
                         <div class="pull-right">
 
+                            @if(backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
                             <a class="btn btn-success" href="{{ route('zone.all_enable_cron') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_enable_all_schduling') }}">
                                 <i class="fa fa-clock-o"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_enable_all_schduling') }}</span>
                             </a>
+                            @endif
+                            @if(backpack_user()->hasPermissionTo('start stop zones', backpack_guard_name()))
                             <div class="btn-group">
                                 <a class="btn btn-warning" href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.irrigation_stop_all') }}">
                                     <i class="fa fa-stop"></i> <span class="hide">&nbsp;{{ trans('pigarden.irrigation_stop_all') }}</span>
@@ -49,10 +52,13 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-close-all" role="menu" style="right:0; left:auto;">
                                     <li><a href="{{ route('zone.all_stop') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-stop"></i> {{ trans('pigarden.irrigation_stop_all') }}</a></li>
+                                    @if(backpack_user()->hasPermissionTo('manage cron zones', backpack_guard_name()))
                                     <li><a href="{{ route('zone.all_stop', ['disable_scheduling' => 'disable_scheduling']) }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-clock-o"></i> {{ trans('pigarden.irrigation_stop_all_and_disable_scheduled') }}</a></li>
+                                    @endif
                                 </ul>
                             </div>
-
+                            @endif
+                            @if(backpack_user()->hasPermissionTo('shutdown restart', backpack_guard_name()))
                             <div class="btn-group">
                                 <a class="btn btn-danger" href="{{ route('reboot') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')" title="{{ trans('pigarden.system_reboot') }}">
                                     <i class="fa fa-power-off"></i> <span class="hide">&nbsp;{{ trans('pigarden.system_reboot') }}</span>
@@ -66,6 +72,7 @@
                                     <li><a href="{{ route('poweroff') }}" onclick="return confirm('{{ trans('pigarden.confirm') }}')"><i class="fa fa-power-off"></i> {{ trans('pigarden.system_shutdown') }}</a></li>
                                 </ul>
                             </div>
+                            @endif
                         </div>
 
                     </div>

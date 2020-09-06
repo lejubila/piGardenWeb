@@ -58,5 +58,7 @@ return [
         'button'             => "Reset Password",
         'notice'             => "",
         'subject'            => "Reset Password",
-    ]
+    ],
+
+    'api_token'              => 'Api Token'
 ];

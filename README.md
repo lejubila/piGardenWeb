@@ -1,7 +1,18 @@
 # piGardenWeb
 Web control panel to manage your piGarden (system irrigation with Raspberry Pi)
 
-![piGardenWeb v.0.4.4](https://www.lejubila.net/wp-content/uploads/2020/04/pigarden044.png)
+![piGardenWeb v.0.6.0 Dashboard](https://www.lejubila.net/wp-content/uploads/2020/09/piGardeWeb_600_dashboard.png)
+
+![piGardenWeb v.0.6.0 Zone setting](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_zone.png)
+
+![piGardenWeb v.0.6.0 Customize icon](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_icons.png)
+
+![piGardenWeb v.0.6.0 Log](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_log.png)
+
+![piGardenWeb v.0.6.0 Log](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_log.png)
+
+![piGardenWeb v.0.6.0 Manage users and permission](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_user_and_permission.png)
+
 
 ## Official documentation 
 Documentation of piGarden and build system irrigation with Raspberry Pi can be found on the [www.lejubila.net/tag/pigarden/](http://www.lejubila.net/tag/pigarden/)
@@ -56,6 +67,7 @@ modify the file /etc/php/7.3/fpm/php.ini, search and uncomment the line with cgi
         touch database/piGarden.sqlite
         php7.3 artisan key:generate
         php7.3 artisan migrate
+        php7.3 artisan db:seed
         sudo chown -R pi:www-data /home/pi/piGardenWeb/
         sudo chmod -R g+w storage database database/piGarden.sqlite
         ```
@@ -78,12 +90,15 @@ modify the file /etc/php/7.3/fpm/php.ini, search and uncomment the line with cgi
 
 10) Open your browser on http://ip_address_of_your_raspberry_pi and register your user.
 
-11) Sign in to piGardenWeb with the newly created user, and perform the initial setup from the menu "SETUP / Initial setup"
+11) Sign in to piGardenWeb with the newly created user
 
-11) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
+12) Goto in to menu "Users, Roles, Perm / Users" and assign admin role to your user 
+
+13) Perform the initial setup from the menu "SETUP / Initial setup"
+
+12) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
+    Also disable ALLOW_MANAGE_USER and ALLOW_MANAGE_ROLE_AND_PERMISSION.
     You can also change the language of the interface (LOCALE = en / it) and smtp parameters for sending email notifications to reset the user password.
-
-
 
 ## Installation on Raspbian 9 stretch (nginx + php7) -- for versions of piGardenWeb lower than v.0.4.4
 
@@ -155,7 +170,7 @@ modify the file /etc/php/7.0/fpm/php.ini, search and uncomment the line with cgi
 
 11) Sign in to piGardenWeb with the newly created user, and perform the initial setup from the menu "SETUP / Initial setup"
 
-11) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
+12) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
     You can also change the language of the interface (LOCALE = en / it) and smtp parameters for sending email notifications to reset the user password.
 
 ## Installation on Raspbian 8 jessie (nginx + php5) -- for versions of piGardenWeb lower than v.0.4.4
@@ -228,5 +243,5 @@ modify the file /etc/php5/fpm/php.ini, search and uncomment the line with cgi.fi
 
 11) Sign in to piGardenWeb with the newly created user, and perform the initial setup from the menu "SETUP / Initial setup"
 
-11) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
+12) Now you can disable open registration by editing the .env file and setting REGISTRATION_OPEN with the value "false".
     You can also change the language of the interface (LOCALE = en / it) and smtp parameters for sending email notifications to reset the user password.

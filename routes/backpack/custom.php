@@ -13,6 +13,18 @@ Route::group([
 ], function () { // custom admin routes
 
     CRUD::resource('icon', 'IconCrudController');
+    CRUD::resource('log', 'LogCrudController');
+
+}); // this should be the absolute last line of this file
+
+Route::group([
+    'prefix'     => config('backpack.base.route_prefix', 'admin'),
+    'middleware' => ['web', config('backpack.base.middleware_key', 'admin')],
+    'namespace'  => 'App\Http\Controllers\Auth',
+], function () { // custom admin routes
+
+    Route::get('account-api-token', 'MyAccountController@getApiTokenForm')->name('backpack.account.api_token');
+    Route::post('account-api-token', 'MyAccountController@postApiTokenForm');
 
 }); // this should be the absolute last line of this file
 

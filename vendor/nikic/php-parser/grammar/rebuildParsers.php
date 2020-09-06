@@ -16,7 +16,7 @@ $tokensResultsFile = $resultDir . '/Tokens.php';
 $kmyacc = getenv('KMYACC');
 if (!$kmyacc) {
     // Use phpyacc from dev dependencies by default.
-    $kmyacc = PHP_BINARY . ' ' . __DIR__ . '/../vendor/bin/phpyacc';
+    $kmyacc = __DIR__ . '/../vendor/bin/phpyacc';
 }
 
 $options = array_flip($argv);
@@ -178,7 +178,7 @@ function resolveMacros($code) {
 
                 return '$startAttributes = ' . $args[1] . ';'
                     . ' if (isset($startAttributes[\'comments\']))'
-                    . ' { ' . $args[0] . ' = new Stmt\Nop($this->createZeroLengthAttributes($startAttributes)); }'
+                    . ' { ' . $args[0] . ' = new Stmt\Nop($this->createCommentNopAttributes($startAttributes[\'comments\'])); }'
                     . ' else { ' . $args[0] . ' = null; }';
             }
 

@@ -1,3 +1,8 @@
+## 0.6.0 - 06/09/2020
+ - Implemented roles and user permissions to manage piGardenWeb
+ - Implemented api and interface to manage pigarden log
+ - Update laravel libraries
+
 ## 0.5.1 - 13/06/2020
  - Fix bug when setting on true the APP_FORCE_HTTPS parameter in .app configuration file
 
