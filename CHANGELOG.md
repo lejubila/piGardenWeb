@@ -1,3 +1,6 @@
+## 0.6.1 - 09/08/2021
+ - Implemented max record in log table with .env parameter PIGARDEN_MAX_RECORD_LOG  
+
 ## 0.6.0 - 06/09/2020
  - Implemented roles and user permissions to manage piGardenWeb
  - Implemented api and interface to manage pigarden log

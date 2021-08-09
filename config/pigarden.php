@@ -17,9 +17,11 @@ return [
 
     'timeout_json_dashboard_status' => env('PIGARDEN_TIMEOUT_DASHBOARD_STATUS', 20000),
 
+    'max_record_log' => env('PIGARDEN_MAX_RECORD_LOG', 0),
+
     'version' => [
         'ver' => 0,
         'sub' => 6,
-        'rel' => 0
+        'rel' => 1
     ],
 ];
