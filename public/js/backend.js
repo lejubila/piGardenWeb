@@ -21,6 +21,7 @@ function updateDashboard(urlAction, first=false)
             updateDashboardExec(data);
             updateZones(data);
             updateDateTime(data);
+            updateSensor(data);
             updateNotify(data);
         },
         error: function( jqXHR, textStatus, errorThrown ){
@@ -30,7 +31,7 @@ function updateDashboard(urlAction, first=false)
         }
     });
 
-    var timeout = 20000
+    var timeout = 20000;
     if (typeof timeoutJsonDashboardStatus !== 'undefined') {
         timeout = timeoutJsonDashboardStatus;
     }

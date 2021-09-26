@@ -189,6 +189,11 @@ return array(
     'System reboot is started' => 'Riavvio del sistema in corso',
     'System shutdown is started' => 'Arresto del sistema in corso',
 
+    'sensor' => 'Sensore',
+    'moisture' => 'Umidità',
+    'illuminance' => 'Luminosità',
+    'fertility' => 'Fertilità',
+
     'enabled' => 'Abilitato',
 
     'icon' => [

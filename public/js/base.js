@@ -65,6 +65,21 @@ function updateZones(status){
     }
 }
 
+function updateSensor(data){
+    if (checkExitsElement(data, 'status', 'sensor')){
+        vue_sensor.sensor = data.status.sensor;
+    }
+}
+
+if (typeof Vue !== 'undefined') {
+    var vue_sensor = new Vue({
+        el: '#vue-sensor',
+        data: {
+            sensor: null
+        }
+    });
+}
+
 function updateDateTime(status){
     updateElement('#pigarden-date-time', status.date_time);
 }

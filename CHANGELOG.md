@@ -1,3 +1,6 @@
+## 0.6.2 - xx/xx/2021
+ - Implemented view sensor status of piGarden from 0.6.4
+
 ## 0.6.1 - 09/08/2021
  - Implemented max record in log table with .env parameter PIGARDEN_MAX_RECORD_LOG  
 

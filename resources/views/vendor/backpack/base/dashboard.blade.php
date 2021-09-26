@@ -185,9 +185,79 @@
             </div>
         </div>
     @endif
+
+    <div class="row" id="vue-sensor" v-if="sensor">
+        <div class="col-md-12" v-for="(sensor_item, sensor_name) in sensor">
+            <div class="box box-warning">
+                <div class="box-header with-border text-center">
+                    <div class="box-title">{{trans('pigarden.sensor')}}: <strong>@{{ sensor_name.replace('_', ' ') }}</strong></div>
+                </div>
+                <div class="box-body">
+
+                    <div class="row text-center">
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                    <i class="fa fa-tint" aria-hidden="true" style="font-size: 3em; color: #0b58a2"></i>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                    <div class="weather-text">
+                                        {{ trans('pigarden.moisture') }} <strong><span>@{{ sensor_item.moisture }}</span></strong> %
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                    <i class="fa fa-thermometer-half" aria-hidden="true" style="font-size: 3em; color: #ff6a00"></i>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                    <div class="weather-text">
+                                        {{ trans('pigarden.temp_c') }} <strong><span>@{{ sensor_item.temperature }}</span></strong> C°
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                    <i class="fa fa-pagelines" aria-hidden="true" style="font-size: 3em; color: #32bb1b"></i>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                    <div class="weather-text">
+                                        {{ trans('pigarden.fertility') }} <strong><span>@{{ sensor_item.fertility }}</span></strong> us/cm
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6 col-xs-12">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-right">
+                                    <i class="fa fa-sun-o" aria-hidden="true" style="font-size: 3em; color: #f6dc27"></i>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 box-weather text-left">
+                                    <div class="weather-text">
+                                        {{ trans('pigarden.illuminance') }} <strong><span>@{{ sensor_item.illuminance }}</span></strong> lx
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('after_scripts')
+    <script src="{{ asset('js/vue2.js') }}"></script>
     <script src="{{ asset('js/base.js') }}"></script>
     <script>
         var urlJsonDashboardStatus = "{{ route('get.json.dashboard.status') }}";

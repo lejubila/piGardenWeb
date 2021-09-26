@@ -191,6 +191,11 @@ return array(
     'System reboot is started' => 'System reboot is started',
     'System shutdown is started' => 'System shutdown is started',
 
+    'sensor' => 'Sensor',
+    'moisture' => 'Moisture',
+    'illuminance' => 'Illuminance',
+    'fertility' => 'Fertility',
+
     'enabled' => 'Enabled',
 
     'icon' => [
