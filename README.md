@@ -1,7 +1,7 @@
 # piGardenWeb
 Web control panel to manage your piGarden (system irrigation with Raspberry Pi)
 
-![piGardenWeb v.0.6.0 Dashboard](https://www.lejubila.net/wp-content/uploads/2020/09/piGardeWeb_600_dashboard.png)
+![piGardenWeb v.0.6.2 Dashboard](https://www.lejubila.net/wp-content/uploads/2021/10/piGardeWeb_620_dashboard.png)
 
 ![piGardenWeb v.0.6.0 Zone setting](https://www.lejubila.net/wp-content/uploads/2020/09/piGardenWeb_600_zone.png)
 

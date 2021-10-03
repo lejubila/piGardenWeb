@@ -1,4 +1,4 @@
-## 0.6.2 - xx/xx/2021
+## 0.6.2 - 03/10/2021
  - Implemented view sensor status of piGarden from 0.6.4
 
 ## 0.6.1 - 09/08/2021
